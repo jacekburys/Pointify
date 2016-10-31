@@ -3,7 +3,7 @@
 client_root=$(dirname $0)
 pushd $client_root
 
-clang++ -g -Iinclude/ -std=c++11 -o bin/client src/client.cpp
+clang++ -g -Iinclude/ -std=c++11 -o bin/client src/client.cpp src/socket.cpp
 clang++ -g -Iinclude/ -std=c++11 -o bin/server src/server.cpp
 
 popd
