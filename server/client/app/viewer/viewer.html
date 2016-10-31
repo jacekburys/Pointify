@@ -1,7 +1,27 @@
 <div class="row">
   <div class="col-sm-4">
-    <ul class="list-group">
-      <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">{{client.id}}</li>
+    <!-- TODO : put a logo or something here -->
+    <!-- TODO : make buttons change color depending on situation -->
+    <h1 class="text-center">Pointify</h1>
+    <button type="button" class="btn-block btn-lg btn-primary"
+            ng-click="$ctrl.takePicture()">Take Picture</button>
+    <button type="button" class="btn-block btn-lg btn-success"
+            ng-click="$ctrl.calibrate()">Calibrate</button>
+    <h1 class="text-center"> Clients </h1>
+    <ul class="list-group pre-scrollable">
+      <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
+        <div class="row">
+          <div class="col-sm-3">
+            {{client.id}}
+          </div>
+          <div class="col-sm-6">
+            {{client.ip}}
+          </div>
+          <div class="col-sm-3">
+            {{client.calibStatus}}
+          </div>
+        </div>
+      </li>
     </ul>
   </div>
   <div class="col-sm-8">
@@ -82,14 +102,14 @@
     <script>
       
       var sceneProperties = {
-        //path: "http://5.9.65.151/mschuetz/potree/resources/pointclouds/pix4d/matterhorn/cloud.js",
+        path: "http://5.9.65.151/mschuetz/potree/resources/pointclouds/pix4d/matterhorn/cloud.js",
         cameraPosition: null,
         cameraTarget: null,
         sizeType: "Adaptive",
         quality: "Squares",
         fov: 75,
         material: "RGB",
-        pointLimit: 1,
+        pointLimit: 0.05,
         navigation: "Orbit",
         pointSize: 1,  
         useEDL: false,
