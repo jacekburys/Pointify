@@ -1,10 +1,14 @@
-#include <unistd.h>
-#include "socket.hpp"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+
+#include <cmdline.h>
+#include <cmdlog.h>
+#include <socketio/sio_client.h>
+
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -12,11 +16,17 @@ int main(int argc, char *argv[])
     cmdParser.add<std::string>("ip", 'i', "Server IP address", false, "127.0.0.1");
     cmdParser.add<unsigned short>("port", 'p', "Server port number", false, 4500);
     cmdParser.parse_check(argc, argv);
+    const char* inputIp = cmdParser.get<std::string>("ip").c_str();
+    unsigned short inputPort = cmdParser.get<unsigned short>("port");
+    char serverUrl[100];
+    sprintf(serverUrl, "http://%s:%hu", inputIp, inputPort);
 
-    const char* parsedIp = cmdParser.get<std::string>("ip").c_str();
-    unsigned short parsedPort = cmdParser.get<unsigned short>("port");
+    cv::Mat image = cv::imread(std::string("./image.jpg"));
+    cv::imshow("image", image);
+    cv::waitKey(0);
 
-    Socket* socket = new Socket(parsedIp, parsedPort);
-    socket->start();
+    sio::client client;
+    client.connect(serverUrl);
+    client.socket()->emit("test", std::string("test"));
 }
 

@@ -3,11 +3,12 @@
 client_root=$(dirname $0:A)
 pushd $client_root
 
-clang++ -g -Iinclude/ -Llib/mac/ -std=c++11 -o bin/client src/client.cpp
-clang++ -g -Iinclude/ -Llib/mac/ -std=c++11 -o bin/server src/server.cpp
+clang++ -g -Iinclude/ -Llib/mac/ -std=c++11 -o bin/client src/client.cpp \
+    -Llib/mac -rpath $client_root/lib/mac \
+    -lsocketio -lboost_system -lboost_thread -lfreenect2 \
+    -lopencv_core -lopencv_highgui -lopencv_imgcodecs
 
-# clang++ -g -Iinclude/ -std=c++11 -o bin/client src/client.cpp src/socket.cpp
-# clang++ -g -Iinclude/ -std=c++11 -o bin/server src/server.cpp
+clang++ -g -Iinclude/ -Llib/mac/ -std=c++11 -o bin/server src/server.cpp
 
 popd
 
