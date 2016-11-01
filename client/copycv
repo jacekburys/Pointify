@@ -1,0 +1,44 @@
+#!/bin/zsh
+
+if [ $# -ne 3 ] ; then
+    echo "Needs to supply opencv source path, opencv module path, opencv binary path, in this order!"
+    return
+fi
+
+if ! [ -d $1 ] ; then
+    echo "Opencv source path supplied is not a directory"
+    return
+fi
+
+if ! [ -d $2 ] ; then
+    echo "Opencv module path supplied is not a directory"
+    return
+fi
+
+if ! [ -d $3 ] ; then
+    echo "Opencv binary path supplied is not a directory"
+    return
+fi
+
+opencv_src=$1:A
+opencv_module=$2:A
+opencv_bin=$3:A
+
+client_root=$(dirname $0:A)
+
+cp -R $opencv_src/include/opencv2 $client_root/include/
+for d in $opencv_src/modules/* ; do
+    if [ -d $d ] && [ -d $d/include ] ; then
+        cp -R $d/include/opencv2 $client_root/include/
+    fi
+done
+
+for d in $opencv_module/modules/* ; do
+    if [ -d $d ] && [ -d $d/include ] ; then
+        cp -R $d/include/opencv2 $client_root/include/
+    fi
+done
+
+cp -R $opencv_bin/opencv2 $client_root/include/
+cp -R $opencv_bin/lib/* $client_root/lib/mac/
+

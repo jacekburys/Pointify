@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+client_root=$(dirname $0:A)
+pushd $client_root
+
+./copycv ../lib/opencv ../lib/opencv_contrib ../lib/opencv_bin
+./copyfreenect ../lib/libfreenect2
+
+for lib in lib/mac/*.dylib ; do
+    if ! [ -h $lib ] ; then
+        dylibname=$(basename $lib)
+        install_name_tool -add_rpath $client_root/lib/mac -id @rpath/$dylibname $lib
+    fi
+done
+
+popd
+

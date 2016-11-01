@@ -78,4 +78,8 @@ $RECYCLE.BIN/
 
 
 client/bin
+client/lib
+lib
+client/src/KinectOneStream.cpp
+client/build_sample
 
