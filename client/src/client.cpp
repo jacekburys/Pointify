@@ -7,10 +7,11 @@
 
 #include <cmdline.h>
 #include <cmdlog.h>
-#include <socketio/sio_client.h>
-
+#include <json.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
+#include <socketio/sio_client.h>
+
 
 int main(int argc, char *argv[])
 {
@@ -30,8 +31,15 @@ int main(int argc, char *argv[])
     client.set_open_listener([] { INFO("Connected"); });
     client.set_fail_listener([] { INFO("Failed"); });
     client.set_close_listener([] (sio::client::close_reason const& reason) { INFO("Closed"); });
-    client.set_socket_open_listener( [] (std::string const& nsp) { INFO("Socket connected"); });
-    client.socket()->on("hello", [] (sio::event& event) { INFO("Msg received"); });
+
+    client.set_socket_open_listener( [&] (std::string const& nsp) 
+                                     {
+                                     INFO("Socket connected");
+                                     nlohmann::json msg;
+                                     msg["values"] = { 1.0, 2.0, 3.0 };
+                                     client.socket()->emit("new_frame", msg.dump());
+                                     });
+    client.socket()->on("hello", [] (sio::event& event) { INFO("Hello from server"); });
 
     client.connect(serverUrl);
 }
