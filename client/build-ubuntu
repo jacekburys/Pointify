@@ -1,0 +1,10 @@
+#!/bin/bash
+
+client_root=$(dirname $0:A)
+pushd $client_root
+
+g++ -g -Iinclude -Llib/linux -std=c++14 -o bin/client src/client.cpp \
+    -lopencv_core -lfreenect2 -Wl,-rpath=../lib/linux
+
+popd
+
