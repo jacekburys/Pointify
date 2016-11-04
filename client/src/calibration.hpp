@@ -1,5 +1,6 @@
 #ifndef CALIBRATION_H 
 #define CALIBRATION_H 
+#include <opencv2/core.hpp>
 
 class Calibration 
 {
@@ -15,7 +16,7 @@ private:
     const int MARKER_SEPARATION = 1;
 public:
     Calibration();
-    void calibrate();
+    void calibrate(cv::Mat);
 };
 
 #endif

@@ -3,11 +3,12 @@
 client_root=$(dirname $0:A)
 pushd $client_root
 
-g++ -g -Iinclude -Llib/linux -std=c++14 -o bin/client src/client.cpp \
-    -Wl,-rpath=../lib/linux \
-    -lsocketio -lboost_system -lboost_thread -lfreenect2 \
-    -lopencv_core -lopencv_highgui -lopencv_imgcodecs \
-    -lpthread
+linked_libs="-lsocketio -lboost_system -lboost_thread -lfreenect2 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lpthread"
+lib_dir="-Llib/linux"
+incs="-Iinclude"
+
+g++ -g $incs $lib_dir -std=c++14 -o bin/client src/client.cpp -Wl,-rpath=../lib/linux $linked_libs
+g++ -g $incs $lib_dir -std=c++14 -o bin/calibration src/calibration.cpp -Wl,-rpath=../lib/linux $linked_libs
 
 popd
 
