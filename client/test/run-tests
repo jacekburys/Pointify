@@ -1,0 +1,4 @@
+#!/bin/bash
+
+g++ -I../include test.cpp -o /tmp/test
+/tmp/test
