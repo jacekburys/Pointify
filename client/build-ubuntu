@@ -7,7 +7,7 @@ g++ -g -Iinclude -Llib/linux -std=c++14 -o bin/client src/client.cpp \
     -Wl,-rpath=../lib/linux \
     -lsocketio -lboost_system -lboost_thread -lfreenect2 \
     -lopencv_core -lopencv_highgui -lopencv_imgcodecs \
-    -lpthread
+    -lpthread -lopencv_imgproc
 
 popd
 
