@@ -1,28 +1,30 @@
-<div class="row">
+<div class="row main">
   <div class="col-sm-4">
-    <!-- TODO : put a logo or something here -->
-    <!-- TODO : make buttons change color depending on situation -->
-    <h1 class="text-center">Pointify</h1>
-    <button type="button" class="btn-block btn-lg btn-primary"
-            ng-click="$ctrl.takePicture()">Take Picture</button>
-    <button type="button" class="btn-block btn-lg btn-success"
-            ng-click="$ctrl.calibrate()">Calibrate</button>
-    <h1 class="text-center"> Clients </h1>
-    <ul class="list-group pre-scrollable">
-      <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
-        <div class="row">
-          <div class="col-sm-3">
-            {{client.id}}
+    <div class="col-sm-10 col-sm-offset-1">
+      <!-- TODO : put a logo or something here -->
+      <!-- TODO : make buttons change color depending on situation -->
+      <h1 class="text-center">Pointify</h1>
+      <button type="button" class="btn-block btn-lg btn-default button"
+              ng-click="$ctrl.takePicture()">Take Picture</button>
+      <button type="button" class="btn-block btn-lg btn-default button"
+              ng-click="$ctrl.calibrate()">Calibrate</button>
+      <h1 class="text-center"> Clients </h1>
+      <ul class="list-group pre-scrollable">
+        <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
+          <div class="row">
+            <div class="col-sm-3">
+              {{client.id}}
+            </div>
+            <div class="col-sm-6">
+              {{client.ip}}
+            </div>
+            <div class="col-sm-3">
+              {{client.calibStatus}}
+            </div>
           </div>
-          <div class="col-sm-6">
-            {{client.ip}}
-          </div>
-          <div class="col-sm-3">
-            {{client.calibStatus}}
-          </div>
-        </div>
-      </li>
-    </ul>
+        </li>
+      </ul>
+    </div>
   </div>
   <div class="col-sm-8">
 <!-- -->
@@ -65,7 +67,7 @@
     <script src="../../potree-1.3/build/js/laslaz.js"></script>
     -->
 
-    <!-- HEADING 
+    <!-- HEADING
     <div class="info" style="position: absolute; left: 300px; right: 300px; top: 10px; text-align: center;">
       <a href="http://potree.org" target="_blank">potree.org</a><br>
       Point cloud courtesy of <a href="http://www.sigeom.ch/" target="_blank">sigeom sa</a><br>
@@ -100,7 +102,7 @@
     <div id="renderArea" style="height: 700px"></div>
 
     <script>
-      
+
       var sceneProperties = {
         path: "http://5.9.65.151/mschuetz/potree/resources/pointclouds/pix4d/matterhorn/cloud.js",
         cameraPosition: null,
@@ -111,7 +113,7 @@
         material: "RGB",
         pointLimit: 0.05,
         navigation: "Orbit",
-        pointSize: 1,  
+        pointSize: 1,
         useEDL: false,
       };
     </script>
