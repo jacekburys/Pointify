@@ -21,10 +21,12 @@ class Camera
 {
 public:
     Camera() {};
-    void start(sio::client client);
-
+    void start();
+    void takePicture();
 private:
     string matrixToJSON();
+    void cameraLoop();
+    void sendPicture(cv::Mat image);
 };
 
 #endif

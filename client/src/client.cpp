@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
     client.connect(serverUrl);
 
     Camera camera;
-    camera.start(client);
+    camera.start();
+    client.socket()->on("takepicture",  [] (sio::event& event) { camera.takePicture(); });
 
     return 0;
 }
