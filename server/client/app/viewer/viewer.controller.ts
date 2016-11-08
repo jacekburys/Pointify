@@ -9,7 +9,9 @@ enum CalibrationStatus {
 }
 
 class ViewerController {
-  constructor($scope) {
+  constructor($scope, socket) {
+    this.$scope = $scope;
+    this.socket = socket;
     this.connectedClients = [
       {
         id : 123,
@@ -96,6 +98,7 @@ class ViewerController {
 
   takePicture() {
     console.log('Trying to take a picture');
+    this.socket.takePicture();
   }
 
   calibrate() {

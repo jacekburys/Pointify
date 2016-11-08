@@ -10,6 +10,10 @@ export default function(socketio) {
     socket.on('disconnect', function() {
       console.log('disconnected');
     });
+    socket.on('viewer-takepicture', function() {
+      console.log('Take Picture button pressed');
+      socket.emit('takepicture');
+    });
   });
 
 }

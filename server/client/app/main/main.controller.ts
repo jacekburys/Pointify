@@ -10,14 +10,14 @@ class MainController {
     this.awesomeThings = [];
 
     $scope.$on('$destroy', function() {
-      socket.unsyncUpdates('thing');
+      //socket.unsyncUpdates('thing');
     });
   }
 
   $onInit() {
     this.$http.get('/api/things').then(response => {
       this.awesomeThings = response.data;
-      this.socket.syncUpdates('thing', this.awesomeThings);
+      //this.socket.syncUpdates('thing', this.awesomeThings);
     });
   }
 
