@@ -4,11 +4,13 @@ pushd $client_root
 
 export LD_LIBRARY_PATH=lib/linux
 
-g++ -g -Iinclude -Llib/linux -std=c++14 -o bin/client src/client.cpp src/camera.cpp \
-    -Wl,-rpath=../lib/linux \
-    -lsocketio -lboost_system -lboost_thread -lfreenect2 \
-    -lopencv_core -lopencv_highgui -lopencv_imgcodecs \
-    -lpthread
+linked_libs="-lsocketio -lboost_system -lboost_thread -lfreenect2 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lpthread"
+incs="-Iinclude"
+out="bin/client"
+src="src/client.cpp src/camera.cpp src/calibration.cpp"
+
+g++ -g $incs -L$LD_LIBRARY_PATH -std=c++14 -o $out $src\
+    -Wl,-rpath=../$LD_LIBRARY_PATH $linked_libs
 
 popd
 
