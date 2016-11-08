@@ -104,6 +104,64 @@ class ViewerController {
   calibrate() {
     console.log('Trying to calibrate');
   }
+
+  runThree() {
+    var camera, scene, renderer, controls;
+    init();
+    animate();
+
+    function init() {
+      var width = document.getElementById('viewer').clientWidth;
+      var height = window.innerHeight;
+      console.log(width, height);
+      camera = new THREE.PerspectiveCamera( 70, width / height, 1, 1000 );
+      camera.position.z = 400;
+
+      scene = new THREE.Scene();
+      var material = new THREE.PointsMaterial({
+        size: 5,
+        //color : 0x00ff00
+        vertexColors: THREE.VertexColors,
+      });
+      var geometry = new THREE.Geometry();
+      var x, y, z;
+      for (var i = 0; i < 100; i += 1) {
+        x = (Math.random() * 800) - 400;
+        y = (Math.random() * 800) - 400;
+        z = (Math.random() * 800) - 400;
+        geometry.vertices.push(new THREE.Vector3(x, y, z));
+        geometry.colors.push(new THREE.Color(Math.random(), Math.random(), Math.random()));
+      }
+      var pointCloud = new THREE.Points(geometry, material);
+
+      scene.add( pointCloud );
+      renderer = new THREE.WebGLRenderer();
+      renderer.setPixelRatio( window.devicePixelRatio );
+      renderer.setSize( width, height );
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      //controls.addEventListener('change', render);
+      //controls.enableDamping = true;
+      //controls.dampingFactor = 0.25;
+      //controls.enableZoom = false;
+
+      document.getElementById('viewer').appendChild( renderer.domElement );
+      window.addEventListener( 'resize', onWindowResize, false );
+    }
+
+    function onWindowResize() {
+      var width = document.getElementById('viewer').clientWidth;
+      var height = window.innerHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize( width, height );
+    }
+
+    function animate() {
+      requestAnimationFrame( animate );
+      renderer.render( scene, camera );
+    }
+  }
 }
 
 angular.module('serverApp')
