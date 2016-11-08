@@ -82,3 +82,10 @@ client/lib
 lib
 client/src/KinectOneStream.cpp
 
+
+# Intellij Files
+.idea
+
+CMakeLists.txt
+
+
