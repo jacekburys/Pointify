@@ -1,4 +1,8 @@
 #include "calibration.hpp"
+<<<<<<< HEAD
+=======
+#include <opencv2/aruco.hpp>
+>>>>>>> 154d92baaa65500f97abafe8ed52500008b4c74f
 #include <vector>
 
 Calibration::Calibration()

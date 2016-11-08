@@ -1,7 +1,10 @@
 #ifndef CALIBRATION_H 
 #define CALIBRATION_H 
 #include <opencv2/core.hpp>
+<<<<<<< HEAD
 #include <opencv2/aruco.hpp>
+=======
+>>>>>>> 154d92baaa65500f97abafe8ed52500008b4c74f
 
 class Calibration 
 {
