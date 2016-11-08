@@ -1,13 +1,14 @@
 #!/bin/bash
-
 client_root=$(dirname $0:A)
 pushd $client_root
+
+export LD_LIBRARY_PATH=lib/linux
 
 g++ -g -Iinclude -Llib/linux -std=c++14 -o bin/client src/client.cpp src/camera.cpp \
     -Wl,-rpath=../lib/linux \
     -lsocketio -lboost_system -lboost_thread -lfreenect2 \
     -lopencv_core -lopencv_highgui -lopencv_imgcodecs \
-    -lpthread -lopencv_imgproc
+    -lpthread
 
 popd
 
