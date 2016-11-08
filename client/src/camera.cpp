@@ -16,15 +16,11 @@ typedef unsigned char byte;
 bool pictureTriggered = false;
 string triggeredPicture;
 
-string Camera::matrixToJSON(cv::Mat image)
+string Camera::serializeMatrix(cv::Mat image)
 {
-    cv::Size size = image.size();
-
-    int total = size.width * size.height * image.channels();
-
-    std::vector<uchar> data(image.ptr(), image.ptr() + total);
-    std::string s(data.begin(), data.end());
-    return s;
+    ostringstream stream;
+    stream << image;
+    return stream.str();
 }
 
 void Camera::start()
@@ -82,7 +78,7 @@ void Camera::start()
         cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(depthmat);
 
         if (pictureTriggered) {
-            triggeredPicture = matrixToJSON(rgbmat);
+            triggeredPicture = serializeMatrix(rgbmat);
             pictureTriggered = false;
         }
 

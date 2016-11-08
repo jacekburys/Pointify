@@ -13,7 +13,7 @@ public:
     static void start();
     static string takePicture();
 private:
-    static string matrixToJSON(cv::Mat image);
+    static string serializeMatrix(cv::Mat image);
     static void cameraLoop();
     static void sendPicture(cv::Mat image);
 };
