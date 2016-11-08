@@ -143,7 +143,7 @@
 
 @property (nonatomic, weak) id<CvPhotoCameraDelegate> delegate;
 
-- (void)takePicture;
+- (void)pictureTriggered;
 
 @end
 

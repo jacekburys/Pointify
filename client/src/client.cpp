@@ -1,3 +1,5 @@
+using namespace std;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -17,13 +19,12 @@
 
 int main(int argc, char *argv[])
 {
-    using namespace std::chrono_literals;
 
     cmdline::parser cmdParser;
-    cmdParser.add<std::string>("ip", 'i', "Server IP address", false, "127.0.0.1");
+    cmdParser.add<string>("ip", 'i', "Server IP address", false, "127.0.0.1");
     cmdParser.add<unsigned short>("port", 'p', "Server port number", false, 9000);
     cmdParser.parse_check(argc, argv);
-    const char* inputIp = cmdParser.get<std::string>("ip").c_str();
+    const char* inputIp = cmdParser.get<string>("ip").c_str();
     unsigned short inputPort = cmdParser.get<unsigned short>("port");
     char serverUrl[100];
     sprintf(serverUrl, "http://%s:%hu", inputIp, inputPort);
@@ -34,7 +35,7 @@ int main(int argc, char *argv[])
     client.set_fail_listener([] { INFO("Failed"); });
     client.set_close_listener([] (sio::client::close_reason const& reason) { INFO("Closed"); });
 
-    client.set_socket_open_listener( [&] (std::string const& nsp)
+    client.set_socket_open_listener( [&] (string const& nsp)
                                      {
                                      INFO("Socket connected");
                                      nlohmann::json msg;
@@ -47,7 +48,9 @@ int main(int argc, char *argv[])
 
     Camera camera;
     camera.start();
-    client.socket()->on("takepicture",  [] (sio::event& event) { camera.takePicture(); });
+
+    client.socket()->on("takepicture",  [&camera] (sio::event& event) { camera.takePicture(); });
+
 
     return 0;
 }

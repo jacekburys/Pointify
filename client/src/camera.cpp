@@ -1,18 +1,40 @@
 #include "camera.h"
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <socketio/sio_client.h>
+#include <cmdlog.h>
+
+#include <libfreenect2/libfreenect2.hpp>
+#include <libfreenect2/frame_listener_impl.h>
+#include <libfreenect2/registration.h>
+#include <libfreenect2/packet_pipeline.h>
+#include <libfreenect2/logger.h>
+#include <iostream>
+#include <thread>
 
 typedef unsigned char byte;
-bool takePicture = false;
+bool pictureTriggered = false;
+libfreenect2::SyncMultiFrameListener listener(libfreenect2::Frame::Color |
+                                              libfreenect2::Frame::Depth |
+                                              libfreenect2::Frame::Ir);
+libfreenect2::FrameMap frames;
+libfreenect2::Freenect2Device *dev = 0;
 
-string matrixToJSON(cv::Mat image)
+string Camera::matrixToJSON(cv::Mat image)
 {
     return "";
 }
 
-void sendPicture(cv::Mat image) {
-    //
+void Camera::sendPicture(cv::Mat image) {
+   //pass back matrixToJSON(image) to a callback function
 }
 
-void cameraLoop() {
+void Camera::cameraLoop() {
+    bool shutdown = false;
+    cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2;
+    libfreenect2::Registration* registration = new libfreenect2::Registration(dev->getIrCameraParams(), dev->getColorCameraParams());
+    libfreenect2::Frame undistorted(512, 424, 4), registered(512, 424, 4), depth2rgb(1920, 1080 + 2, 4);
+
     while (!shutdown) {
         listener.waitForNewFrame(frames);
         libfreenect2::Frame *rgb = frames[libfreenect2::Frame::Color];
@@ -23,12 +45,18 @@ void cameraLoop() {
         cv::Mat(ir->height, ir->width, CV_32FC1, ir->data).copyTo(irmat);
         cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(depthmat);
 
-        if (takePicture) {
+        if (pictureTriggered) {
             sendPicture(rgbmat);
-            takePicture = false;
+            pictureTriggered = false;
         }
 
         cv::imshow("Camera", depthmat);
+
+        registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
+
+        cv::Mat(undistorted.height, undistorted.width, CV_32FC1, undistorted.data).copyTo(depthmatUndistorted);
+        cv::Mat(registered.height, registered.width, CV_8UC4, registered.data).copyTo(rgbd);
+        cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
 
         int key = cv::waitKey(1);
 
@@ -38,18 +66,19 @@ void cameraLoop() {
         // Shutdown on window close
         try {
             int windowProperty = cv::getWindowProperty("Camera", 0);
-        } catch (Exception e) {
+        } catch (cv::Exception e) {
             shutdown = true;
         }
 
         listener.release(frames);
     }
+    dev->stop();
+    dev->close();
 }
 
 void Camera::start()
 {
     libfreenect2::Freenect2 freenect2;
-    libfreenect2::Freenect2Device *dev = 0;
 
     if(freenect2.enumerateDevices() == 0)
     {
@@ -70,11 +99,6 @@ void Camera::start()
 
     libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::None));
 
-    libfreenect2::SyncMultiFrameListener listener(libfreenect2::Frame::Color |
-                                                  libfreenect2::Frame::Depth |
-                                                  libfreenect2::Frame::Ir);
-    libfreenect2::FrameMap frames;
-
     dev->setColorFrameListener(&listener);
     dev->setIrAndDepthFrameListener(&listener);
 
@@ -83,18 +107,12 @@ void Camera::start()
     cout << "device serial: " << dev->getSerialNumber() << endl;
     cout << "device firmware: " << dev->getFirmwareVersion() << endl;
 
-    cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2;
-    bool shutdown = false;
     cv::namedWindow("Camera", CV_WINDOW_NORMAL);
     cv::resizeWindow("Camera", 1500, 844);
 
     std::thread loopThread (cameraLoop);
-
-    // Trigger on exit of loop
-    dev->stop();
-    dev->close();
 }
 
 void Camera::takePicture() {
-    takePicture = true;
+    pictureTriggered = true;
 }
