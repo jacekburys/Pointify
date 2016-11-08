@@ -11,7 +11,7 @@ class Camera
 public:
     Camera() {};
     static void start();
-    static void takePicture();
+    static string takePicture();
 private:
     static string matrixToJSON(cv::Mat image);
     static void cameraLoop();
