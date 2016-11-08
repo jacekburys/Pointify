@@ -12,6 +12,7 @@ public:
     Camera() {};
     static void start();
     static string takePicture();
+    struct ColorCameraParams* getColorCameraParams();
 private:
     static string serializeMatrix(cv::Mat image);
     static void cameraLoop();

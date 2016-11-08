@@ -2,7 +2,6 @@
 #define CALIBRATION_H 
 #include <opencv2/core.hpp>
 #include <opencv2/aruco.hpp>
-#include <opencv2/aruco.hpp>
 
 class Calibration 
 {
@@ -16,21 +15,20 @@ private:
     
     // distance between markers
     const int MARKER_SEPARATION = 1;
+      
+    //Every Calibration() object has these 
 	
-	//Every Calibration() object has these 
+    // dict is the set of aruco markers that we are expecting to 
+    cv::Ptr<cv::aruco::Dictionary> dict;
 	
-	// dict is the set of aruco markers that we are expecting to see
-	cv::Ptr<cv::aruco::Dictionary> dict;
+    // marker corners
+    std::vector<std::vector<cv::Point2f>> corners;
 	
-	// marker corners
-	std::vector<std::vector<cv::Point2f>> corners;
-	
-	// marker ids 
+    // marker ids 
     std::vector<int> ids;
 	
 public:
     Calibration();
-	//~Calibration();
     bool calibrate(cv::Mat);
 };
 
