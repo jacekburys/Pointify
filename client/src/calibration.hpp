@@ -2,6 +2,7 @@
 #define CALIBRATION_H 
 #include <opencv2/core.hpp>
 #include <opencv2/aruco.hpp>
+#include "libfreenect2/libfreenect2.hpp"
 
 class Calibration 
 {
@@ -31,7 +32,7 @@ private:
     libfreenect2::Freenect2Device *device;
 
 public:
-    Calibration(libfreenect2::Freenect2Device *device);
+    Calibration(libfreenect2::Freenect2Device*);
     Calibration(); //Don't use default constructor for instantiation!
     bool calibrate(cv::Mat image);
 };

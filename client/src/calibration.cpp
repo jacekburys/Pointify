@@ -1,5 +1,4 @@
 #include "calibration.hpp"
-#include "libfreenect2/libfreenect2.hpp"
 #include <opencv2/aruco.hpp>
 #include <vector>
 
@@ -30,7 +29,7 @@ bool Calibration::calibrate(cv::Mat img)
    // Unsure about this bit 
 
     //Get the depth parameters from device 
-    Freenect2Device::IrCameraParams depthParameters = device->getIrCameraParams();
+    libfreenect2::Freenect2Device::IrCameraParams depthParameters = device->getIrCameraParams();
     
     float fx,fy,cx,cy;
     fx = depthParameters.fx;
@@ -48,7 +47,7 @@ bool Calibration::calibrate(cv::Mat img)
     //
 
     // (width,height)
-    cv::Mat cameraMatrix = Mat(3,3,CV_64F,depthMatrix);
+    cv::Mat cameraMatrix = cv::Mat(3,3,CV_64F,depthMatrix);
     cv::Mat distCoeffs = cv::Mat::zeros(5, 1, CV_64F);    
    
     // rotation (rvecs) and translation (tvecs) vectors that bring the marker from it's coordinate space to world coordinate space
