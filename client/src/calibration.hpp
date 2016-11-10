@@ -28,7 +28,7 @@ private:
     std::vector<int> ids;
 
     //Device
-    libfreenect2::Freenect2Device *device = NULL;
+    libfreenect2::Freenect2Device *device;
 
 public:
     Calibration(libfreenect2::Freenect2Device *device);

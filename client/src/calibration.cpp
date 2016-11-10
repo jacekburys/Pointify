@@ -1,7 +1,7 @@
 #include "calibration.hpp"
 #include "libfreenect2/libfreenect2.hpp"
 #include <opencv2/aruco.hpp>
-#include <vector
+#include <vector>
 
 Calibration::Calibration(libfreenect2::Freenect2Device *device)
 {
@@ -12,10 +12,11 @@ Calibration::Calibration(libfreenect2::Freenect2Device *device)
     dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 }
 
-/*Calibration::~Calibration()
+Calibration::Calibration()
 {
-	
-}*/
+  device = NULL;
+  dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+}
 
 bool Calibration::calibrate(cv::Mat img)
 {
@@ -48,11 +49,11 @@ bool Calibration::calibrate(cv::Mat img)
 
     // (width,height)
     cv::Mat cameraMatrix = Mat(3,3,CV_64F,depthMatrix);
-    cv::Mat distCoeffs = Mat::zeros(5, 1, CV_64F);    
+    cv::Mat distCoeffs = cv::Mat::zeros(5, 1, CV_64F);    
    
     // rotation (rvecs) and translation (tvecs) vectors that bring the marker from it's coordinate space to world coordinate space
     //std::vector<Mat> rvecs, tvecs;
-    cd::Mat rvecs, tvecs;
+    cv::Mat rvecs, tvecs;
 
     // calibrate
     cv::aruco::calibrateCameraAruco(corners, ids, MARKER_X * MARKER_Y, board, img.size(), cameraMatrix, distCoeffs, rvecs, tvecs);
