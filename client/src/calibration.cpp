@@ -2,8 +2,11 @@
 #include <opencv2/aruco.hpp>
 #include <vector>
 
-Calibration::Calibration()
+Calibration::Calibration(libfreenect2::Freenect2Device *device)
 {
+    // Device used for calibration
+    this->device = device;
+
     // dict is the set of aruco markers that we are expecting to see
     dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 }
@@ -21,11 +24,25 @@ bool Calibration::calibrate(cv::Mat img)
 
     // perform camera calibration
     cv::Ptr<cv::aruco::Board> board = cv::aruco::GridBoard::create(MARKER_X, MARKER_Y, MARKER_LENGTH, MARKER_SEPARATION, dict).staticCast<cv::aruco::Board>();
-	
-    // cv::Mat is (height,width) 3x3 camera matrix
-    // TODO: maybe change this to use getColorCameraParams()
-    cv::Mat cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
-	
+       
+    //Get the depth parameters from device 
+    Freenect2Device::IrCameraParams depthParameters = device->getIrCameraParams();
+    
+    float fx,fy,cx,cy;
+    fx = depthParameters.fx;
+    fy = depthParameters.fy;
+    cx = depthParameters.cx;
+    cy = depthParameters.cy;
+
+    float depthMatrix[3][3] = 
+    {
+     {fx, 0, cx},
+     {0, fy, cy},
+     {0,  0, 1}
+    };    
+
+    // (width,height)
+    cv::Mat cameraMatrix = Mat(3,3,CV_64F,depthMatrix);
     cv::Mat distCoeffs;
     cv::Mat rvecs, tvecs; // rotation and translation vectors that bring the marker from it's coordinate space to world coordinate space  
  

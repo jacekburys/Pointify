@@ -26,10 +26,14 @@ private:
 	
     // marker ids 
     std::vector<int> ids;
-	
+
+    //Device
+    libfreenect2::Freenect2Device *device = NULL;
+
 public:
-    Calibration();
-    bool calibrate(cv::Mat);
+    Calibration(libfreenect2::Freenect2Device *device);
+    Calibration(); //Don't use default constructor for instantiation!
+    bool calibrate(cv::Mat image);
 };
 
 #endif
