@@ -28,11 +28,11 @@ sio::array_message::ptr Camera::getMessage(cv::Mat image) {
     int rows = image.rows;
     int cols = image.cols;
     for (int i = 0; i < rows; i++) {
+        cv::Vec3b* vector = image.ptr<cv::Vec3b>(i);
         for (int j = 0; j < cols; j++) {
-            cv::Vec3b vector = image.at<cv::Vec3b>(i, j);
-            char r = vector[0];
-            char g = vector[1];
-            char b = vector[2];
+            char r = vector[j][0];
+            char g = vector[j][1];
+            char b = vector[j][2];
             int point = 0;
             point |= (r << 16);
             point |= (g << 8);
