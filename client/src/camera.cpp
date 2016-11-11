@@ -85,6 +85,10 @@ void Camera::start()
             pictureTriggered = false;
         }
 
+        if (calibrationTriggered) {
+            calibrationSuccess = calibration.calibrate(rgbmat);
+        }
+
         cv::imshow("Camera", depthmat);
 
         registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
@@ -92,10 +96,6 @@ void Camera::start()
         cv::Mat(undistorted.height, undistorted.width, CV_32FC1, undistorted.data).copyTo(depthmatUndistorted);
         cv::Mat(registered.height, registered.width, CV_8UC4, registered.data).copyTo(rgbd);
         cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
-
-        if (calibrationTriggered) {
-            calibrationSuccess = calibration.calibrate(rgbmat);
-        }
 
         int key = cv::waitKey(1);
 

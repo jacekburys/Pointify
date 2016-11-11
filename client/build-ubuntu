@@ -4,7 +4,7 @@ pushd $client_root
 
 export LD_LIBRARY_PATH=lib/linux
 
-linked_libs="-lsocketio -lboost_system -lboost_thread -lfreenect2 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_aruco -lpthread"
+linked_libs="-lsocketio -lboost_system -lboost_thread -lfreenect2 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_aruco -lopencv_imgproc -lpthread"
 incs="-Iinclude"
 out="bin/client"
 src="src/client.cpp src/camera.cpp src/calibration.cpp"

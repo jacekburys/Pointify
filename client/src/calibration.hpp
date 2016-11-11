@@ -28,8 +28,12 @@ private:
     // marker ids 
     std::vector<int> ids;
 
-    //Device
+    // camera device
     libfreenect2::Freenect2Device *device;
+
+    // output rotation and translation vectors
+    cv::Mat rotation;
+    cv::Mat translation;
 
 public:
     Calibration(libfreenect2::Freenect2Device*);
