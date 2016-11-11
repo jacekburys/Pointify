@@ -42,12 +42,12 @@ int main(int argc, char *argv[])
                                      msg["values"] = { 1.0, 2.0, 3.0 };
                                      client.socket()->emit("new_frame", msg.dump());
                                      });
-    client.socket()->on("hello", [] (sio::event& event) { INFO("Hello from server"); });
 
     client.connect(serverUrl);
 
     Camera camera;
-    client.socket()->on("takepicture",  [&camera] (sio::event& event) { cout << camera.takePicture() << endl << endl; });
+    //Use fprintf because cout doesnt work
+    client.socket()->on("take_picture",  [&camera, &client] (sio::event& event) { INFO("triggered"); client.socket()->emit("new_frame", camera.takePicture()); });
     camera.start();
 
 

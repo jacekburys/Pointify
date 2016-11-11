@@ -14,13 +14,34 @@
 
 typedef unsigned char byte;
 bool pictureTriggered = false;
-string triggeredPicture;
+sio::array_message::ptr triggeredPicture;
 
 string Camera::serializeMatrix(cv::Mat image)
 {
     ostringstream stream;
     stream << image;
     return stream.str();
+}
+
+sio::array_message::ptr Camera::getMessage(cv::Mat image) {
+    sio::message::list result;
+    int rows = image.rows;
+    int cols = image.cols;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cv::Vec3b vector = image.at<cv::Vec3b>(i, j);
+            char r = vector[0];
+            char g = vector[1];
+            char b = vector[2];
+            int point = 0;
+            point |= (r << 16);
+            point |= (g << 8);
+            point |= (b << 0);
+            sio::message::ptr ptr_point = sio::int_message::create(point);
+            result.push(ptr_point);
+        }
+    }
+    return result.to_array_message();
 }
 
 void Camera::start()
@@ -78,7 +99,7 @@ void Camera::start()
         cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(depthmat);
 
         if (pictureTriggered) {
-            triggeredPicture = serializeMatrix(rgbmat);
+            triggeredPicture = getMessage(rgbmat);
             pictureTriggered = false;
         }
 
@@ -108,7 +129,7 @@ void Camera::start()
     dev->close();
 }
 
-string Camera::takePicture() {
+sio::array_message::ptr Camera::takePicture() {
     pictureTriggered = true;
     while (pictureTriggered) {}
     return triggeredPicture;
