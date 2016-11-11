@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 
     Camera camera;
     client.socket()->on("takepicture",  [&camera] (sio::event& event) { cout << camera.takePicture() << endl << endl; });
+    client.socket()->on("calibrate",  [&camera] (sio::event& event) { camera.calibrate(); });
     camera.start();
 
 

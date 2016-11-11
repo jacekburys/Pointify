@@ -5,6 +5,7 @@ using namespace std;
 
 #include <string>
 #include <opencv2/opencv.hpp>
+#include "calibration.hpp"
 
 class Camera
 {
@@ -12,6 +13,7 @@ public:
     Camera() {};
     static void start();
     static string takePicture();
+    static bool calibrate();
     struct ColorCameraParams* getColorCameraParams();
 private:
     static string serializeMatrix(cv::Mat image);

@@ -14,7 +14,9 @@
 
 typedef unsigned char byte;
 bool pictureTriggered = false;
+bool calibrationTriggered = false;
 string triggeredPicture;
+bool calibrationSuccess;
 
 string Camera::serializeMatrix(cv::Mat image)
 {
@@ -55,6 +57,7 @@ void Camera::start()
     dev->setIrAndDepthFrameListener(&listener);
 
     dev->start();
+    Calibration calibration(dev);
 
     cout << "device serial: " << dev->getSerialNumber() << endl;
     cout << "device firmware: " << dev->getFirmwareVersion() << endl;
@@ -90,6 +93,10 @@ void Camera::start()
         cv::Mat(registered.height, registered.width, CV_8UC4, registered.data).copyTo(rgbd);
         cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
 
+        if (calibrationTriggered) {
+            calibrationSuccess = calibration.calibrate(rgbmat);
+        }
+
         int key = cv::waitKey(1);
 
         // Shutdown on escape
@@ -112,4 +119,10 @@ string Camera::takePicture() {
     pictureTriggered = true;
     while (pictureTriggered) {}
     return triggeredPicture;
+}
+
+bool Camera::calibrate() {
+    calibrationTriggered = true;
+    while (calibrationTriggered) {}
+    return calibrationSuccess;
 }
