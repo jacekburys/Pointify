@@ -4,11 +4,6 @@
 #include <socketio/sio_client.h>
 #include <cmdlog.h>
 
-#include <libfreenect2/libfreenect2.hpp>
-#include <libfreenect2/frame_listener_impl.h>
-#include <libfreenect2/registration.h>
-#include <libfreenect2/packet_pipeline.h>
-#include <libfreenect2/logger.h>
 #include <iostream>
 #include <thread>
 
@@ -23,30 +18,51 @@ string Camera::serializeMatrix(cv::Mat image)
     return stream.str();
 }
 
-sio::array_message::ptr Camera::getMessage(cv::Mat image) {
+sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* registration, libfreenect2::Frame& undistorted, libfreenect2::Frame& registered) {
     sio::message::list result;
-    int rows = image.rows;
-    int cols = image.cols;
+    int rows = undistorted.height;
+    int cols = undistorted.width;
     for (int i = 0; i < rows; i++) {
-        cv::Vec3b* vector = image.ptr<cv::Vec3b>(i);
         for (int j = 0; j < cols; j++) {
-            char r = vector[j][0];
-            char g = vector[j][1];
-            char b = vector[j][2];
-            int point = 0;
-            point |= (r << 16);
-            point |= (g << 8);
-            point |= (b << 0);
-            sio::message::ptr ptr_point = sio::int_message::create(point);
-            result.push(ptr_point);
+            float x, y, z, rgb;
+            double dx, dy, dz;
+
+            registration->getPointXYZRGB(&undistorted, &registered, i, j, x, y, z, rgb);
+
+            dx = static_cast<double>(x);
+            dy = static_cast<double>(y);
+            dz = static_cast<double>(z);
+
+            const uint8_t *p = reinterpret_cast<uint8_t*>(&rgb);
+            uint8_t b = p[0];
+            uint8_t g = p[1];
+            uint8_t r = p[2];
+
+            if(r > 0 || g > 0 || b > 0) {
+                sio::message::ptr ptr_x = sio::double_message::create(dx);
+                sio::message::ptr ptr_y = sio::double_message::create(dy);
+                sio::message::ptr ptr_z = sio::double_message::create(dz);
+                sio::message::ptr ptr_r = sio::int_message::create(r);
+                sio::message::ptr ptr_g = sio::int_message::create(g);
+                sio::message::ptr ptr_b = sio::int_message::create(b);
+
+                result.push(ptr_x);
+                result.push(ptr_y);
+                result.push(ptr_z);
+                result.push(ptr_r);
+                result.push(ptr_g);
+                result.push(ptr_b);
+            }
         }
     }
+
     return result.to_array_message();
 }
 
 void Camera::start()
 {
     libfreenect2::Freenect2 freenect2;
+    libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::None));
     libfreenect2::SyncMultiFrameListener listener(libfreenect2::Frame::Color |
                                                   libfreenect2::Frame::Depth |
                                                   libfreenect2::Frame::Ir);
@@ -55,13 +71,13 @@ void Camera::start()
 
     if(freenect2.enumerateDevices() == 0)
     {
-        cout << "no device connected!" << endl;
+        INFO("No device connected");
         throw;
     }
 
     string serial = freenect2.getDefaultDeviceSerialNumber();
 
-    cout << "SERIAL: " << serial << endl;
+    INFO("SERIAL: %s", serial.c_str());
     dev = freenect2.openDevice(serial);
 
     if(dev == 0)
@@ -70,15 +86,18 @@ void Camera::start()
         throw;
     }
 
-    libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::None));
 
     dev->setColorFrameListener(&listener);
     dev->setIrAndDepthFrameListener(&listener);
 
     dev->start();
 
-    cout << "device serial: " << dev->getSerialNumber() << endl;
-    cout << "device firmware: " << dev->getFirmwareVersion() << endl;
+    char serialNumber[100];
+    char firmwareVersion[100];
+    sprintf(serialNumber, "%s", dev->getSerialNumber().c_str());
+    sprintf(firmwareVersion, "%s", dev->getFirmwareVersion().c_str());
+    INFO("Device serial: %s", serialNumber);
+    INFO("Device firmware: %s", firmwareVersion);
 
     cv::namedWindow("Camera", CV_WINDOW_NORMAL);
     cv::resizeWindow("Camera", 1500, 844);
@@ -98,18 +117,14 @@ void Camera::start()
         cv::Mat(ir->height, ir->width, CV_32FC1, ir->data).copyTo(irmat);
         cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(depthmat);
 
+        registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
+
         if (pictureTriggered) {
-            triggeredPicture = getMessage(rgbmat);
+            triggeredPicture = getPointCloud(registration, undistorted, registered);
             pictureTriggered = false;
         }
 
-        cv::imshow("Camera", depthmat);
-
-        registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
-
-        cv::Mat(undistorted.height, undistorted.width, CV_32FC1, undistorted.data).copyTo(depthmatUndistorted);
-        cv::Mat(registered.height, registered.width, CV_8UC4, registered.data).copyTo(rgbd);
-        cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
+        cv::imshow("Camera", rgbmat);
 
         int key = cv::waitKey(1);
 
