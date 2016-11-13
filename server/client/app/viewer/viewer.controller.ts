@@ -12,6 +12,7 @@ class ViewerController {
   constructor($scope, socket) {
     this.$scope = $scope;
     this.socket = socket;
+    this.scene = null;
     this.connectedClients = [
       {
         id : 123,
@@ -94,6 +95,12 @@ class ViewerController {
         calibStatus : CalibrationStatus.Error,
       },
     ];
+
+    var _this = this;
+    socket.ioSocket.on('viewer-pointcloud', function(frame) {
+      console.log('got frame from server');
+      _this.renderPointCloud(frame);
+    });
   }
 
   takePicture() {
@@ -105,9 +112,47 @@ class ViewerController {
     console.log('Trying to calibrate');
   }
 
+  renderPointCloud(frame) {
+    //this.scene.children.forEach(function(object){
+    //    this.scene.remove(object);
+    //});
+    console.log('trying to render frame');
+    var material = new THREE.PointsMaterial({
+      size: 1,
+      //color : 0x00ff00
+      vertexColors: THREE.VertexColors,
+    });
+    var geometry = new THREE.Geometry();
+    var x, y, z, r, g, b;
+    var i = 0;
+    if (frame.length % 6 !== 0) {
+      console.log('ERROR');
+      return;
+    }
+    while (i < frame.length) {
+      x = frame[i];
+      i++;
+      y = frame[i];
+      i++;
+      z = frame[i];
+      i++;
+      r = frame[i];
+      i++;
+      g = frame[i];
+      i++;
+      b = frame[i];
+      i++;
+      geometry.vertices.push(new THREE.Vector3(x * 800, y * 800, z * 800));
+      geometry.colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
+    }
+    var pointCloud = new THREE.Points(geometry, material);
+
+    this.scene.add( pointCloud );
+  }
+
   runThree() {
     var camera, scene, renderer, controls;
-    init();
+    (init.bind(this))();
     animate();
 
     function init() {
@@ -124,14 +169,16 @@ class ViewerController {
         vertexColors: THREE.VertexColors,
       });
       var geometry = new THREE.Geometry();
+      /*
       var x, y, z;
-      for (var i = 0; i < 100; i += 1) {
+      for (var i = 0; i < 250; i += 1) {
         x = (Math.random() * 800) - 400;
         y = (Math.random() * 800) - 400;
         z = (Math.random() * 800) - 400;
         geometry.vertices.push(new THREE.Vector3(x, y, z));
         geometry.colors.push(new THREE.Color(Math.random(), Math.random(), Math.random()));
       }
+      */
       var pointCloud = new THREE.Points(geometry, material);
 
       scene.add( pointCloud );
@@ -147,6 +194,8 @@ class ViewerController {
 
       document.getElementById('viewer').appendChild( renderer.domElement );
       window.addEventListener( 'resize', onWindowResize, false );
+
+      this.scene = scene;
     }
 
     function onWindowResize() {
@@ -162,6 +211,7 @@ class ViewerController {
       renderer.render( scene, camera );
     }
   }
+
 }
 
 angular.module('serverApp')

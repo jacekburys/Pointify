@@ -1,18 +1,17 @@
-export default function(socketio) {
+export default function(io) {
 
-  socketio.on('connection', function(socket) {
+  io.on('connection', function(socket) {
     console.log('a user connected');
-    socket.emit('hello');
     socket.on('new_frame', function(frame) {
       console.log('new frame');
-      console.log(frame);
+      io.sockets.emit('viewer-pointcloud', frame);
     });
     socket.on('disconnect', function() {
       console.log('disconnected');
     });
     socket.on('viewer-takepicture', function() {
       console.log('Take Picture button pressed');
-      socket.emit('takepicture');
+      io.sockets.emit('take_picture');
     });
   });
 

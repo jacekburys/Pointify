@@ -13,6 +13,7 @@ angular.module('serverApp')
 
     //var socket = socketFactory({ioSocket});
 
+
     return {
       ioSocket,
       takePicture : function() {
