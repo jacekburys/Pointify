@@ -110,6 +110,7 @@ class ViewerController {
 
   calibrate() {
     console.log('Trying to calibrate');
+    this.socket.calibrate();
   }
 
   renderPointCloud(frame) {

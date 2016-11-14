@@ -19,6 +19,10 @@ angular.module('serverApp')
       takePicture : function() {
         console.log('Trying to emit takepicture');
         ioSocket.emit('viewer-takepicture');
+      },
+      calibrate : function() {
+        console.log('Trying to emit calibrate');
+        ioSocket.emit('viewer-calibrate');
       }
     };
   });
