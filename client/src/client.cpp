@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     //Use fprintf because cout doesnt work
     client.socket()->on("take_picture",  [&camera, &client] (sio::event& event) {
         client.socket()->emit("new_frame", camera.takePicture()); });
-    client.socket()->on("calibrate",  [&camera] (sio::event& event) { camera.calibrate(); });
+    client.socket()->on("calibrate",  [&camera] (sio::event& event) { INFO("got calibrate message"); camera.calibrate(); });
     camera.start();
 
     return 0;

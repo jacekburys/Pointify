@@ -119,6 +119,7 @@ void Camera::start()
         cv::Mat(rgb->height, rgb->width, CV_8UC4, rgb->data).copyTo(rgbmat);
         cv::Mat(ir->height, ir->width, CV_32FC1, ir->data).copyTo(irmat);
         cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(depthmat);
+        cv::cvtColor(rgbmat, rgbmat, CV_RGBA2RGB);
 
         registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
 
@@ -129,6 +130,7 @@ void Camera::start()
 
         if (calibrationTriggered) {
             calibrationSuccess = calibration.calibrate(rgbmat);
+            calibrationTriggered = false;
         }
 
         registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
@@ -136,6 +138,7 @@ void Camera::start()
         cv::Mat(undistorted.height, undistorted.width, CV_32FC1, undistorted.data).copyTo(depthmatUndistorted);
         cv::Mat(registered.height, registered.width, CV_8UC4, registered.data).copyTo(rgbd);
         cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
+        calibration.detectMarkers(&rgbmat);
         cv::imshow("Camera", rgbmat);
 
         int key = cv::waitKey(1);

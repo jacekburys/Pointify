@@ -38,7 +38,8 @@ private:
 public:
     Calibration(libfreenect2::Freenect2Device*);
     Calibration(); //Don't use default constructor for instantiation!
-    bool calibrate(cv::Mat image);
+    bool calibrate(cv::Mat);
+    void detectMarkers(cv::Mat*);
 };
 
 #endif

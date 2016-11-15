@@ -1,7 +1,10 @@
 #include "calibration.hpp"
 #include <opencv2/aruco.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 #include <vector>
+#include <cmdlog.h>
+#include <iostream>
 
 Calibration::Calibration(libfreenect2::Freenect2Device *device)
 {
@@ -9,7 +12,7 @@ Calibration::Calibration(libfreenect2::Freenect2Device *device)
     this->device = device;
 
     // dict is the set of aruco markers that we are expecting to see
-    dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+    dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_1000);
 }
 
 Calibration::Calibration()
@@ -18,16 +21,27 @@ Calibration::Calibration()
   dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 }
 
+void Calibration::detectMarkers(cv::Mat* img)
+{
+    //Perform marker detection
+    cv::aruco::detectMarkers(*img, dict, corners, ids);
+    cv::aruco::drawDetectedMarkers(*img, corners, ids);
+}
+
+
 bool Calibration::calibrate(cv::Mat img)
 {
-    
-    //Perform marker detection
-    cv::aruco::detectMarkers(img, dict, corners, ids);
+    detectMarkers(&img);
+
+    INFO("found %d corners", (int)corners[0].size());
+    if(ids.size() == 0) {
+        // if there are no markers in frame, fail
+        INFO("Calibration failed, likely could not find any markers");
+        return false;
+    }
 
     // perform camera calibration
     cv::Ptr<cv::aruco::Board> board = cv::aruco::GridBoard::create(MARKER_X, MARKER_Y, MARKER_LENGTH, MARKER_SEPARATION, dict).staticCast<cv::aruco::Board>();
-   
-   // Unsure about this bit 
 
     //Get the depth parameters from device 
     libfreenect2::Freenect2Device::IrCameraParams depthParameters = device->getIrCameraParams();
@@ -53,13 +67,18 @@ bool Calibration::calibrate(cv::Mat img)
     //std::vector<Mat> rvecs, tvecs;
     std::vector<cv::Mat> rvecs, tvecs;
 
+    // amount of markers per frame (assume only one)
+    std::vector<int> counter;
+    counter.push_back(corners[0].size());
+
     // calibrate
-    cv::aruco::calibrateCameraAruco(corners, ids, MARKER_X * MARKER_Y, board, img.size(), cameraMatrix, distCoeffs, rvecs, tvecs);
+    cv::aruco::calibrateCameraAruco(corners, ids, counter, board, img.size(), cameraMatrix, distCoeffs, rvecs, tvecs);
 	
     // transform output
-    cv::invertAffineTransform(rvecs[0], rotation);
-    cv::invertAffineTransform(tvecs[0], translation);
+    rotation = rvecs[0];
+    translation = tvecs[0];
 
+    INFO("Calibration success");
     return true;
 }
 
