@@ -12,7 +12,6 @@ using namespace std;
 
 #include <cmdline.h>
 #include <cmdlog.h>
-#include <json.hpp>
 #include <socketio/sio_client.h>
 
 #include "camera.h"
@@ -35,22 +34,16 @@ int main(int argc, char *argv[])
     client.set_fail_listener([] { INFO("Failed"); });
     client.set_close_listener([] (sio::client::close_reason const& reason) { INFO("Closed"); });
 
-    client.set_socket_open_listener( [&] (string const& nsp)
-                                     {
-                                     INFO("Socket connected");
-                                     nlohmann::json msg;
-                                     msg["values"] = { 1.0, 2.0, 3.0 };
-                                     client.socket()->emit("new_frame", msg.dump());
-                                     });
-    client.socket()->on("hello", [] (sio::event& event) { INFO("Hello from server"); });
+    client.set_socket_open_listener( [&] (string const& nsp) { INFO("Socket connected"); });
 
     client.connect(serverUrl);
 
     Camera camera;
-    client.socket()->on("takepicture",  [&camera] (sio::event& event) { cout << camera.takePicture() << endl << endl; });
+    //Use fprintf because cout doesnt work
+    client.socket()->on("take_picture",  [&camera, &client] (sio::event& event) {
+        client.socket()->emit("new_frame", camera.takePicture()); });
     client.socket()->on("calibrate",  [&camera] (sio::event& event) { camera.calibrate(); });
     camera.start();
-
 
     return 0;
 }
