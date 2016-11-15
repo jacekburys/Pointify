@@ -7,6 +7,7 @@
 class Calibration 
 {
 private:
+    const int MARKER_ID = 871;
     // amount of markers in the x and y directions on the grid
     const int MARKER_X = 1;
     const int MARKER_Y = 1;

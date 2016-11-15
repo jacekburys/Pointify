@@ -18,7 +18,7 @@ Calibration::Calibration(libfreenect2::Freenect2Device *device)
 Calibration::Calibration()
 {
   device = NULL;
-  dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+  dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_1000);
 }
 
 void Calibration::detectMarkers(cv::Mat* img)
@@ -34,6 +34,7 @@ bool Calibration::calibrate(cv::Mat img)
     detectMarkers(&img);
 
     INFO("found %d corners", (int)corners[0].size());
+    INFO("found %d ids", (int)ids.size());
     if(ids.size() == 0) {
         // if there are no markers in frame, fail
         INFO("Calibration failed, likely could not find any markers");
@@ -42,6 +43,7 @@ bool Calibration::calibrate(cv::Mat img)
 
     // perform camera calibration
     cv::Ptr<cv::aruco::Board> board = cv::aruco::GridBoard::create(MARKER_X, MARKER_Y, MARKER_LENGTH, MARKER_SEPARATION, dict).staticCast<cv::aruco::Board>();
+    board->ids[0] = MARKER_ID;
 
     //Get the depth parameters from device 
     libfreenect2::Freenect2Device::IrCameraParams depthParameters = device->getIrCameraParams();
@@ -69,7 +71,7 @@ bool Calibration::calibrate(cv::Mat img)
 
     // amount of markers per frame (assume only one)
     std::vector<int> counter;
-    counter.push_back(corners[0].size());
+    counter.push_back(corners.size());
 
     // calibrate
     cv::aruco::calibrateCameraAruco(corners, ids, counter, board, img.size(), cameraMatrix, distCoeffs, rvecs, tvecs);
