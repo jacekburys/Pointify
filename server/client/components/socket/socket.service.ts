@@ -9,7 +9,7 @@ angular.module('serverApp')
       // 'query': 'token=' + Auth.getToken()
     //});
 
-    var ioSocket = io();
+    var ioSocket = io({ query : 'clientType=viewer'});
 
     //var socket = socketFactory({ioSocket});
 

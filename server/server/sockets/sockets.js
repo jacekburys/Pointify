@@ -1,8 +1,24 @@
 export default function(io) {
 
+  io.nextClientID = 0;
   io.on('connection', function(socket) {
 
     console.log('a user connected');
+    if ('clientType' in socket.handshake.query) {
+      if (socket.handshake.query.clientType !== 'viewer') {
+        console.log('kinect client connected');
+        var newClient = {
+          calibStatus : false,
+          ip : socket.request.connection.remoteAddress,
+          id : io.nextClientID,
+        };
+        io.nextClientID += 1;
+        io.sockets.emit('viewer-new-client', newClient);
+      } else {
+        console.log('viewer connected');
+      }
+    } 
+
     socket.on('disconnect', function() {
       console.log('disconnected');
     });
@@ -32,5 +48,4 @@ export default function(io) {
       console.log(stat);
     });
   });
-
 }

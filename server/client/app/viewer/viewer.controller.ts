@@ -34,72 +34,17 @@ class ViewerController {
         ip : '148.0.1.43',
         calibStatus : CalibrationStatus.Error,
       },
-      {
-        id : 123,
-        ip : '127.0.0.1',
-        calibStatus : CalibrationStatus.Calibrated,
-      },
-      {
-        id : 456,
-        ip : '148.0.1.43',
-        calibStatus : CalibrationStatus.Error,
-      },
-      {
-        id : 123,
-        ip : '127.0.0.1',
-        calibStatus : CalibrationStatus.Calibrated,
-      },
-      {
-        id : 456,
-        ip : '148.0.1.43',
-        calibStatus : CalibrationStatus.Error,
-      },
-      {
-        id : 123,
-        ip : '127.0.0.1',
-        calibStatus : CalibrationStatus.Calibrated,
-      },
-      {
-        id : 456,
-        ip : '148.0.1.43',
-        calibStatus : CalibrationStatus.Error,
-      },
-      {
-        id : 123,
-        ip : '127.0.0.1',
-        calibStatus : CalibrationStatus.Calibrated,
-      },
-      {
-        id : 456,
-        ip : '148.0.1.43',
-        calibStatus : CalibrationStatus.Error,
-      },
-      {
-        id : 123,
-        ip : '127.0.0.1',
-        calibStatus : CalibrationStatus.Calibrated,
-      },
-      {
-        id : 456,
-        ip : '148.0.1.43',
-        calibStatus : CalibrationStatus.Error,
-      },
-      {
-        id : 123,
-        ip : '127.0.0.1',
-        calibStatus : CalibrationStatus.Calibrated,
-      },
-      {
-        id : 456,
-        ip : '148.0.1.43',
-        calibStatus : CalibrationStatus.Error,
-      },
     ];
 
     var _this = this;
     socket.ioSocket.on('viewer-pointcloud', function(frame) {
       console.log('got frame from server');
       _this.renderPointCloud(frame);
+    });
+    socket.ioSocket.on('viewer-new-client', function(newClient) {
+      console.log('new client connected');
+      _this.connectedClients.push(newClient);
+      console.log(_this.connectedClients);
     });
   }
 
@@ -120,7 +65,6 @@ class ViewerController {
     console.log('trying to render frame');
     var material = new THREE.PointsMaterial({
       size: 1,
-      //color : 0x00ff00
       vertexColors: THREE.VertexColors,
     });
     var geometry = new THREE.Geometry();
@@ -143,7 +87,7 @@ class ViewerController {
       i++;
       b = frame[i];
       i++;
-      geometry.vertices.push(new THREE.Vector3(x * 800, y * 800, z * 800));
+      geometry.vertices.push(new THREE.Vector3(x * 100, y * 100, z * 100));
       geometry.colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
     }
     var pointCloud = new THREE.Points(geometry, material);
@@ -161,25 +105,15 @@ class ViewerController {
       var height = window.innerHeight;
       console.log(width, height);
       camera = new THREE.PerspectiveCamera( 70, width / height, 1, 1000 );
-      camera.position.z = 400;
+      camera.position.z = -10;
+      camera.up.set(0, 0, 1);
 
       scene = new THREE.Scene();
       var material = new THREE.PointsMaterial({
-        size: 5,
-        //color : 0x00ff00
+        size: 1,
         vertexColors: THREE.VertexColors,
       });
       var geometry = new THREE.Geometry();
-      /*
-      var x, y, z;
-      for (var i = 0; i < 250; i += 1) {
-        x = (Math.random() * 800) - 400;
-        y = (Math.random() * 800) - 400;
-        z = (Math.random() * 800) - 400;
-        geometry.vertices.push(new THREE.Vector3(x, y, z));
-        geometry.colors.push(new THREE.Color(Math.random(), Math.random(), Math.random()));
-      }
-      */
       var pointCloud = new THREE.Points(geometry, material);
 
       scene.add( pointCloud );
@@ -188,10 +122,9 @@ class ViewerController {
       renderer.setSize( width, height );
 
       controls = new THREE.OrbitControls(camera, renderer.domElement);
-      //controls.addEventListener('change', render);
-      //controls.enableDamping = true;
-      //controls.dampingFactor = 0.25;
-      //controls.enableZoom = false;
+
+      var axisHelper = new THREE.AxisHelper(5);
+      scene.add(axisHelper);
 
       document.getElementById('viewer').appendChild( renderer.domElement );
       window.addEventListener( 'resize', onWindowResize, false );
