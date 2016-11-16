@@ -8,7 +8,10 @@ all: $(BIN)/client
 
 $(BIN)/client: $(OBJECTS)
 	g++ -Llib/mac \
-	    -lc++ -lSystem -lsocketio -lboost_system -lboost_thread -lfreenect2 -lopencv_core -lopencv_highgui -lopencv_imgcodecs \
+	    -lc++ -lSystem -lpthread \
+	    -lsocketio -lboost_system -lboost_thread \
+	    -lfreenect2 \
+	    -lopencv_aruco -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs \
 	    -o $@ \
 	    $^
 
@@ -16,6 +19,9 @@ $(BIN)/camera.o: $(SRC)/camera.cpp $(BIN)
 	g++ -c -g -Iinclude -std=c++14 -o $@ $<
 
 $(BIN)/client.o: $(SRC)/client.cpp $(BIN)
+	g++ -c -g -Iinclude -std=c++14 -o $@ $<
+
+$(BIN)/calibration.o: $(SRC)/calibration.cpp $(BIN)
 	g++ -c -g -Iinclude -std=c++14 -o $@ $<
 
 # NOTE: Change to this if you understand why it's not working

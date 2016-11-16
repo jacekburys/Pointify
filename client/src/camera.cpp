@@ -1,17 +1,21 @@
-#include "camera.h"
+#include <iostream>
+#include <functional>
+#include <thread>
+#include <chrono>
+#include <future>
+#include <mutex>
+#include <condition_variable>
+
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <socketio/sio_client.h>
 #include <cmdlog.h>
 
-#include <iostream>
-#include <thread>
+#include "camera.hpp"
 
 typedef unsigned char byte;
-bool pictureTriggered = false;
-bool calibrationTriggered = false;
-bool calibrationSuccess;
-sio::array_message::ptr triggeredPicture;
+
+using namespace std;
 
 string Camera::serializeMatrix(cv::Mat image)
 {
@@ -20,12 +24,17 @@ string Camera::serializeMatrix(cv::Mat image)
     return stream.str();
 }
 
-sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* registration, libfreenect2::Frame& undistorted, libfreenect2::Frame& registered) {
+sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* registration,
+                                              libfreenect2::Frame& undistorted,
+                                              libfreenect2::Frame& registered)
+{
     sio::message::list result;
     int rows = undistorted.height;
     int cols = undistorted.width;
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
             float x, y, z, rgb;
             double dx, dy, dz;
 
@@ -40,7 +49,8 @@ sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* regist
             uint8_t g = p[1];
             uint8_t r = p[2];
 
-            if(r > 0 || g > 0 || b > 0) {
+            if (r > 0 || g > 0 || b > 0)
+            {
                 sio::message::ptr ptr_x = sio::double_message::create(dx);
                 sio::message::ptr ptr_y = sio::double_message::create(dy);
                 sio::message::ptr ptr_z = sio::double_message::create(dz);
@@ -110,7 +120,8 @@ void Camera::start()
     libfreenect2::Registration* registration = new libfreenect2::Registration(dev->getIrCameraParams(), dev->getColorCameraParams());
     libfreenect2::Frame undistorted(512, 424, 4), registered(512, 424, 4), depth2rgb(1920, 1080 + 2, 4);
 
-    while (!shutdown) {
+    while (!shutdown)
+    {
         listener.waitForNewFrame(frames);
         libfreenect2::Frame *rgb = frames[libfreenect2::Frame::Color];
         libfreenect2::Frame *ir = frames[libfreenect2::Frame::Ir];
@@ -123,14 +134,28 @@ void Camera::start()
 
         registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
 
-        if (pictureTriggered) {
-            triggeredPicture = getPointCloud(registration, undistorted, registered);
-            pictureTriggered = false;
+        if (!pictureFinished)
+        {
+            auto future = async(launch::async,
+                                &Camera::getPointCloud, this, registration, ref(undistorted), ref(registered));
+            if (future.wait_for(chrono::seconds(0)) == future_status::ready)
+            {
+                capturedPicture = future.get();
+                pictureFinished = true;
+                pictureCv.notify_one();
+            }
         }
 
-        if (calibrationTriggered) {
-            calibrationSuccess = calibration.calibrate(rgbmat);
-            calibrationTriggered = false;
+        if (!calibrationFinished)
+        {
+            auto future = async(launch::async,
+                                &Calibration::calibrate, &calibration, rgbmat);
+            if (future.wait_for(chrono::seconds(0)) == future_status::ready)
+            {
+                calibrationSuccess = future.get();
+                calibrationFinished = true;
+                calibrationCv.notify_one();
+            }
         }
 
         registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
@@ -143,13 +168,16 @@ void Camera::start()
 
         int key = cv::waitKey(1);
 
-        // Shutdown on escape
+        /// Shutdown on escape
         shutdown = shutdown || (key > 0 && ((key & 0xFF) == 27));
 
-        // Shutdown on window close
-        try {
+        /// Shutdown on window close
+        try
+        {
             int windowProperty = cv::getWindowProperty("Camera", 0);
-        } catch (cv::Exception e) {
+        }
+        catch (cv::Exception e)
+        {
             shutdown = true;
         }
 
@@ -159,14 +187,19 @@ void Camera::start()
     dev->close();
 }
 
-sio::array_message::ptr Camera::takePicture() {
-    pictureTriggered = true;
-    while (pictureTriggered) {}
-    return triggeredPicture;
+sio::array_message::ptr Camera::takePicture()
+{
+    unique_lock<mutex> lock(pictureMutex);
+    pictureFinished = false;
+    pictureCv.wait(lock, [this] { return pictureFinished; });
+    return capturedPicture;
 }
 
-bool Camera::calibrate() {
-    calibrationTriggered = true;
-    while (calibrationTriggered) {}
+bool Camera::calibrate()
+{
+    unique_lock<mutex> lock(calibrationMutex);
+    calibrationFinished = false;
+    calibrationCv.wait(lock, [this] { return calibrationFinished; });
     return calibrationSuccess;
 }
+

@@ -1,5 +1,3 @@
-using namespace std;
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -14,7 +12,9 @@ using namespace std;
 #include <cmdlog.h>
 #include <socketio/sio_client.h>
 
-#include "camera.h"
+#include "camera.hpp"
+
+using namespace std;
 
 int main(int argc, char *argv[])
 {
@@ -30,20 +30,41 @@ int main(int argc, char *argv[])
     INFO("Trying to connect to %s", serverUrl);
 
     sio::client client;
-    client.set_open_listener([] { INFO("Connected"); });
-    client.set_fail_listener([] { INFO("Failed"); });
-    client.set_close_listener([] (sio::client::close_reason const& reason) { INFO("Closed"); });
+    client.set_open_listener([] ()
+                             {
+                                 INFO("Connected");
+                             });
+    client.set_fail_listener([] ()
+                             {
+                                 INFO("Failed");
+                             });
+    client.set_close_listener([] (sio::client::close_reason const& reason)
+                              {
+                                  INFO("Closed");
+                              });
 
-    client.set_socket_open_listener( [&] (string const& nsp) { INFO("Socket connected"); });
+    client.set_socket_open_listener([&] (string const& nsp)
+                                    {
+                                        INFO("Socket connected");
+                                    });
 
     client.connect(serverUrl);
 
     Camera camera;
-    //Use fprintf because cout doesnt work
-    client.socket()->on("take_picture",  [&camera, &client] (sio::event& event) {
-        client.socket()->emit("new_frame", camera.takePicture()); });
-    client.socket()->on("calibrate",  [&camera] (sio::event& event) { INFO("got calibrate message"); camera.calibrate(); });
+    /// Use fprintf because cout doesnt work
+    client.socket()->on("take_picture",  
+                        [&camera, &client] (sio::event& event)
+                        {
+                            client.socket()->emit("new_frame", camera.takePicture());
+                        });
+    client.socket()->on("calibrate",
+                        [&camera] (sio::event& event) 
+                        { 
+                            INFO("got calibrate message");
+                            camera.calibrate();
+                        });
     camera.start();
 
     return 0;
 }
+
