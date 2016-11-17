@@ -2,6 +2,9 @@
 #define POINTIFY_CAMERA_H
 
 #include <string>
+#include <mutex>
+#include <thread>
+#include <condition_variable>
 
 #include <opencv2/opencv.hpp>
 #include <socketio/sio_client.h>
