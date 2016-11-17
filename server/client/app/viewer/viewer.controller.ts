@@ -14,26 +14,6 @@ class ViewerController {
     this.socket = socket;
     this.scene = null;
     this.connectedClients = [
-      {
-        id : 123,
-        ip : '127.0.0.1',
-        calibStatus : CalibrationStatus.Calibrated,
-      },
-      {
-        id : 456,
-        ip : '148.0.1.43',
-        calibStatus : CalibrationStatus.Error,
-      },
-      {
-        id : 123,
-        ip : '127.0.0.1',
-        calibStatus : CalibrationStatus.Calibrated,
-      },
-      {
-        id : 456,
-        ip : '148.0.1.43',
-        calibStatus : CalibrationStatus.Error,
-      },
     ];
 
     var _this = this;
@@ -44,7 +24,19 @@ class ViewerController {
     socket.ioSocket.on('viewer-new-client', function(newClient) {
       console.log('new client connected');
       _this.connectedClients.push(newClient);
+      _this.$scope.$apply();
       console.log(_this.connectedClients);
+    });
+    socket.ioSocket.on('viewer-client-disconnect', function(clientID) {
+      console.log('disconnect ' + clientID);
+      var index = _this.connectedClients.findIndex(function(client) {
+        return client.id = clientID;
+      });
+      if (index === -1) {
+        return;
+      }
+      _this.connectedClients.splice(index, 1);
+      _this.$scope.$apply();
     });
   }
 
@@ -87,7 +79,7 @@ class ViewerController {
       i++;
       b = frame[i];
       i++;
-      geometry.vertices.push(new THREE.Vector3(x * 100, y * 100, z * 100));
+      geometry.vertices.push(new THREE.Vector3(x * 100, -y * 100, z * 100));
       geometry.colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
     }
     var pointCloud = new THREE.Points(geometry, material);
@@ -106,7 +98,7 @@ class ViewerController {
       console.log(width, height);
       camera = new THREE.PerspectiveCamera( 70, width / height, 1, 1000 );
       camera.position.z = -10;
-      camera.up.set(0, 0, 1);
+      camera.up.set(0, 1, 0);
 
       scene = new THREE.Scene();
       var material = new THREE.PointsMaterial({
