@@ -2,9 +2,11 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/calib3d.hpp>
 #include <vector>
 #include <cmdlog.h>
 #include <iostream>
+
 
 Calibration::Calibration(libfreenect2::Freenect2Device *device)
 {
@@ -72,21 +74,33 @@ bool Calibration::calibrate(cv::Mat img)
     cv::Mat distCoeffs = cv::Mat::zeros(5, 1, CV_64F);    
    
     // rotation (rvecs) and translation (tvecs) vectors that bring the marker from it's coordinate space to world coordinate space
-    //std::vector<Mat> rvecs, tvecs;
-    std::vector<cv::Mat> rvecs, tvecs;
+    vector<cv::Mat> rvecs, tvecs;
 
     // amount of markers per frame (assume only one)
-    std::vector<int> counter;
+    vector<int> counter;
     counter.push_back(corners.size());
 
     // calibrate
     cv::aruco::calibrateCameraAruco(corners, ids, counter, board, img.size(), cameraMatrix, distCoeffs, rvecs, tvecs);
 	
-    // transform output
-    rotation = rvecs[0];
+    // build transformation to apply to point cloud
+    cv::Rodrigues(rvecs[0], rotation);
     translation = tvecs[0];
 
     INFO("Calibration success");
     return true;
 }
 
+vector<double> Calibration::transformPoint(double x, double y, double z)
+{
+  cv::Mat input(3, 1, CV_64F);
+  input.at<double>(0,0) = x;
+  input.at<double>(1,0) = y;
+  input.at<double>(2,0) = z;
+  cv::Mat processed(3, 1, CV_64F);  
+
+  processed = rotation * input + translation; //TODO test this
+
+  vector<double> result = { processed.at<double>(0,0), processed.at<double>(1,0), processed.at<double>(2,0) };
+  return result;
+}

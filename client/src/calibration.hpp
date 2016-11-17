@@ -2,7 +2,10 @@
 #define CALIBRATION_H 
 #include <opencv2/core.hpp>
 #include <opencv2/aruco.hpp>
+#include <socketio/sio_client.h>
 #include "libfreenect2/libfreenect2.hpp"
+
+using namespace std;
 
 class Calibration 
 {
@@ -13,7 +16,7 @@ private:
     const int MARKER_Y = 1;
     
     // size of marker in meters(?)
-    const int MARKER_LENGTH = 1;
+    const double MARKER_LENGTH = 0.175;
     
     // distance between markers
     const int MARKER_SEPARATION = 1;
@@ -24,10 +27,10 @@ private:
     cv::Ptr<cv::aruco::Dictionary> dict;
 	
     // marker corners
-    std::vector<std::vector<cv::Point2f>> corners;
+    vector<vector<cv::Point2f>> corners;
 	
     // marker ids 
-    std::vector<int> ids;
+    vector<int> ids;
 
     // camera device
     libfreenect2::Freenect2Device *device;
@@ -39,9 +42,11 @@ private:
 public:
     Calibration(libfreenect2::Freenect2Device*);
     Calibration(); //Don't use default constructor for instantiation!
+    vector<double> transformPoint(double, double, double);
     void setDevice(libfreenect2::Freenect2Device*);
     bool calibrate(cv::Mat);
     void detectMarkers(cv::Mat*);
+
 };
 
 #endif
