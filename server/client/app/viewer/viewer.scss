@@ -25,3 +25,28 @@
 .navbar-text {
   margin-left: 15px;
 }
+
+.list-group-item {
+  background-color: black;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.main {
+  background-color: black;
+  color: white;
+}
+
+.body {
+  padding-right: -15px;
+}
+
+.button {
+  background-color: grey;
+}
+
+#viewer {
+}
+

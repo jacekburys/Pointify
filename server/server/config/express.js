@@ -13,7 +13,7 @@ import methodOverride from 'method-override';
 import cookieParser from 'cookie-parser';
 import errorHandler from 'errorhandler';
 import path from 'path';
-import lusca from 'lusca';
+//import lusca from 'lusca';
 import config from './environment';
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
@@ -49,6 +49,7 @@ export default function(app) {
    * Lusca - express server security
    * https://github.com/krakenjs/lusca
    */
+   /*
   if (env !== 'test' && !process.env.SAUCE_USERNAME) {
     app.use(lusca({
       csrf: {
@@ -63,6 +64,7 @@ export default function(app) {
       xssProtection: true
     }));
   }
+  */
 
   app.set('appPath', path.join(config.root, 'client'));
 
