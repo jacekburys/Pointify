@@ -103,7 +103,7 @@ void Camera::start()
     dev->setIrAndDepthFrameListener(&listener);
 
     dev->start();
-    Calibration calibration(dev);
+    calibration.setDevice(dev);
 
     char serialNumber[100];
     char firmwareVersion[100];
@@ -138,7 +138,7 @@ void Camera::start()
         {
             auto future = async(launch::async,
                                 &Camera::getPointCloud, this, registration, ref(undistorted), ref(registered));
-            if (future.wait_for(chrono::seconds(0)) == future_status::ready)
+            if (future.wait_for(chrono::seconds(TAKEPICTURE_TIMEOUT)) == future_status::ready)
             {
                 capturedPicture = future.get();
                 pictureFinished = true;
@@ -150,7 +150,7 @@ void Camera::start()
         {
             auto future = async(launch::async,
                                 &Calibration::calibrate, &calibration, rgbmat);
-            if (future.wait_for(chrono::seconds(0)) == future_status::ready)
+            if (future.wait_for(chrono::seconds(CALIBRATION_TIMEOUT)) == future_status::ready)
             {
                 calibrationSuccess = future.get();
                 calibrationFinished = true;

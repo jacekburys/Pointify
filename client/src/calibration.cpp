@@ -17,9 +17,15 @@ Calibration::Calibration(libfreenect2::Freenect2Device *device)
 
 Calibration::Calibration()
 {
-  device = NULL;
-  dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_1000);
+    device = NULL;
+    dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_1000);
 }
+
+void Calibration::setDevice(libfreenect2::Freenect2Device *device)
+{
+    this->device = device;
+}
+
 
 void Calibration::detectMarkers(cv::Mat* img)
 {
@@ -33,13 +39,13 @@ bool Calibration::calibrate(cv::Mat img)
 {
     detectMarkers(&img);
 
-    INFO("found %d corners", (int)corners[0].size());
-    INFO("found %d ids", (int)ids.size());
     if(ids.size() == 0) {
         // if there are no markers in frame, fail
         INFO("Calibration failed, likely could not find any markers");
         return false;
     }
+    INFO("found %d corners", (int)corners[0].size());
+    INFO("found %d ids", (int)ids.size());
 
     // perform camera calibration
     cv::Ptr<cv::aruco::Board> board = cv::aruco::GridBoard::create(MARKER_X, MARKER_Y, MARKER_LENGTH, MARKER_SEPARATION, dict).staticCast<cv::aruco::Board>();

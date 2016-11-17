@@ -33,11 +33,15 @@ class Camera
         void cameraLoop();
         void sendPicture(cv::Mat image);
 
+        int CALIBRATION_TIMEOUT = 3; // seconds
+        int TAKEPICTURE_TIMEOUT = 3; // seconds
+
         bool pictureFinished = true;
         mutex pictureMutex;
         condition_variable pictureCv;
         sio::array_message::ptr capturedPicture;
 
+        Calibration calibration;
         bool calibrationFinished = true;
         mutex calibrationMutex;
         condition_variable calibrationCv;
