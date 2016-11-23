@@ -29,7 +29,10 @@ class Camera
         sio::array_message::ptr getPointCloud(libfreenect2::Registration* registration,
                                               libfreenect2::Frame& undistorted,
                                               libfreenect2::Frame& registered);
-        string serializeMatrix(cv::Mat image);
+        char* Camera::getPointCloudStream(libfreenect2::Registration* registration,
+                                              libfreenect2::Frame& undistorted,
+                                              libfreenect2::Frame& registered);
+            string serializeMatrix(cv::Mat image);
         void cameraLoop();
         void sendPicture(cv::Mat image);
 

@@ -72,6 +72,49 @@ sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* regist
     return result.to_array_message();
 }
 
+char* Camera::getPointCloudStream(libfreenect2::Registration* registration,
+                                              libfreenect2::Frame& undistorted,
+                                              libfreenect2::Frame& registered)
+{
+    int rows = undistorted.height;
+    int cols = undistorted.width;
+    char* buffer = new char[rows * cols * 27];
+    // make this frame invariant
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            float x, y, z, rgb;
+            double dx, dy, dz;
+
+            registration->getPointXYZRGB(&undistorted, &registered, i, j, x, y, z, rgb);
+
+            dx = static_cast<double>(x);
+            dy = static_cast<double>(y);
+            dz = static_cast<double>(z);
+
+            const uint8_t *p = reinterpret_cast<uint8_t*>(&rgb);
+            uint8_t b = p[0];
+            uint8_t g = p[1];
+            uint8_t r = p[2];
+
+            if (r > 0 || g > 0 || b > 0)
+            {
+                vectoir<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
+                int index = 27 * (i * cols + j);
+                buffer[index] = r;
+                buffer[index + 1] = g;
+                buffer[index + 2] = b;
+                *reinterpret_cast<double*>(buffer + (index + 3)) = pt[0];
+                *reinterpret_cast<double*>(buffer + (index + 11)) = pt[1];
+                *reinterpret_cast<double*>(buffer + (index + 19)) = pt[2];
+            }
+        }
+    }
+
+    return buffer;
+}
+
 void Camera::start()
 {
     libfreenect2::Freenect2 freenect2;

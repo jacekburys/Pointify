@@ -51,8 +51,7 @@ int main(int argc, char *argv[])
     client.connect(serverUrl);
 
     Camera camera;
-    /// Use fprintf because cout doesnt work
-    client.socket()->on("take_picture",  
+    client.socket()->on("take_picture",
                         [&camera, &client] (sio::event& event)
                         {
                             INFO("taking picture");
@@ -60,10 +59,10 @@ int main(int argc, char *argv[])
                             client.socket()->emit("new_frame", pic);
                         });
     client.socket()->on("calibrate",
-                        [&camera] (sio::event& event) 
-                        { 
+                        [&camera, &client] (sio::event& event)
+                        {
                             INFO("got calibrate message");
-                            camera.calibrate();
+                            client.socket()->emit("calibration_status", sio::bool_message::create(camera.calibrate()));
                         });
     client.socket()->on("start_streaming",
                         [&camera, &client] (sio::event& event)
