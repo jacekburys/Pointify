@@ -26,13 +26,19 @@ export default function(io) {
     });
 
     // the Take Picture button on the frontend was pressed
-    socket.on('viewer-takepicture', function() {
+    socket.on('viewer_take_picture', function() {
       console.log('Take Picture button pressed');
       io.sockets.emit('take_picture');
     });
 
+    // the Start Streaming button on the frontend was pressed
+    socket.on('viewer_start_streaming', function() {
+      console.log('Start Streaming button pressed');
+      io.sockets.emit('start_streaming');
+    });
+
     // the Calibrate button on the frontend was pressed
-    socket.on('viewer-calibrate', function() {
+    socket.on('viewer_calibrate', function() {
       console.log('Calibrate button pressed');
       io.sockets.emit('calibrate');
     });
@@ -40,6 +46,7 @@ export default function(io) {
     // the client sent a frame
     socket.on('new_frame', function(frame) {
       console.log('new frame');
+      frame.clientID = socket.clientID;
       io.sockets.emit('viewer-pointcloud', frame);
     });
 

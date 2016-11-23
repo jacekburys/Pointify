@@ -15,6 +15,7 @@ class ViewerController {
     this.scene = null;
     this.connectedClients = [
     ];
+    this.latestPointCloud = {};
 
     var _this = this;
     socket.ioSocket.on('viewer-pointcloud', function(frame) {
@@ -43,6 +44,11 @@ class ViewerController {
   takePicture() {
     console.log('Trying to take a picture');
     this.socket.takePicture();
+  }
+
+  startStreaming() {
+    console.log('Trying to start streaming');
+    this.socket.startStreaming();
   }
 
   calibrate() {
@@ -84,7 +90,11 @@ class ViewerController {
     }
     var pointCloud = new THREE.Points(geometry, material);
 
+    var clientID = frame.clientID;
+
     this.scene.add( pointCloud );
+    this.scene.remove(this.latestPointCloud[clientID]);
+    this.latestPointCloud[clientID] = pointCloud;
   }
 
   runThree() {
