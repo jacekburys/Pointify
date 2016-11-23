@@ -88,6 +88,7 @@ bool Calibration::calibrate(cv::Mat img)
     translation = tvecs[0];
 
     INFO("Calibration success");
+    calibrated = true;
     return true;
 }
 
@@ -97,6 +98,9 @@ vector<double> Calibration::transformPoint(double x, double y, double z)
   input.at<double>(0,0) = x;
   input.at<double>(1,0) = y;
   input.at<double>(2,0) = z;
+
+  if(!calibrated) return input;
+
   cv::Mat processed(3, 1, CV_64F);  
   
   processed = rotation * (input - translation);

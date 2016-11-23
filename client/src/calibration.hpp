@@ -20,6 +20,8 @@ private:
     
     // distance between markers
     const int MARKER_SEPARATION = 1;
+
+    bool calibrated = false;
       
     //Every Calibration() object has these 
 	

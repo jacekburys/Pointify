@@ -100,7 +100,7 @@ char* Camera::getPointCloudStream(libfreenect2::Registration* registration,
 
             if (r > 0 || g > 0 || b > 0)
             {
-                vectoir<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
+                vector<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
                 int index = 27 * (i * cols + j);
                 buffer[index] = r;
                 buffer[index + 1] = g;
