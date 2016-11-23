@@ -165,15 +165,18 @@ void Camera::start()
             static future<bool> future;
             if (!calibrationTriggered)
             {
+                cout << "In calibration triggered branch\n";
                 future = async(launch::async,
                                &Calibration::calibrate, &calibration, rgbd);
                 calibrationTriggered = true;
             }
+            cout << "Between two branches\n";
             if (future.wait_for(chrono::seconds(CALIBRATION_TIMEOUT)) == future_status::ready)
             {
+                cout << "In wating for branch\n";
                 calibrationSuccess = future.get();
                 calibrationFinished = true;
-                calibrationFinished = false;
+                calibrationTriggered = false;
                 calibrationCv.notify_one();
             }
         }
