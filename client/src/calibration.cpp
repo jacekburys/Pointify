@@ -97,6 +97,20 @@ bool Calibration::calibrate(cv::Mat img)
     return true;
 }
 
+vector<double> Calibration::transformPoint(double x, double y, double z)
+{
+    cv::Mat input(3, 1, CV_64F);
+    input.at<double>(0,0) = x;
+    input.at<double>(1,0) = y;
+    input.at<double>(2,0) = z;
+    cv::Mat processed(3, 1, CV_64F);
+
+    processed = rotation * (input - translation);
+
+    vector<double> result = { processed.at<double>(0,0), processed.at<double>(1,0), processed.at<double>(2,0) };
+    return result;
+}
+
 void Calibration::transformPoints(cv::Mat src, cv::Mat dst)
 {
   cv::perspectiveTransform(src, dst, transformation);

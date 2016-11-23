@@ -55,7 +55,6 @@ sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* regist
 
             if (r > 0 || g > 0 || b > 0)
             {
-<<<<<<< HEAD
                 vector<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
 
 //                vector<double> pt = {dx,dy,dz};
@@ -64,13 +63,6 @@ sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* regist
                 sio::message::ptr ptr_z = sio::double_message::create(pt[2]);
                 sio::message::ptr ptr_r = sio::int_message::create(r);
                 sio::message::ptr ptr_g = sio::int_message::create(g);
-=======
-                sio::message::ptr ptr_x = sio::double_message::create(dx);
-                sio::message::ptr ptr_y = sio::double_message::create(dy);
-                sio::message::ptr ptr_z = sio::double_message::create(dz);
-                sio::message::ptr ptr_r = sio::a}
-                sio::messge:arr:ptr ptr_g = sio::int_message::create(g);
->>>>>>> 9e73b492a725b7810b8752e985ded6dbb20052cd
                 sio::message::ptr ptr_b = sio::int_message::create(b);
 
                 result.push(ptr_x);
@@ -90,10 +82,8 @@ void Camera::streamFrame(libfreenect2::Registration* registration,
                          libfreenect2::Frame& undistorted,
                          libfreenect2::Frame& registered)
 {
-    getPointCloudStream(registration, undistorted, registered);
-    sio::message::list result;
-    sio::array_message::ptr pic = result.to_array_message();
-    client->socket()->emit("new_frame", pic);
+    string buffString = getPointCloudStream(registration, undistorted, registered);
+    client->socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
     INFO("new thread");
 }
 
@@ -129,32 +119,28 @@ string Camera::getPointCloudStream(libfreenect2::Registration* registration,
                 buffer << char(r);
                 buffer << char(g);
                 buffer << char(b);
-                const char* x2 = reinterpret_cast<char*>(&x);
+                uint8_t* x2 = reinterpret_cast<uint8_t*>(&x);
                 buffer << x2[0];
                 buffer << x2[1];
                 buffer << x2[2];
                 buffer << x2[3];
-                const char* y2 = reinterpret_cast<char*>(&y);
+                uint8_t* y2 = reinterpret_cast<uint8_t*>(&y);
                 buffer << y2[0];
                 buffer << y2[1];
                 buffer << y2[2];
                 buffer << y2[3];
-                const char* z2 = reinterpret_cast<char*>(&z);
+                uint8_t* z2 = reinterpret_cast<uint8_t*>(&z);
                 buffer << z2[0];
                 buffer << z2[1];
                 buffer << z2[2];
                 buffer << z2[3];
-                //buffer[index + 2] = b;
-                //*reinterpret_cast<double*>(buffer + (index + 3)) = pt[0];
-                //*reinterpret_cast<double*>(buffer + (index + 11)) = pt[1];
-                //*reinterpret_cast<double*>(buffer + (index + 19)) = pt[2];
             }
         }
     }
 
     string buffString = buffer.str();
 
-    return buffString; //make_shared<string>(buffString.c_str(), buffString.size());
+    return buffString;
 }
 
 void Camera::start()
@@ -200,8 +186,6 @@ void Camera::start()
 
     cv::namedWindow("Camera", CV_WINDOW_NORMAL);
     cv::resizeWindow("Camera", 1500, 844);
-    cv::namedWindow("Camera2", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Camera2", 600, 500);
 
     bool shutdown = false;
     cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2, registeredmat;
@@ -270,7 +254,6 @@ void Camera::start()
 
         calibration.detectMarkers(&rgbmat);
         cv::imshow("Camera", rgbmat);
-        cv::imshow("Camera2", rgbd);
 
         int key = cv::waitKey(1);
 
