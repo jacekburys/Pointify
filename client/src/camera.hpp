@@ -40,16 +40,18 @@ class Camera
         int TAKEPICTURE_TIMEOUT = 3; // seconds
 
         bool pictureFinished = true;
+        bool pictureTriggered = false;
         mutex pictureMutex;
         condition_variable pictureCv;
         sio::array_message::ptr capturedPicture;
 
-        Calibration calibration;
         bool calibrationFinished = true;
+        bool calibrationTriggered = false;
         mutex calibrationMutex;
         condition_variable calibrationCv;
         bool calibrationSuccess;
 
+        Calibration calibration;
 };
 
 #endif
