@@ -142,24 +142,36 @@ void Camera::start()
 
         if (!pictureFinished)
         {
-            auto future = async(launch::async,
-                                &Camera::getPointCloud, this, registration, ref(undistorted), ref(registered));
+            static future<sio::array_message::ptr> future;
+            if (!pictureTriggered)
+            {
+                future = async(launch::async,
+                               &Camera::getPointCloud, this, registration, ref(undistorted), ref(registered));
+                pictureTriggered = true;
+            }
             if (future.wait_for(chrono::seconds(TAKEPICTURE_TIMEOUT)) == future_status::ready)
             {
                 capturedPicture = future.get();
                 pictureFinished = true;
+                pictureTriggered = false;
                 pictureCv.notify_one();
             }
         }
 
         if (!calibrationFinished)
         {
-            auto future = async(launch::async,
-                                &Calibration::calibrate, &calibration, rgbd);
+            static future<bool> future;
+            if (!calibrationTriggered)
+            {
+                future = async(launch::async,
+                               &Calibration::calibrate, &calibration, rgbd);
+                calibrationTriggered = true;
+            }
             if (future.wait_for(chrono::seconds(CALIBRATION_TIMEOUT)) == future_status::ready)
             {
                 calibrationSuccess = future.get();
                 calibrationFinished = true;
+                calibrationFinished = false;
                 calibrationCv.notify_one();
             }
         }
