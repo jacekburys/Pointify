@@ -36,6 +36,7 @@ class ViewerController {
     socket.ioSocket.on('viewer_new_client', function(newClient) {
       console.log('new client connected');
       _this.connectedClients.push(newClient);
+      _this.latestPointCloud[newClient.id] = null;
       _this.$scope.$apply();
       console.log(_this.connectedClients);
     });
@@ -103,8 +104,13 @@ class ViewerController {
 
     var clientID = frame.clientID;
 
+    if (this.latestPointCloud[clientID]) {
+      console.log('latest not null');
+      this.scene.remove(this.latestPointCloud[clientID]);
+    } else {
+      console.log('latest null');
+    }
     this.scene.add( pointCloud );
-    this.scene.remove(this.latestPointCloud[clientID]);
     this.latestPointCloud[clientID] = pointCloud;
   }
 
