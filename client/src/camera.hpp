@@ -33,7 +33,7 @@ class Camera
         sio::array_message::ptr getPointCloud(libfreenect2::Registration* registration,
                                               libfreenect2::Frame& undistorted,
                                               libfreenect2::Frame& registered);
-    string getPointCloudStream(libfreenect2::Registration* registration,
+        string getPointCloudStream(libfreenect2::Registration* registration,
                                               libfreenect2::Frame& undistorted,
                                               libfreenect2::Frame& registered);
         void streamFrame(libfreenect2::Registration* registration,

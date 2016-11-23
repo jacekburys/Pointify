@@ -20,6 +20,8 @@ private:
     
     // distance between markers
     const int MARKER_SEPARATION = 1;
+
+    bool calibrated = false;
       
     //Every Calibration() object has these 
 	
@@ -38,11 +40,12 @@ private:
     // output rotation and translation vectors
     cv::Mat rotation;
     cv::Mat translation;
+    cv::Mat transformation;
 
 public:
     Calibration(libfreenect2::Freenect2Device*);
     Calibration(); //Don't use default constructor for instantiation!
-    vector<double> transformPoint(double, double, double);
+    void transformPoints(cv::Mat, cv::Mat);
     void setDevice(libfreenect2::Freenect2Device*);
     bool calibrate(cv::Mat);
     void detectMarkers(cv::Mat*);
