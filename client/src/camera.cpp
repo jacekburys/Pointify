@@ -117,7 +117,7 @@ void Camera::start()
     cv::resizeWindow("Camera", 1500, 844);
 
     bool shutdown = false;
-    cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2;
+    cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2, registeredmat;
     libfreenect2::Registration* registration = new libfreenect2::Registration(dev->getIrCameraParams(), dev->getColorCameraParams());
     libfreenect2::Frame undistorted(512, 424, 4), registered(512, 424, 4), depth2rgb(1920, 1080 + 2, 4);
 
@@ -135,6 +135,11 @@ void Camera::start()
 
         registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
 
+        cv::Mat(undistorted.height, undistorted.width, CV_32FC1, undistorted.data).copyTo(depthmatUndistorted);
+        cv::Mat(registered.height, registered.width, CV_8UC4, registered.data).copyTo(rgbd);
+        cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
+        cv::cvtColor(rgbd, rgbd, CV_RGBA2RGB);
+
         if (!pictureFinished)
         {
             auto future = async(launch::async,
@@ -150,7 +155,7 @@ void Camera::start()
         if (!calibrationFinished)
         {
             auto future = async(launch::async,
-                                &Calibration::calibrate, &calibration, rgbmat);
+                                &Calibration::calibrate, &calibration, rgbd);
             if (future.wait_for(chrono::seconds(CALIBRATION_TIMEOUT)) == future_status::ready)
             {
                 calibrationSuccess = future.get();
@@ -159,11 +164,6 @@ void Camera::start()
             }
         }
 
-        registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
-
-        cv::Mat(undistorted.height, undistorted.width, CV_32FC1, undistorted.data).copyTo(depthmatUndistorted);
-        cv::Mat(registered.height, registered.width, CV_8UC4, registered.data).copyTo(rgbd);
-        cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
         calibration.detectMarkers(&rgbmat);
         cv::imshow("Camera", rgbmat);
 

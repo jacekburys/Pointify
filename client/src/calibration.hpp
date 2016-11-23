@@ -16,7 +16,7 @@ private:
     const int MARKER_Y = 1;
     
     // size of marker in meters(?)
-    const double MARKER_LENGTH = 0.175;
+    const double MARKER_LENGTH = 0.179;
     
     // distance between markers
     const int MARKER_SEPARATION = 1;

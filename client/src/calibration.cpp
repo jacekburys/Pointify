@@ -85,6 +85,7 @@ bool Calibration::calibrate(cv::Mat img)
 	
     // build transformation to apply to point cloud
     cv::Rodrigues(rvecs[0], rotation);
+    cv::invert(rotation, rotation);
     translation = tvecs[0];
 
     INFO("Calibration success");
@@ -98,8 +99,8 @@ vector<double> Calibration::transformPoint(double x, double y, double z)
   input.at<double>(1,0) = y;
   input.at<double>(2,0) = z;
   cv::Mat processed(3, 1, CV_64F);  
-
-  processed = rotation * input + translation; //TODO test this
+  
+  processed = rotation * (input - translation);
 
   vector<double> result = { processed.at<double>(0,0), processed.at<double>(1,0), processed.at<double>(2,0) };
   return result;
