@@ -54,7 +54,7 @@ bool Calibration::calibrate(cv::Mat img)
     board->ids[0] = MARKER_ID;
 
     //Get the depth parameters from device 
-    libfreenect2::Freenect2Device::IrCameraParams depthParameters = device->getIrCameraParams();
+    libfreenect2::Freenect2Device::ColorCameraParams depthParameters = device->getColorCameraParams();
     
     float fx,fy,cx,cy;
     fx = depthParameters.fx;
@@ -69,7 +69,6 @@ bool Calibration::calibrate(cv::Mat img)
      {0,  0, 1}
     };    
 
-    // (width,height)
     cv::Mat cameraMatrix = cv::Mat(3,3,CV_64F,depthMatrix);
     cv::Mat distCoeffs = cv::Mat::zeros(5, 1, CV_64F);    
    
