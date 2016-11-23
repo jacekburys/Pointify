@@ -18,11 +18,15 @@ angular.module('serverApp')
       ioSocket,
       takePicture : function() {
         console.log('Trying to emit takepicture');
-        ioSocket.emit('viewer-takepicture');
+        ioSocket.emit('viewer_take_picture');
+      },
+      startStreaming : function() {
+        console.log('Trying to emit startstreaming');
+        ioSocket.emit('viewer_start_streaming');
       },
       calibrate : function() {
         console.log('Trying to emit calibrate');
-        ioSocket.emit('viewer-calibrate');
+        ioSocket.emit('viewer_calibrate');
       }
     };
   });
