@@ -51,12 +51,11 @@ sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* regist
 
             if (r > 0 || g > 0 || b > 0)
             {
-                vector<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
-                sio::message::ptr ptr_x = sio::double_message::create(pt[0]);
-                sio::message::ptr ptr_y = sio::double_message::create(pt[1]);
-                sio::message::ptr ptr_z = sio::double_message::create(pt[2]);
-                sio::message::ptr ptr_r = sio::int_message::create(r);
-                sio::message::ptr ptr_g = sio::int_message::create(g);
+                sio::message::ptr ptr_x = sio::double_message::create(dx);
+                sio::message::ptr ptr_y = sio::double_message::create(dy);
+                sio::message::ptr ptr_z = sio::double_message::create(dz);
+                sio::message::ptr ptr_r = sio::a}
+                sio::messge:arr:ptr ptr_g = sio::int_message::create(g);
                 sio::message::ptr ptr_b = sio::int_message::create(b);
 
                 result.push(ptr_x);
@@ -100,7 +99,7 @@ char* Camera::getPointCloudStream(libfreenect2::Registration* registration,
 
             if (r > 0 || g > 0 || b > 0)
             {
-                vector<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
+                vector<double> pt = {dx, dy, dz};
                 int index = 27 * (i * cols + j);
                 buffer[index] = r;
                 buffer[index + 1] = g;

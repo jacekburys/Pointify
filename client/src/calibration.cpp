@@ -31,6 +31,8 @@ void Calibration::setDevice(libfreenect2::Freenect2Device *device)
 
 void Calibration::detectMarkers(cv::Mat* img)
 {
+    if(calibrated) return;
+
     //Perform marker detection
     cv::aruco::detectMarkers(*img, dict, corners, ids);
     cv::aruco::drawDetectedMarkers(*img, corners, ids);
@@ -86,25 +88,16 @@ bool Calibration::calibrate(cv::Mat img)
     cv::Rodrigues(rvecs[0], rotation);
     cv::invert(rotation, rotation);
     translation = tvecs[0];
+    cv::hconcat(rotation, translation, transformation);
+    cv::Mat_<double> m = (cv::Mat_<double>(1, 4) << 0,0,0,1);
+    cv::vconcat(transformation, m, transformation);
 
     INFO("Calibration success");
     calibrated = true;
     return true;
 }
 
-vector<double> Calibration::transformPoint(double x, double y, double z)
+void Calibration::transformPoints(cv::Mat src, cv::Mat dst)
 {
-  cv::Mat input(3, 1, CV_64F);
-  input.at<double>(0,0) = x;
-  input.at<double>(1,0) = y;
-  input.at<double>(2,0) = z;
-
-  if(!calibrated) return input;
-
-  cv::Mat processed(3, 1, CV_64F);  
-  
-  processed = rotation * (input - translation);
-
-  vector<double> result = { processed.at<double>(0,0), processed.at<double>(1,0), processed.at<double>(2,0) };
-  return result;
+  cv::perspectiveTransform(src, dst, transformation);
 }
