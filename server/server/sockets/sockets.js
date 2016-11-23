@@ -14,7 +14,7 @@ export default function(io) {
       var newClient = {
         calibStatus : 'Not calibrated',
         ip : socket.request.connection.remoteAddress,
-        id : io.nextClientID,
+        clientID : io.nextClientID,
       };
       io.nextClientID += 1;
       io.sockets.emit('viewer_new_client', newClient);
@@ -46,8 +46,11 @@ export default function(io) {
     // the client sent a frame
     socket.on('new_frame', function(frame) {
       console.log('new frame');
-      frame.clientID = socket.clientID;
-      io.sockets.emit('viewer_pointcloud', frame);
+      var frameObj = {
+        frame : frame,
+        clientID : socket.clientID,
+      };
+      io.sockets.emit('viewer_pointcloud', frameObj);
     });
 
     // a client sent a calibration status
