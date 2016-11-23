@@ -50,13 +50,13 @@ int main(int argc, char *argv[])
 
     client.connect(serverUrl);
 
-    Camera camera;
+    Camera camera(&client);
     client.socket()->on("take_picture",
                         [&camera, &client] (sio::event& event)
                         {
                             INFO("taking picture");
-                            sio::array_message::ptr pic = camera.takePicture();
-                            client.socket()->emit("new_frame", pic);
+                            string buffString = camera.takePicture();
+                            client.socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
                         });
     client.socket()->on("calibrate",
                         [&camera, &client] (sio::event& event)
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
                         [&camera, &client] (sio::event& event)
                         {
                             INFO("started streaming");
-                            client.socket()->emit("new_frame", camera.takePicture());
+                            camera.startStreaming();
                         });
     camera.start();
 

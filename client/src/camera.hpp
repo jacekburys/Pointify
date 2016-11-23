@@ -4,6 +4,8 @@
 #include <string>
 #include <mutex>
 #include <thread>
+#include <memory>
+#include <iostream>
 #include <condition_variable>
 
 #include <opencv2/opencv.hpp>
@@ -21,18 +23,23 @@ using namespace std;
 class Camera
 {
     public:
-        Camera() {};
+        Camera(sio::client* client);
         void start();
-        sio::array_message::ptr takePicture();
+    string takePicture();
         bool calibrate();
+        void startStreaming();
     private:
+        sio::client* client;
         sio::array_message::ptr getPointCloud(libfreenect2::Registration* registration,
                                               libfreenect2::Frame& undistorted,
                                               libfreenect2::Frame& registered);
-        char* Camera::getPointCloudStream(libfreenect2::Registration* registration,
+    string getPointCloudStream(libfreenect2::Registration* registration,
                                               libfreenect2::Frame& undistorted,
                                               libfreenect2::Frame& registered);
-            string serializeMatrix(cv::Mat image);
+        void streamFrame(libfreenect2::Registration* registration,
+                                 libfreenect2::Frame& undistorted,
+                                 libfreenect2::Frame& registered);
+        string serializeMatrix(cv::Mat image);
         void cameraLoop();
         void sendPicture(cv::Mat image);
 
@@ -41,9 +48,10 @@ class Camera
 
         bool pictureFinished = true;
         bool pictureTriggered = false;
+        bool startedStreaming = false;
         mutex pictureMutex;
         condition_variable pictureCv;
-        sio::array_message::ptr capturedPicture;
+    string capturedPicture;
 
         bool calibrationFinished = true;
         bool calibrationTriggered = false;

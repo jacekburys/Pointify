@@ -10,12 +10,16 @@
 #include <opencv2/highgui.hpp>
 #include <socketio/sio_client.h>
 #include <cmdlog.h>
+#include <queue>
 
 #include "camera.hpp"
 
 typedef unsigned char byte;
-
 using namespace std;
+
+Camera::Camera(sio::client* client) {
+    this->client = client;
+}
 
 string Camera::serializeMatrix(cv::Mat image)
 {
@@ -52,6 +56,8 @@ sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* regist
             if (r > 0 || g > 0 || b > 0)
             {
                 vector<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
+
+//                vector<double> pt = {dx,dy,dz};
                 sio::message::ptr ptr_x = sio::double_message::create(pt[0]);
                 sio::message::ptr ptr_y = sio::double_message::create(pt[1]);
                 sio::message::ptr ptr_z = sio::double_message::create(pt[2]);
@@ -72,13 +78,24 @@ sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* regist
     return result.to_array_message();
 }
 
-char* Camera::getPointCloudStream(libfreenect2::Registration* registration,
+void Camera::streamFrame(libfreenect2::Registration* registration,
+                         libfreenect2::Frame& undistorted,
+                         libfreenect2::Frame& registered)
+{
+    getPointCloudStream(registration, undistorted, registered);
+    sio::message::list result;
+    sio::array_message::ptr pic = result.to_array_message();
+    client->socket()->emit("new_frame", pic);
+    INFO("new thread");
+}
+
+string Camera::getPointCloudStream(libfreenect2::Registration* registration,
                                               libfreenect2::Frame& undistorted,
                                               libfreenect2::Frame& registered)
 {
     int rows = undistorted.height;
     int cols = undistorted.width;
-    char* buffer = new char[rows * cols * 27];
+    std::ostringstream buffer;
     // make this frame invariant
     for (int i = 0; i < rows; i++)
     {
@@ -100,19 +117,36 @@ char* Camera::getPointCloudStream(libfreenect2::Registration* registration,
 
             if (r > 0 || g > 0 || b > 0)
             {
-                vectoir<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
-                int index = 27 * (i * cols + j);
-                buffer[index] = r;
-                buffer[index + 1] = g;
-                buffer[index + 2] = b;
-                *reinterpret_cast<double*>(buffer + (index + 3)) = pt[0];
-                *reinterpret_cast<double*>(buffer + (index + 11)) = pt[1];
-                *reinterpret_cast<double*>(buffer + (index + 19)) = pt[2];
+                vector<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
+                buffer << char(r);
+                buffer << char(g);
+                buffer << char(b);
+                const char* x2 = reinterpret_cast<char*>(&x);
+                buffer << x2[0];
+                buffer << x2[1];
+                buffer << x2[2];
+                buffer << x2[3];
+                const char* y2 = reinterpret_cast<char*>(&y);
+                buffer << y2[0];
+                buffer << y2[1];
+                buffer << y2[2];
+                buffer << y2[3];
+                const char* z2 = reinterpret_cast<char*>(&z);
+                buffer << z2[0];
+                buffer << z2[1];
+                buffer << z2[2];
+                buffer << z2[3];
+                //buffer[index + 2] = b;
+                //*reinterpret_cast<double*>(buffer + (index + 3)) = pt[0];
+                //*reinterpret_cast<double*>(buffer + (index + 11)) = pt[1];
+                //*reinterpret_cast<double*>(buffer + (index + 19)) = pt[2];
             }
         }
     }
 
-    return buffer;
+    string buffString = buffer.str();
+
+    return buffString; //make_shared<string>(buffString.c_str(), buffString.size());
 }
 
 void Camera::start()
@@ -187,11 +221,11 @@ void Camera::start()
 
         if (!pictureFinished)
         {
-            static future<sio::array_message::ptr> future;
+            static future<string> future;
             if (!pictureTriggered)
             {
                 future = async(launch::async,
-                               &Camera::getPointCloud, this, registration, ref(undistorted), ref(registered));
+                               &Camera::getPointCloudStream, this, registration, ref(undistorted), ref(registered));
                 pictureTriggered = true;
             }
             if (future.wait_for(chrono::seconds(TAKEPICTURE_TIMEOUT)) == future_status::ready)
@@ -208,20 +242,22 @@ void Camera::start()
             static future<bool> future;
             if (!calibrationTriggered)
             {
-                cout << "In calibration triggered branch\n";
-                future = async(launch::async,
-                               &Calibration::calibrate, &calibration, rgbd);
+                future = async(launch::async, &Calibration::calibrate, &calibration, rgbd);
                 calibrationTriggered = true;
             }
-            cout << "Between two branches\n";
             if (future.wait_for(chrono::seconds(CALIBRATION_TIMEOUT)) == future_status::ready)
             {
-                cout << "In wating for branch\n";
                 calibrationSuccess = future.get();
                 calibrationFinished = true;
                 calibrationTriggered = false;
                 calibrationCv.notify_one();
             }
+        }
+
+
+        if (startedStreaming)
+        {
+            async(launch::async, &Camera::streamFrame, this, registration, ref(undistorted), ref(registered));
         }
 
         calibration.detectMarkers(&rgbmat);
@@ -249,12 +285,16 @@ void Camera::start()
     dev->close();
 }
 
-sio::array_message::ptr Camera::takePicture()
+string Camera::takePicture()
 {
     unique_lock<mutex> lock(pictureMutex);
     pictureFinished = false;
     pictureCv.wait(lock, [this] { return pictureFinished; });
     return capturedPicture;
+}
+
+void Camera::startStreaming() {
+    startedStreaming = true;
 }
 
 bool Camera::calibrate()
