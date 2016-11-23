@@ -115,6 +115,8 @@ void Camera::start()
 
     cv::namedWindow("Camera", CV_WINDOW_NORMAL);
     cv::resizeWindow("Camera", 1500, 844);
+    cv::namedWindow("Camera2", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Camera2", 600, 500);
 
     bool shutdown = false;
     cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2, registeredmat;
@@ -166,6 +168,7 @@ void Camera::start()
 
         calibration.detectMarkers(&rgbmat);
         cv::imshow("Camera", rgbmat);
+        cv::imshow("Camera2", rgbd);
 
         int key = cv::waitKey(1);
 

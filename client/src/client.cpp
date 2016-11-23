@@ -55,13 +55,21 @@ int main(int argc, char *argv[])
     client.socket()->on("take_picture",  
                         [&camera, &client] (sio::event& event)
                         {
-                            client.socket()->emit("new_frame", camera.takePicture());
+                            INFO("taking picture");
+                            sio::array_message::ptr pic = camera.takePicture();
+                            client.socket()->emit("new_frame", pic);
                         });
     client.socket()->on("calibrate",
                         [&camera] (sio::event& event) 
                         { 
                             INFO("got calibrate message");
                             camera.calibrate();
+                        });
+    client.socket()->on("start_streaming",
+                        [&camera, &client] (sio::event& event)
+                        {
+                            INFO("started streaming");
+                            client.socket()->emit("new_frame", camera.takePicture());
                         });
     camera.start();
 
