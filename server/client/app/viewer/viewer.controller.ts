@@ -2,12 +2,6 @@
 
 (function() {
 
-enum CalibrationStatus {
-  Calibrated = <any>'Calibrated',
-  InProgress = <any>'InProgress',
-  Error = <any>'Error',
-}
-
 class ViewerController {
   constructor($scope, socket) {
     this.$scope = $scope;
@@ -18,17 +12,34 @@ class ViewerController {
     this.latestPointCloud = {};
 
     var _this = this;
-    socket.ioSocket.on('viewer-pointcloud', function(frame) {
+    socket.ioSocket.on('viewer_calibration_status', function(stat) {
+      console.log('got calibration status');
+      var clientID = stat.clientID;
+      var statusBool = stat.stat;
+      var index = _this.connectedClients.findIndex(function(client) {
+        return client.id = clientID;
+      });
+      if (index === -1) {
+        return;
+      }
+      if (statusBool) {
+        _this.connectedClients[index].calibStatus = 'Success';
+      } else {
+        _this.connectedClients[index].calibStatus = 'Error';
+      }
+      _this.$scope.$apply();
+    });
+    socket.ioSocket.on('viewer_pointcloud', function(frame) {
       console.log('got frame from server');
       _this.renderPointCloud(frame);
     });
-    socket.ioSocket.on('viewer-new-client', function(newClient) {
+    socket.ioSocket.on('viewer_new_client', function(newClient) {
       console.log('new client connected');
       _this.connectedClients.push(newClient);
       _this.$scope.$apply();
       console.log(_this.connectedClients);
     });
-    socket.ioSocket.on('viewer-client-disconnect', function(clientID) {
+    socket.ioSocket.on('viewer_client_disconnect', function(clientID) {
       console.log('disconnect ' + clientID);
       var index = _this.connectedClients.findIndex(function(client) {
         return client.id = clientID;
