@@ -16,10 +16,13 @@ class ViewerController {
       console.log('got calibration status');
       var clientID = stat.clientID;
       var statusBool = stat.stat;
+      console.log(_this.connectedClients);
+      console.log(clientID);
       var index = _this.connectedClients.findIndex(function(client) {
-        return client.id = clientID;
+        return client.clientID = clientID;
       });
       if (index === -1) {
+        console.log('client for status update not found');
         return;
       }
       if (statusBool) {
@@ -29,14 +32,15 @@ class ViewerController {
       }
       _this.$scope.$apply();
     });
-    socket.ioSocket.on('viewer_pointcloud', function(frame) {
+    socket.ioSocket.on('viewer_pointcloud', function(frameObj) {
       console.log('got frame from server');
-      _this.renderPointCloud(frame);
+      console.log(frameObj);
+      _this.renderPointCloud(frameObj);
     });
     socket.ioSocket.on('viewer_new_client', function(newClient) {
       console.log('new client connected');
       _this.connectedClients.push(newClient);
-      _this.latestPointCloud[newClient.id] = null;
+      _this.latestPointCloud[newClient.clientID] = null;
       _this.$scope.$apply();
       console.log(_this.connectedClients);
     });
@@ -68,7 +72,7 @@ class ViewerController {
     this.socket.calibrate();
   }
 
-  renderPointCloud(frame) {
+  renderPointCloud(frameObj) {
     //this.scene.children.forEach(function(object){
     //    this.scene.remove(object);
     //});
@@ -80,11 +84,18 @@ class ViewerController {
     var geometry = new THREE.Geometry();
     var x, y, z, r, g, b;
     var i = 0;
-    if (frame.length % 6 !== 0) {
+    var frame = frameObj.frame;
+
+    console.log('new string frame');
+    if (frame.byteLength % 15 !== 0) {
       console.log('ERROR');
       return;
     }
-    while (i < frame.length) {
+
+    var dataView = new DataView(frame);
+
+    while (i < frame.byteLength) {
+      /*
       x = frame[i];
       i++;
       y = frame[i];
@@ -97,6 +108,26 @@ class ViewerController {
       i++;
       b = frame[i];
       i++;
+      */
+
+      r = dataView.getUint8(i);
+      i++;
+
+      g = dataView.getUint8(i);
+      i++;
+
+      b = dataView.getUint8(i);
+      i++;
+
+      x = dataView.getFloat32(i, true);
+      i += 4;
+
+      y = dataView.getFloat32(i, true);
+      i += 4;
+
+      z = dataView.getFloat32(i, true);
+      i += 4;
+
       geometry.vertices.push(new THREE.Vector3(x * 100, -y * 100, z * 100));
       geometry.colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
     }
