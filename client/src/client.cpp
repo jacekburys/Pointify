@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
                         {
                             INFO("taking picture");
                             string buffString = camera.takePicture();
+                            INFO("picture taken");
                             client.socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
                         });
     client.socket()->on("calibrate",

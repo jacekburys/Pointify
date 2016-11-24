@@ -32,6 +32,7 @@ sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* regist
                                               libfreenect2::Frame& undistorted,
                                               libfreenect2::Frame& registered)
 {
+/*
     sio::message::list result;
     int rows = undistorted.height;
     int cols = undistorted.width;
@@ -76,6 +77,8 @@ sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* regist
     }
 
     return result.to_array_message();
+    */
+    return nullptr;
 }
 
 void Camera::streamFrame(libfreenect2::Registration* registration,
@@ -100,13 +103,8 @@ string Camera::getPointCloudStream(libfreenect2::Registration* registration,
         for (int j = 0; j < cols; j++)
         {
             float x, y, z, rgb;
-            double dx, dy, dz;
 
             registration->getPointXYZRGB(&undistorted, &registered, i, j, x, y, z, rgb);
-
-            dx = static_cast<double>(x);
-            dy = static_cast<double>(y);
-            dz = static_cast<double>(z);
 
             const uint8_t *p = reinterpret_cast<uint8_t*>(&rgb);
             uint8_t b = p[0];
@@ -115,21 +113,21 @@ string Camera::getPointCloudStream(libfreenect2::Registration* registration,
 
             if (r > 0 || g > 0 || b > 0)
             {
-                vector<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
+                vector<float> pt = calibration.transformPoint(x, y, z); // transform point for calibration
                 buffer << char(r);
                 buffer << char(g);
                 buffer << char(b);
-                uint8_t* x2 = reinterpret_cast<uint8_t*>(&x);
+                uint8_t* x2 = reinterpret_cast<uint8_t*>(&pt[0]);
                 buffer << x2[0];
                 buffer << x2[1];
                 buffer << x2[2];
                 buffer << x2[3];
-                uint8_t* y2 = reinterpret_cast<uint8_t*>(&y);
+                uint8_t* y2 = reinterpret_cast<uint8_t*>(&pt[1]);
                 buffer << y2[0];
                 buffer << y2[1];
                 buffer << y2[2];
                 buffer << y2[3];
-                uint8_t* z2 = reinterpret_cast<uint8_t*>(&z);
+                uint8_t* z2 = reinterpret_cast<uint8_t*>(&pt[2]);
                 buffer << z2[0];
                 buffer << z2[1];
                 buffer << z2[2];
@@ -234,7 +232,7 @@ void Camera::start()
             static future<bool> future;
             if (!calibrationTriggered)
             {
-                future = async(launch::async, &Calibration::calibrate, &calibration, rgbd);
+                future = async(launch::async, &Calibration::calibrate, &calibration, rgba);
                 calibrationTriggered = true;
             }
             if (future.wait_for(chrono::seconds(CALIBRATION_TIMEOUT)) == future_status::ready)

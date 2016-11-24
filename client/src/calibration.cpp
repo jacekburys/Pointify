@@ -48,12 +48,7 @@ bool Calibration::calibrate(cv::Mat img)
         INFO("Calibration failed, likely could not find any markers");
         return false;
     }
-    INFO("found %d corners", (int)corners[0].size());
-    INFO("found %d ids", (int)ids.size());
-
-    // perform camera calibration
-    cv::Ptr<cv::aruco::Board> board = cv::aruco::GridBoard::create(MARKER_X, MARKER_Y, MARKER_LENGTH, MARKER_SEPARATION, dict).staticCast<cv::aruco::Board>();
-    board->ids[0] = MARKER_ID;
+    INFO("found %d markers", (int)ids.size());
 
     //Get the depth parameters from device 
     libfreenect2::Freenect2Device::ColorCameraParams depthParameters = device->getColorCameraParams();
@@ -64,50 +59,39 @@ bool Calibration::calibrate(cv::Mat img)
     cx = depthParameters.cx;
     cy = depthParameters.cy;
 
-    float depthMatrix[3][3] = 
-    {
-     {fx, 0, cx},
-     {0, fy, cy},
-     {0,  0, 1}
-    };    
-
-    cv::Mat cameraMatrix = cv::Mat(3,3,CV_64F,depthMatrix);
-    cv::Mat distCoeffs = cv::Mat::zeros(5, 1, CV_64F);    
+    cv::Mat_<float> cameraMatrix = (cv::Mat_<float>(3,3) << fx,0,cx,0,fy,cy,0,0,1);
+    cv::Mat distCoeffs = cv::Mat::zeros(4, 1, CV_64F);    
    
     // rotation (rvecs) and translation (tvecs) vectors that bring the marker from it's coordinate space to world coordinate space
-    vector<cv::Mat> rvecs, tvecs;
-
-    // amount of markers per frame (assume only one)
-    vector<int> counter;
-    counter.push_back(corners.size());
+    vector<cv::Vec3d> rvecs, tvecs;
 
     // calibrate
-    cv::aruco::calibrateCameraAruco(corners, ids, counter, board, img.size(), cameraMatrix, distCoeffs, rvecs, tvecs);
-	
+    cv::aruco::estimatePoseSingleMarkers(corners, MARKER_LENGTH, cameraMatrix, distCoeffs, rvecs, tvecs); 
+
     // build transformation to apply to point cloud
-    cv::Rodrigues(rvecs[0], rotation);
-    cv::invert(rotation, rotation);
-    translation = tvecs[0];
-    cv::hconcat(rotation, translation, transformation);
-    cv::Mat_<double> m = (cv::Mat_<double>(1, 4) << 0,0,0,1);
+    cv::Mat_<float> r = (cv::Mat_<float>(3, 1) << rvecs[0][0],rvecs[0][1],rvecs[0][2]);
+    cv::Rodrigues(r, r);
+
+    cv::Mat_<float> t = (cv::Mat_<float>(3, 1) << tvecs[0][0],tvecs[0][1],tvecs[0][2]);
+    cv::hconcat(r, t, transformation);
+
+    cv::Mat_<float> m = (cv::Mat_<float>(1, 4) << 0,0,0,1);
     cv::vconcat(transformation, m, transformation);
+    cv::invert(transformation, transformation);
 
     INFO("Calibration success");
     calibrated = true;
     return true;
 }
 
-vector<double> Calibration::transformPoint(double x, double y, double z)
+vector<float> Calibration::transformPoint(float x, float y, float z)
 {
-    cv::Mat input(3, 1, CV_64F);
-    input.at<double>(0,0) = x;
-    input.at<double>(1,0) = y;
-    input.at<double>(2,0) = z;
-    cv::Mat processed(3, 1, CV_64F);
+    cv::Mat_<float> input = (cv::Mat_<float>(4, 1) << x, y, z, 1);
+    cv::Mat processed(4, 1, CV_32F);
 
-    processed = rotation * (input - translation);
+    processed = transformation * input;
 
-    vector<double> result = { processed.at<double>(0,0), processed.at<double>(1,0), processed.at<double>(2,0) };
+    vector<float> result = { processed.at<float>(0,0), processed.at<float>(1,0), processed.at<float>(2,0) };
     return result;
 }
 

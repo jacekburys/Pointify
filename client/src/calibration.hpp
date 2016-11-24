@@ -10,16 +10,8 @@ using namespace std;
 class Calibration 
 {
 private:
-    const int MARKER_ID = 871;
-    // amount of markers in the x and y directions on the grid
-    const int MARKER_X = 1;
-    const int MARKER_Y = 1;
-    
-    // size of marker in meters(?)
-    const double MARKER_LENGTH = 0.179;
-    
-    // distance between markers
-    const int MARKER_SEPARATION = 1;
+    // size of marker in meters
+    float MARKER_LENGTH = 0.179;
 
     bool calibrated = false;
       
@@ -38,8 +30,6 @@ private:
     libfreenect2::Freenect2Device *device;
 
     // output rotation and translation vectors
-    cv::Mat rotation;
-    cv::Mat translation;
     cv::Mat transformation;
 
 public:
@@ -48,7 +38,7 @@ public:
     void transformPoints(cv::Mat, cv::Mat);
     void setDevice(libfreenect2::Freenect2Device*);
     bool calibrate(cv::Mat);
-    vector<double> transformPoint(double, double, double);
+    vector<float> transformPoint(float, float, float);
     void detectMarkers(cv::Mat*);
 
 };
