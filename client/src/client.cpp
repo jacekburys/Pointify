@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
                             string buffString = camera.takePicture();
                             INFO("picture taken");
                             client.socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
+                            INFO("picture sent");
                         });
     client.socket()->on("calibrate",
                         [&camera, &client] (sio::event& event)
