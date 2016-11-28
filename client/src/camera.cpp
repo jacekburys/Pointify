@@ -50,38 +50,55 @@ string Camera::getPointCloudStream(libfreenect2::Registration* registration,
 {
     int rows = undistorted.height;
     int cols = undistorted.width;
-    std::ostringstream buffer;
-    // make this frame invariant
+
+    // build up xyz and rgb matrices
+    cv::Mat xyzmat(rows, cols, CV_32FC3);
+    cv::Mat rgbmat(rows, cols, CV_8UC3);
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
             float x, y, z, rgb;
-
             registration->getPointXYZRGB(&undistorted, &registered, i, j, x, y, z, rgb);
+            const uint8_t *rgbp = reinterpret_cast<uint8_t*>(&rgb);
 
-            const uint8_t *p = reinterpret_cast<uint8_t*>(&rgb);
-            uint8_t b = p[0];
-            uint8_t g = p[1];
-            uint8_t r = p[2];
+            rgbmat.at<cv::Vec3b>(i, j) = cv::Vec3b({rgbp[2], rgbp[1], rgbp[0]});
+            xyzmat.at<cv::Vec3f>(i, j) = cv::Vec3f({x, y, z});
+        }
+    }
+    calibration.transformPoints(xyzmat, xyzmat);
+
+    std::ostringstream buffer;
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            cv::Vec3f xyz = xyzmat.at<cv::Vec3f>(i, j);
+            float x = xyz[0];
+            float y = xyz[1];
+            float z = xyz[2];
+
+            cv::Vec3b rgb = rgbmat.at<cv::Vec3b>(i, j);
+            uint8_t r = rgb[0];
+            uint8_t g = rgb[1];
+            uint8_t b = rgb[2];
 
             if (r > 0 || g > 0 || b > 0)
             {
-                vector<float> pt = calibration.transformPoint(x, y, z); // transform point for calibration
                 buffer << char(r);
                 buffer << char(g);
                 buffer << char(b);
-                uint8_t* x2 = reinterpret_cast<uint8_t*>(&pt[0]);
+                uint8_t* x2 = reinterpret_cast<uint8_t*>(&x);
                 buffer << x2[0];
                 buffer << x2[1];
                 buffer << x2[2];
                 buffer << x2[3];
-                uint8_t* y2 = reinterpret_cast<uint8_t*>(&pt[1]);
+                uint8_t* y2 = reinterpret_cast<uint8_t*>(&y);
                 buffer << y2[0];
                 buffer << y2[1];
                 buffer << y2[2];
                 buffer << y2[3];
-                uint8_t* z2 = reinterpret_cast<uint8_t*>(&pt[2]);
+                uint8_t* z2 = reinterpret_cast<uint8_t*>(&z);
                 buffer << z2[0];
                 buffer << z2[1];
                 buffer << z2[2];
@@ -137,7 +154,7 @@ void Camera::start()
     INFO("Device firmware: %s", firmwareVersion);
 
     cv::namedWindow("Camera", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Camera", 1500, 844);
+    cv::resizeWindow("Camera", 512, 424);
 
     bool shutdown = false;
     cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2, registeredmat;
