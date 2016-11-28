@@ -1,5 +1,6 @@
 export default function(io) {
 
+  io.connectedClients = [];
   io.nextClientID = 0;
   io.on('connection', function(socket) {
 
@@ -9,6 +10,9 @@ export default function(io) {
     if ('clientType' in socket.handshake.query) {
       // TODO : make the c++ client send its type
       console.log('viewer connected');
+      // viewers have negative ID
+      socket.clientID = -1*io.nextClientID;
+      io.sockets.emit('viewer_on_connection', io.connectedClients);
     } else {
       console.log('kinect client connected');
       var newClient = {
@@ -18,11 +22,27 @@ export default function(io) {
       };
       io.nextClientID += 1;
       io.sockets.emit('viewer_new_client', newClient);
+      newClient.calibStatus = '???';
+      io.connectedClients.push(newClient);
+      console.log(io.connectedClients);
     } 
 
     socket.on('disconnect', function() {
       console.log('disconnected');
+      if (socket.clientID < 0) {
+        return;
+      }
       io.sockets.emit('viewer_client_disconnect', socket.clientID);
+      var index = io.connectedClients.findIndex(function(client) {
+        return client.clientID === socket.clientID;
+      });
+      if (index === -1) {
+        console.log('client for status update not found');
+        return;
+      }
+      console.log('removing');
+      console.log(index);
+      io.connectedClients.splice(index, 1);
     });
 
     // the Take Picture button on the frontend was pressed
