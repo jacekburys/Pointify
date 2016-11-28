@@ -11,7 +11,7 @@ class Calibration
 {
 private:
     // size of marker in meters
-    float MARKER_LENGTH = 0.179;
+    float MARKER_LENGTH = 0.1765;
 
     bool calibrated = false;
       
@@ -28,8 +28,14 @@ private:
 
     // camera device
     libfreenect2::Freenect2Device *device;
+    
+    // camera properties
+    cv::Mat cameraMatrix;
+    cv::Mat distCoeffs;
 
     // output rotation and translation vectors
+    cv::Vec3d rvec;
+    cv::Vec3d tvec;
     cv::Mat transformation;
 
 public:

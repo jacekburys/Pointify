@@ -232,7 +232,7 @@ void Camera::start()
             static future<bool> future;
             if (!calibrationTriggered)
             {
-                future = async(launch::async, &Calibration::calibrate, &calibration, rgba);
+                future = async(launch::async, &Calibration::calibrate, &calibration, rgbd);
                 calibrationTriggered = true;
             }
             if (future.wait_for(chrono::seconds(CALIBRATION_TIMEOUT)) == future_status::ready)
@@ -250,8 +250,8 @@ void Camera::start()
             async(launch::async, &Camera::streamFrame, this, registration, ref(undistorted), ref(registered));
         }
 
-        calibration.detectMarkers(&rgbmat);
-        cv::imshow("Camera", rgbmat);
+        calibration.detectMarkers(&rgbd);
+        cv::imshow("Camera", rgbd);
 
         int key = cv::waitKey(1);
 

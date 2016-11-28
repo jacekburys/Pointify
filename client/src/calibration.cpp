@@ -31,11 +31,12 @@ void Calibration::setDevice(libfreenect2::Freenect2Device *device)
 
 void Calibration::detectMarkers(cv::Mat* img)
 {
-    if(calibrated) return;
-
-    //Perform marker detection
-    cv::aruco::detectMarkers(*img, dict, corners, ids);
-    cv::aruco::drawDetectedMarkers(*img, corners, ids);
+    if(calibrated) {
+      cv::aruco::drawAxis(*img, cameraMatrix, distCoeffs, rvec, tvec, 0.2); 
+    } else {
+      cv::aruco::detectMarkers(*img, dict, corners, ids);
+      cv::aruco::drawDetectedMarkers(*img, corners, ids);
+    }
 }
 
 
@@ -51,7 +52,7 @@ bool Calibration::calibrate(cv::Mat img)
     INFO("found %d markers", (int)ids.size());
 
     //Get the depth parameters from device 
-    libfreenect2::Freenect2Device::ColorCameraParams depthParameters = device->getColorCameraParams();
+    libfreenect2::Freenect2Device::IrCameraParams depthParameters = device->getIrCameraParams();
     
     float fx,fy,cx,cy;
     fx = depthParameters.fx;
@@ -59,8 +60,8 @@ bool Calibration::calibrate(cv::Mat img)
     cx = depthParameters.cx;
     cy = depthParameters.cy;
 
-    cv::Mat_<float> cameraMatrix = (cv::Mat_<float>(3,3) << fx,0,cx,0,fy,cy,0,0,1);
-    cv::Mat distCoeffs = cv::Mat::zeros(4, 1, CV_64F);    
+    cameraMatrix = (cv::Mat_<float>(3,3) << fx,0,cx,0,fy,cy,0,0,1);
+    distCoeffs = cv::Mat::zeros(4, 1, CV_64F);    
    
     // rotation (rvecs) and translation (tvecs) vectors that bring the marker from it's coordinate space to world coordinate space
     vector<cv::Vec3d> rvecs, tvecs;
@@ -69,6 +70,8 @@ bool Calibration::calibrate(cv::Mat img)
     cv::aruco::estimatePoseSingleMarkers(corners, MARKER_LENGTH, cameraMatrix, distCoeffs, rvecs, tvecs); 
 
     // build transformation to apply to point cloud
+    rvec = rvecs[0];
+    tvec = tvecs[0];
     cv::Mat_<float> r = (cv::Mat_<float>(3, 1) << rvecs[0][0],rvecs[0][1],rvecs[0][2]);
     cv::Rodrigues(r, r);
 
