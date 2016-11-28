@@ -19,7 +19,7 @@ class ViewerController {
       console.log(_this.connectedClients);
       console.log(clientID);
       var index = _this.connectedClients.findIndex(function(client) {
-        return client.clientID = clientID;
+        return client.clientID === clientID;
       });
       if (index === -1) {
         console.log('client for status update not found');
@@ -53,6 +53,12 @@ class ViewerController {
         return;
       }
       _this.connectedClients.splice(index, 1);
+      _this.$scope.$apply();
+    });
+    socket.ioSocket.on('viewer_on_connection', function(connectedClients) {
+      console.log('viewer_on_connection');
+      console.log(connectedClients);
+      _this.connectedClients = connectedClients;
       _this.$scope.$apply();
     });
   }
