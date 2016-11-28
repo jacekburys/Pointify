@@ -162,7 +162,7 @@ class ViewerController {
       var height = window.innerHeight;
       console.log(width, height);
       camera = new THREE.PerspectiveCamera( 70, width / height, 1, 1000 );
-      camera.position.z = -10;
+      camera.position.z = 100;
       camera.up.set(0, 1, 0);
 
       scene = new THREE.Scene();
