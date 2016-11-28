@@ -78,7 +78,7 @@ class ViewerController {
     //});
     console.log('trying to render frame');
     var material = new THREE.PointsMaterial({
-      size: 1,
+      size: 0.5,
       vertexColors: THREE.VertexColors,
     });
     var geometry = new THREE.Geometry();
@@ -128,16 +128,17 @@ class ViewerController {
       z = dataView.getFloat32(i, true);
       i += 4;
 
-      geometry.vertices.push(new THREE.Vector3(x * 100, -y * 100, z * 100));
+      geometry.vertices.push(new THREE.Vector3(x * 50, -y * 50, z * 50));
       geometry.colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
     }
     var pointCloud = new THREE.Points(geometry, material);
 
-    var clientID = frame.clientID;
+    var clientID = frameObj.clientID;
 
     if (this.latestPointCloud[clientID]) {
       console.log('latest not null');
       this.scene.remove(this.latestPointCloud[clientID]);
+      console.log('removed for ' + clientID);
     } else {
       console.log('latest null');
     }
