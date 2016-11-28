@@ -97,5 +97,10 @@ vector<float> Calibration::transformPoint(float x, float y, float z)
 
 void Calibration::transformPoints(cv::Mat src, cv::Mat dst)
 {
-  cv::perspectiveTransform(src, dst, transformation);
+  if(!calibrated)
+  {
+    dst = src;
+  } else {
+    cv::perspectiveTransform(src, dst, transformation);
+  }
 }
