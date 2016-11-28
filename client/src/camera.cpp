@@ -1,0 +1,266 @@
+#include <iostream>
+#include <functional>
+#include <thread>
+#include <chrono>
+#include <future>
+#include <mutex>
+#include <condition_variable>
+
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <socketio/sio_client.h>
+#include <cmdlog.h>
+#include <queue>
+
+#include "camera.hpp"
+
+typedef unsigned char byte;
+using namespace std;
+
+Camera::Camera(sio::client* client) {
+    this->client = client;
+}
+
+string Camera::serializeMatrix(cv::Mat image)
+{
+    ostringstream stream;
+    stream << image;
+    return stream.str();
+}
+
+void Camera::streamFrames(libfreenect2::Registration* registration,
+                            libfreenect2::Frame& undistorted,
+                            libfreenect2::Frame& registered) {
+    while (true)
+        streamFrame(registration, undistorted, registered);
+}
+
+void Camera::streamFrame(libfreenect2::Registration* registration,
+                         libfreenect2::Frame& undistorted,
+                         libfreenect2::Frame& registered)
+{
+    string buffString = getPointCloudStream(registration, undistorted, registered);
+    client->socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
+    INFO("Frame emitted");
+}
+
+string Camera::getPointCloudStream(libfreenect2::Registration* registration,
+                                              libfreenect2::Frame& undistorted,
+                                              libfreenect2::Frame& registered)
+{
+    int rows = undistorted.height;
+    int cols = undistorted.width;
+
+    // build up xyz and rgb matrices
+    cv::Mat xyzmat(rows, cols, CV_32FC3);
+    cv::Mat rgbmat(rows, cols, CV_8UC3);
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            float x, y, z, rgb;
+            registration->getPointXYZRGB(&undistorted, &registered, i, j, x, y, z, rgb);
+            const uint8_t *rgbp = reinterpret_cast<uint8_t*>(&rgb);
+
+            rgbmat.at<cv::Vec3b>(i, j) = cv::Vec3b({rgbp[2], rgbp[1], rgbp[0]});
+            xyzmat.at<cv::Vec3f>(i, j) = cv::Vec3f({x, y, z});
+        }
+    }
+    calibration.transformPoints(xyzmat, xyzmat);
+
+    std::ostringstream buffer;
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            cv::Vec3f xyz = xyzmat.at<cv::Vec3f>(i, j);
+            float x = xyz[0];
+            float y = xyz[1];
+            float z = xyz[2];
+
+            cv::Vec3b rgb = rgbmat.at<cv::Vec3b>(i, j);
+            uint8_t r = rgb[0];
+            uint8_t g = rgb[1];
+            uint8_t b = rgb[2];
+
+            if (r > 0 || g > 0 || b > 0)
+            {
+                buffer << char(r);
+                buffer << char(g);
+                buffer << char(b);
+                uint8_t* x2 = reinterpret_cast<uint8_t*>(&x);
+                buffer << x2[0];
+                buffer << x2[1];
+                buffer << x2[2];
+                buffer << x2[3];
+                uint8_t* y2 = reinterpret_cast<uint8_t*>(&y);
+                buffer << y2[0];
+                buffer << y2[1];
+                buffer << y2[2];
+                buffer << y2[3];
+                uint8_t* z2 = reinterpret_cast<uint8_t*>(&z);
+                buffer << z2[0];
+                buffer << z2[1];
+                buffer << z2[2];
+                buffer << z2[3];
+            }
+        }
+    }
+
+    string buffString = buffer.str();
+
+    return buffString;
+}
+
+void Camera::start()
+{
+    libfreenect2::Freenect2 freenect2;
+    libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::None));
+    libfreenect2::SyncMultiFrameListener listener(libfreenect2::Frame::Color |
+                                                  libfreenect2::Frame::Depth |
+                                                  libfreenect2::Frame::Ir);
+    libfreenect2::FrameMap frames;
+    libfreenect2::Freenect2Device *dev = 0;
+
+    if(freenect2.enumerateDevices() == 0)
+    {
+        INFO("No device connected");
+        throw;
+    }
+
+    string serial = freenect2.getDefaultDeviceSerialNumber();
+
+    INFO("SERIAL: %s", serial.c_str());
+    dev = freenect2.openDevice(serial);
+
+    if(dev == 0)
+    {
+        cout << "failure opening device!" << endl;
+        throw;
+    }
+
+
+    dev->setColorFrameListener(&listener);
+    dev->setIrAndDepthFrameListener(&listener);
+
+    dev->start();
+    calibration.setDevice(dev);
+
+    char serialNumber[100];
+    char firmwareVersion[100];
+    sprintf(serialNumber, "%s", dev->getSerialNumber().c_str());
+    sprintf(firmwareVersion, "%s", dev->getFirmwareVersion().c_str());
+    INFO("Device serial: %s", serialNumber);
+    INFO("Device firmware: %s", firmwareVersion);
+
+    cv::namedWindow("Camera", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Camera", 512, 424);
+
+    bool shutdown = false;
+    cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2, registeredmat;
+    libfreenect2::Registration* registration = new libfreenect2::Registration(dev->getIrCameraParams(), dev->getColorCameraParams());
+    libfreenect2::Frame undistorted(512, 424, 4), registered(512, 424, 4), depth2rgb(1920, 1080 + 2, 4);
+
+    while (!shutdown)
+    {
+        listener.waitForNewFrame(frames);
+        libfreenect2::Frame *rgb = frames[libfreenect2::Frame::Color];
+        libfreenect2::Frame *ir = frames[libfreenect2::Frame::Ir];
+        libfreenect2::Frame *depth = frames[libfreenect2::Frame::Depth];
+
+        cv::Mat(rgb->height, rgb->width, CV_8UC4, rgb->data).copyTo(rgbmat);
+        cv::Mat(ir->height, ir->width, CV_32FC1, ir->data).copyTo(irmat);
+        cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(depthmat);
+        cv::cvtColor(rgbmat, rgbmat, CV_RGBA2RGB);
+
+        registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
+
+        cv::Mat(undistorted.height, undistorted.width, CV_32FC1, undistorted.data).copyTo(depthmatUndistorted);
+        cv::Mat(registered.height, registered.width, CV_8UC4, registered.data).copyTo(rgbd);
+        cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
+        cv::cvtColor(rgbd, rgbd, CV_RGBA2RGB);
+
+        if (!pictureFinished)
+        {
+            static future<string> future;
+            if (!pictureTriggered)
+            {
+                future = async(launch::async,
+                               &Camera::getPointCloudStream, this, registration, ref(undistorted), ref(registered));
+                pictureTriggered = true;
+            }
+            if (future.wait_for(chrono::seconds(TAKEPICTURE_TIMEOUT)) == future_status::ready)
+            {
+                capturedPicture = future.get();
+                pictureFinished = true;
+                pictureTriggered = false;
+                pictureCv.notify_one();
+            }
+        }
+
+        if (!calibrationFinished)
+        {
+            static future<bool> future;
+            if (!calibrationTriggered)
+            {
+                future = async(launch::async, &Calibration::calibrate, &calibration, rgbd);
+                calibrationTriggered = true;
+            }
+            if (future.wait_for(chrono::seconds(CALIBRATION_TIMEOUT)) == future_status::ready)
+            {
+                calibrationSuccess = future.get();
+                calibrationFinished = true;
+                calibrationTriggered = false;
+                calibrationCv.notify_one();
+            }
+        }
+
+        if (streamTriggered) {
+            async(launch::async, &Camera::streamFrames, this, registration, ref(undistorted), ref(registered));
+            streamTriggered = false;
+        }
+
+        calibration.detectMarkers(&rgbd);
+        cv::imshow("Camera", rgbd);
+
+        int key = cv::waitKey(1);
+
+        /// Shutdown on escape
+        shutdown = shutdown || (key > 0 && ((key & 0xFF) == 27));
+
+        /// Shutdown on window close
+        try
+        {
+            int windowProperty = cv::getWindowProperty("Camera", 0);
+        }
+        catch (cv::Exception e)
+        {
+            shutdown = true;
+        }
+
+        listener.release(frames);
+    }
+    dev->stop();
+    dev->close();
+}
+
+string Camera::takePicture()
+{
+    unique_lock<mutex> lock(pictureMutex);
+    pictureFinished = false;
+    pictureCv.wait(lock, [this] { return pictureFinished; });
+    return capturedPicture;
+}
+
+void Camera::startStreaming() {
+    streamTriggered = true;
+}
+
+bool Camera::calibrate()
+{
+    unique_lock<mutex> lock(calibrationMutex);
+    calibrationFinished = false;
+    calibrationCv.wait(lock, [this] { return calibrationFinished; });
+    return calibrationSuccess;
+}
+

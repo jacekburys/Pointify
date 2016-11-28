@@ -80,6 +80,13 @@ $RECYCLE.BIN/
 client/bin
 client/lib
 lib
-client/src/KinectOneStream.cpp
-client/build_sample
+.vimrc
+client/shell
+
+
+# Intellij Files
+.idea
+
+CMakeLists.txt
+
 
