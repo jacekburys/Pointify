@@ -30,12 +30,12 @@ class Camera
         void startStreaming();
     private:
         sio::client* client;
-        sio::array_message::ptr getPointCloud(libfreenect2::Registration* registration,
-                                              libfreenect2::Frame& undistorted,
-                                              libfreenect2::Frame& registered);
         string getPointCloudStream(libfreenect2::Registration* registration,
                                               libfreenect2::Frame& undistorted,
                                               libfreenect2::Frame& registered);
+        void streamFrames(libfreenect2::Registration* registration,
+                            libfreenect2::Frame& undistorted,
+                            libfreenect2::Frame& registered);
         void streamFrame(libfreenect2::Registration* registration,
                                  libfreenect2::Frame& undistorted,
                                  libfreenect2::Frame& registered);
@@ -45,14 +45,12 @@ class Camera
 
         int CALIBRATION_TIMEOUT = 3; // seconds
         int TAKEPICTURE_TIMEOUT = 3; // seconds
-
+        bool streamTriggered = false;
         bool pictureFinished = true;
         bool pictureTriggered = false;
-        bool startedStreaming = false;
         mutex pictureMutex;
         condition_variable pictureCv;
-    string capturedPicture;
-
+        string capturedPicture;
         bool calibrationFinished = true;
         bool calibrationTriggered = false;
         mutex calibrationMutex;

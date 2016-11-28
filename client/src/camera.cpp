@@ -28,57 +28,11 @@ string Camera::serializeMatrix(cv::Mat image)
     return stream.str();
 }
 
-sio::array_message::ptr Camera::getPointCloud(libfreenect2::Registration* registration,
-                                              libfreenect2::Frame& undistorted,
-                                              libfreenect2::Frame& registered)
-{
-/*
-    sio::message::list result;
-    int rows = undistorted.height;
-    int cols = undistorted.width;
-    for (int i = 0; i < rows; i++)
-    {
-        for (int j = 0; j < cols; j++)
-        {
-            float x, y, z, rgb;
-            double dx, dy, dz;
-
-            registration->getPointXYZRGB(&undistorted, &registered, i, j, x, y, z, rgb);
-
-            dx = static_cast<double>(x);
-            dy = static_cast<double>(y);
-            dz = static_cast<double>(z);
-
-            const uint8_t *p = reinterpret_cast<uint8_t*>(&rgb);
-            uint8_t b = p[0];
-            uint8_t g = p[1];
-            uint8_t r = p[2];
-
-            if (r > 0 || g > 0 || b > 0)
-            {
-                vector<double> pt = calibration.transformPoint(dx, dy, dz); // transform point for calibration
-
-//                vector<double> pt = {dx,dy,dz};
-                sio::message::ptr ptr_x = sio::double_message::create(pt[0]);
-                sio::message::ptr ptr_y = sio::double_message::create(pt[1]);
-                sio::message::ptr ptr_z = sio::double_message::create(pt[2]);
-                sio::message::ptr ptr_r = sio::int_message::create(r);
-                sio::message::ptr ptr_g = sio::int_message::create(g);
-                sio::message::ptr ptr_b = sio::int_message::create(b);
-
-                result.push(ptr_x);
-                result.push(ptr_y);
-                result.push(ptr_z);
-                result.push(ptr_r);
-                result.push(ptr_g);
-                result.push(ptr_b);
-            }
-        }
-    }
-
-    return result.to_array_message();
-    */
-    return nullptr;
+void Camera::streamFrames(libfreenect2::Registration* registration,
+                            libfreenect2::Frame& undistorted,
+                            libfreenect2::Frame& registered) {
+    while (true)
+        streamFrame(registration, undistorted, registered);
 }
 
 void Camera::streamFrame(libfreenect2::Registration* registration,
@@ -87,7 +41,7 @@ void Camera::streamFrame(libfreenect2::Registration* registration,
 {
     string buffString = getPointCloudStream(registration, undistorted, registered);
     client->socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
-    INFO("new thread");
+    INFO("Frame emitted");
 }
 
 string Camera::getPointCloudStream(libfreenect2::Registration* registration,
@@ -244,10 +198,9 @@ void Camera::start()
             }
         }
 
-
-        if (startedStreaming)
-        {
-            async(launch::async, &Camera::streamFrame, this, registration, ref(undistorted), ref(registered));
+        if (streamTriggered) {
+            async(launch::async, &Camera::streamFrames, this, registration, ref(undistorted), ref(registered));
+            streamTriggered = false;
         }
 
         calibration.detectMarkers(&rgbd);
@@ -283,7 +236,7 @@ string Camera::takePicture()
 }
 
 void Camera::startStreaming() {
-    startedStreaming = true;
+    streamTriggered = true;
 }
 
 bool Camera::calibrate()
