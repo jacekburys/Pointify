@@ -29,29 +29,28 @@ string Camera::serializeMatrix(cv::Mat image)
     return stream.str();
 }
 
-void Camera::streamFrames(libfreenect2::Registration* registration,
-                            libfreenect2::Frame& undistorted,
-                            libfreenect2::Frame& registered) {
+void Camera::streamFramesWrapper(Camera* camera) {
+    camera->streamFrames();
+}
+
+void Camera::streamFrames() {
     while (true)
-        streamFrame(registration, undistorted, registered);
+        streamFrame();
 }
 
-void Camera::streamFrame(libfreenect2::Registration* registration,
-                         libfreenect2::Frame& undistorted,
-                         libfreenect2::Frame& registered)
+void Camera::streamFrame()
 {
-    string buffString = getPointCloudStream(registration, undistorted, registered);
+    string buffString = getPointCloudStream();
     client->socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
-    usleep(100000);
-    INFO("Frame emitted");
+    usleep(500000);
+    framesEmitted++;
+    INFO("%i", framesEmitted);
 }
 
-string Camera::getPointCloudStream(libfreenect2::Registration* registration,
-                                              libfreenect2::Frame& undistorted,
-                                              libfreenect2::Frame& registered)
+string Camera::getPointCloudStream()
 {
-    int rows = undistorted.height;
-    int cols = undistorted.width;
+    int rows = undistorted->height;
+    int cols = undistorted->width;
 
     // build up xyz and rgb matrices
     cv::Mat xyzmat(rows, cols, CV_32FC3);
@@ -61,7 +60,7 @@ string Camera::getPointCloudStream(libfreenect2::Registration* registration,
         for (int j = 0; j < cols; j++)
         {
             float x, y, z, rgb;
-            registration->getPointXYZRGB(&undistorted, &registered, i, j, x, y, z, rgb);
+            registration->getPointXYZRGB(undistorted, registered, i, j, x, y, z, rgb);
             const uint8_t *rgbp = reinterpret_cast<uint8_t*>(&rgb);
 
             rgbmat.at<cv::Vec3b>(i, j) = cv::Vec3b({rgbp[2], rgbp[1], rgbp[0]});
@@ -160,8 +159,10 @@ void Camera::start()
 
     bool shutdown = false;
     cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2, registeredmat;
-    libfreenect2::Registration* registration = new libfreenect2::Registration(dev->getIrCameraParams(), dev->getColorCameraParams());
-    libfreenect2::Frame undistorted(512, 424, 4), registered(512, 424, 4), depth2rgb(1920, 1080 + 2, 4);
+    registration = new libfreenect2::Registration(dev->getIrCameraParams(), dev->getColorCameraParams());
+    libfreenect2::Frame undistortedLocal(512, 424, 4), registeredLocal(512, 424, 4), depth2rgb(1920, 1080 + 2, 4);
+    undistorted = &undistortedLocal;
+    registered = &registeredLocal;
 
     while (!shutdown)
     {
@@ -175,10 +176,10 @@ void Camera::start()
         cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(depthmat);
         cv::cvtColor(rgbmat, rgbmat, CV_RGBA2RGB);
 
-        registration->apply(rgb, depth, &undistorted, &registered, true, &depth2rgb);
+        registration->apply(rgb, depth, undistorted, registered, true, &depth2rgb);
 
-        cv::Mat(undistorted.height, undistorted.width, CV_32FC1, undistorted.data).copyTo(depthmatUndistorted);
-        cv::Mat(registered.height, registered.width, CV_8UC4, registered.data).copyTo(rgbd);
+        cv::Mat(undistorted->height, undistorted->width, CV_32FC1, undistorted->data).copyTo(depthmatUndistorted);
+        cv::Mat(registered->height, registered->width, CV_8UC4, registered->data).copyTo(rgbd);
         cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
         cv::cvtColor(rgbd, rgbd, CV_RGBA2RGB);
 
@@ -187,8 +188,7 @@ void Camera::start()
             static future<string> future;
             if (!pictureTriggered)
             {
-                future = async(launch::async,
-                               &Camera::getPointCloudStream, this, registration, ref(undistorted), ref(registered));
+                future = async(launch::async, &Camera::getPointCloudStream, this);
                 pictureTriggered = true;
             }
             if (future.wait_for(chrono::seconds(TAKEPICTURE_TIMEOUT)) == future_status::ready)
@@ -218,10 +218,9 @@ void Camera::start()
         }
 
         if (streamTriggered) {
-            streamFrame(registration, ref(undistorted), ref(registered));
-//            usleep(500000);
-//            async(launch::async, &Camera::streamFrames, this, registration, ref(undistorted), ref(registered));
-//            streamTriggered = false;
+            thread streamFrameThread(streamFramesWrapper, this);
+            streamFrameThread.detach();
+            streamTriggered = false;
         }
 
         calibration.detectMarkers(&rgbd);

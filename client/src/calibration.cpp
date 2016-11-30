@@ -31,7 +31,8 @@ void Calibration::setDevice(libfreenect2::Freenect2Device *device)
 
 void Calibration::detectMarkers(cv::Mat* img)
 {
-    if(calibrated) cv::aruco::drawAxis(*img, cameraMatrix, distCoeffs, rvec, tvec, 0.2); 
+//    Uncomment to draw axis on the marker
+//    if(calibrated) cv::aruco::drawAxis(*img, cameraMatrix, distCoeffs, rvec, tvec, 0.2);
     cv::aruco::detectMarkers(*img, dict, corners, ids);
     cv::aruco::drawDetectedMarkers(*img, corners, ids);
 }
