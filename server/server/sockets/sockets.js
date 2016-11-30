@@ -2,6 +2,7 @@ export default function(io) {
 
   io.connectedClients = [];
   io.nextClientID = 0;
+  io.viewerSocket = null;
   io.on('connection', function(socket) {
 
     socket.clientID = io.nextClientID;
@@ -12,6 +13,7 @@ export default function(io) {
       console.log('viewer connected');
       // viewers have negative ID
       socket.clientID = -1*io.nextClientID;
+      io.viewerSocket = socket;
       io.sockets.emit('viewer_on_connection', io.connectedClients);
     } else {
       console.log('kinect client connected');
@@ -70,7 +72,8 @@ export default function(io) {
         frame : frame,
         clientID : socket.clientID,
       };
-      io.sockets.emit('viewer_pointcloud', frameObj);
+      //io.sockets.emit('viewer_pointcloud', frameObj);
+      io.viewerSocket.emit('viewer_pointcloud', frameObj);
     });
 
     // a client sent a calibration status
