@@ -5,6 +5,7 @@
 #include <future>
 #include <mutex>
 #include <condition_variable>
+#include <unistd.h>
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
@@ -41,6 +42,7 @@ void Camera::streamFrame(libfreenect2::Registration* registration,
 {
     string buffString = getPointCloudStream(registration, undistorted, registered);
     client->socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
+    usleep(100000);
     INFO("Frame emitted");
 }
 
@@ -216,8 +218,10 @@ void Camera::start()
         }
 
         if (streamTriggered) {
-            async(launch::async, &Camera::streamFrames, this, registration, ref(undistorted), ref(registered));
-            streamTriggered = false;
+            streamFrame(registration, ref(undistorted), ref(registered));
+//            usleep(500000);
+//            async(launch::async, &Camera::streamFrames, this, registration, ref(undistorted), ref(registered));
+//            streamTriggered = false;
         }
 
         calibration.detectMarkers(&rgbd);
