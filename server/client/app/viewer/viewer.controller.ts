@@ -8,14 +8,13 @@ class ViewerController {
     this.socket = socket;
     this.scene = null;
     this.connectedClients = [];
-    this.latestPointCloud = {};
+    this.pointClouds = {};
     this.frameNumber = 0;
     this.pointCloudGeometries = {};
     this.material = new THREE.PointsMaterial({
       size: 1,
       vertexColors: THREE.VertexColors,
     });
-    //this.renderingFrame = false;
 
     var _this = this;
     socket.ioSocket.on('viewer_calibration_status', function(stat) {
@@ -48,7 +47,7 @@ class ViewerController {
     socket.ioSocket.on('viewer_new_client', function(newClient) {
       console.log('new client connected');
       _this.connectedClients.push(newClient);
-      _this.latestPointCloud[newClient.clientID] = null;
+      //_this.latestPointCloud[newClient.clientID] = null;
       _this.$scope.$apply();
       console.log(_this.connectedClients);
     });
@@ -61,6 +60,7 @@ class ViewerController {
         return;
       }
       _this.connectedClients.splice(index, 1);
+      _this.scene.remove(_this.pointClouds[clientID]);
       _this.$scope.$apply();
     });
     socket.ioSocket.on('viewer_on_connection', function(connectedClients) {
@@ -77,15 +77,8 @@ class ViewerController {
   }
 
   startStreaming() {
-    //if (!this.streaming) {
-    //  this.streaming = false;
-    //}
-    //this.streaming = !this.streaming;
     console.log('Trying to start streaming');
     this.socket.startStreaming();
-    //setInterval(function() {
-    //  this.takePicture();
-    //}.bind(this), 100);
   }
 
   calibrate() {
@@ -133,9 +126,9 @@ class ViewerController {
     if (isNew) {
       var pointCloud = new THREE.Points(this.pointCloudGeometries[clientID], this.material);
       this.scene.add( pointCloud );
+      this.pointClouds[clientID] = pointCloud;
     }
 
-    this.latestPointCloud[clientID] = pointCloud;
     this.pointCloudGeometries[clientID].verticesNeedUpdate = true;
     this.pointCloudGeometries[clientID].colorsNeedUpdate = true;
     this.pointCloudGeometries[clientID].dynamic = true;
