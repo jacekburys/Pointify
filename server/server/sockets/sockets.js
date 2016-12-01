@@ -3,6 +3,7 @@ export default function(io) {
   io.connectedClients = [];
   io.nextClientID = 0;
   io.viewerSocket = null;
+  io.socketToID = {};
   io.on('connection', function(socket) {
 
     socket.clientID = io.nextClientID;
@@ -16,6 +17,10 @@ export default function(io) {
       io.viewerSocket = socket;
       io.sockets.emit('viewer_on_connection', io.connectedClients);
     } else {
+      //if ('clientID' in socket.handshake.query) {
+        // c++ client connected
+        //io.socketToID[socket] = socket.handshake.query.clientID;
+      //}
       console.log('kinect client connected');
       var newClient = {
         calibStatus : 'Not calibrated',

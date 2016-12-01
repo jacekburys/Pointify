@@ -11,6 +11,7 @@ class ViewerController {
     this.pointClouds = {};
     this.frameNumber = 0;
     this.pointCloudGeometries = {};
+    this.framesRecieved = {};
     this.material = new THREE.PointsMaterial({
       size: 1,
       vertexColors: THREE.VertexColors,
@@ -42,7 +43,8 @@ class ViewerController {
       console.log(frameObj);
       console.log(_this.frameNumber);
       _this.frameNumber += 1;
-      _this.renderPointCloud(frameObj);
+      //_this.renderPointCloud(frameObj);
+      _this.framesRecieved[frameObj.clientID] = frameObj;
     });
     socket.ioSocket.on('viewer_new_client', function(newClient) {
       console.log('new client connected');
@@ -79,6 +81,7 @@ class ViewerController {
   startStreaming() {
     console.log('Trying to start streaming');
     this.socket.startStreaming();
+    setInterval(this.renderPointClouds.bind(this), 100);
   }
 
   calibrate() {
@@ -86,52 +89,60 @@ class ViewerController {
     this.socket.calibrate();
   }
 
-  renderPointCloud(frameObj) {
-    console.log('trying to render frame');
-    var clientID = frameObj.clientID;
-    var isNew = false;
-    if (!this.pointCloudGeometries[clientID]) {
-      this.pointCloudGeometries[clientID] = new THREE.Geometry();
-      isNew = true;
-    }
-    this.pointCloudGeometries[clientID].vertices = [];
-    this.pointCloudGeometries[clientID].colors = [];
+  renderPointClouds() {
+    console.log('renderPointClouds called');
+    console.log(this.framesRecieved);
+    for (var frameObjKey in this.framesRecieved) {
+      if (!this.framesRecieved.hasOwnProperty(frameObjKey)) {
+        continue;
+      }
+      var frameObj = this.framesRecieved[frameObjKey];
+      console.log('trying to render frame');
+      var clientID = frameObj.clientID;
+      var isNew = false;
+      if (!this.pointCloudGeometries[clientID]) {
+        this.pointCloudGeometries[clientID] = new THREE.Geometry();
+        isNew = true;
+      }
+      this.pointCloudGeometries[clientID].vertices = [];
+      this.pointCloudGeometries[clientID].colors = [];
 
-    var frame = frameObj.frame;
+      var frame = frameObj.frame;
 
-    if (frame.byteLength % 15 !== 0) {
-      console.log('ERROR: byteLength % 15 != 0');
-      return;
-    }
+      if (frame.byteLength % 15 !== 0) {
+        console.log('ERROR: byteLength % 15 != 0');
+        return;
+      }
 
-    var dataView = new DataView(frame);
-    var i = 0;
-    var x, y, z, r, g, b;
-    while (i < frame.byteLength) {
-      r = dataView.getUint8(i);
-      i++;
-      g = dataView.getUint8(i);
-      i++;
-      b = dataView.getUint8(i);
-      i++;
-      x = dataView.getFloat32(i, true);
-      i += 4;
-      y = dataView.getFloat32(i, true);
-      i += 4;
-      z = dataView.getFloat32(i, true);
-      i += 4;
-      this.pointCloudGeometries[clientID].vertices.push(new THREE.Vector3(x * 50, -y * 50, z * 50));
-      this.pointCloudGeometries[clientID].colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
-    }
-    if (isNew) {
-      var pointCloud = new THREE.Points(this.pointCloudGeometries[clientID], this.material);
-      this.scene.add( pointCloud );
-      this.pointClouds[clientID] = pointCloud;
-    }
+      var dataView = new DataView(frame);
+      var i = 0;
+      var x, y, z, r, g, b;
+      while (i < frame.byteLength) {
+        r = dataView.getUint8(i);
+        i++;
+        g = dataView.getUint8(i);
+        i++;
+        b = dataView.getUint8(i);
+        i++;
+        x = dataView.getFloat32(i, true);
+        i += 4;
+        y = dataView.getFloat32(i, true);
+        i += 4;
+        z = dataView.getFloat32(i, true);
+        i += 4;
+        this.pointCloudGeometries[clientID].vertices.push(new THREE.Vector3(x * 50, -y * 50, z * 50));
+        this.pointCloudGeometries[clientID].colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
+      }
+      if (isNew) {
+        var pointCloud = new THREE.Points(this.pointCloudGeometries[clientID], this.material);
+        this.scene.add( pointCloud );
+        this.pointClouds[clientID] = pointCloud;
+      }
 
-    this.pointCloudGeometries[clientID].verticesNeedUpdate = true;
-    this.pointCloudGeometries[clientID].colorsNeedUpdate = true;
-    this.pointCloudGeometries[clientID].dynamic = true;
+      this.pointCloudGeometries[clientID].verticesNeedUpdate = true;
+      this.pointCloudGeometries[clientID].colorsNeedUpdate = true;
+      this.pointCloudGeometries[clientID].dynamic = true;
+    }
   }
 
   runThree() {
