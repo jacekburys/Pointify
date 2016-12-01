@@ -27,13 +27,13 @@ public:
     void start();
 string takePicture();
     bool calibrate();
-    void startStreaming();
+    void startStreaming(vector<sio::client*> clients);
 private:
     static void streamFramesWrapper(Camera* camera);
     sio::client* client;
     string getPointCloudStream();
     void streamFrames();
-    void streamFrame();
+    void streamFrame(sio::client* clientToEmit);
     string serializeMatrix(cv::Mat image);
     void cameraLoop();
     void sendPicture(cv::Mat image);
@@ -47,6 +47,7 @@ private:
     libfreenect2::Frame* undistorted;
     libfreenect2::Frame* registered;
     mutex pictureMutex;
+    vector<sio::client*> clients;
     condition_variable pictureCv;
     string capturedPicture;
     bool calibrationFinished = true;

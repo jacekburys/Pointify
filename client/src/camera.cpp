@@ -34,14 +34,15 @@ void Camera::streamFramesWrapper(Camera* camera) {
 }
 
 void Camera::streamFrames() {
-    while (true)
-        streamFrame();
+    for (int i = 0; i < clients.size(); i = (i+1) % clients.size()) {
+        streamFrame(clients[i]);
+    }
 }
 
-void Camera::streamFrame()
+void Camera::streamFrame(sio::client* clientToEmit)
 {
     string buffString = getPointCloudStream();
-    client->socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
+    clientToEmit->socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
     usleep(500000);
     framesEmitted++;
     INFO("%i", framesEmitted);
@@ -255,8 +256,9 @@ string Camera::takePicture()
     return capturedPicture;
 }
 
-void Camera::startStreaming() {
+void Camera::startStreaming(vector<sio::client*> clients) {
     streamTriggered = true;
+    this->clients = clients;
 }
 
 bool Camera::calibrate()

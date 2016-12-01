@@ -26,9 +26,12 @@ int main(int argc, char *argv[])
     const char* inputIp = cmdParser.get<string>("ip").c_str();
     unsigned short inputPort = cmdParser.get<unsigned short>("port");
     char serverUrl[100];
+    map<string, string> query;
+    query["clientID"] = to_string(rand() % 1000000000);
     sprintf(serverUrl, "http://%s:%hu", inputIp, inputPort);
     INFO("Trying to connect to %s", serverUrl);
 
+    vector<sio::client*> clients;
     sio::client client;
     client.set_open_listener([] ()
                              {
@@ -48,7 +51,27 @@ int main(int argc, char *argv[])
                                         INFO("Socket connected");
                                     });
 
-    client.connect(serverUrl);
+    client.connect(serverUrl, query);
+    clients.push_back(&client);
+
+//    for (int i = 0; i < 1; i++)
+//    {
+//        sio::client newClient;
+//        newClient.connect(serverUrl, query);
+//        clients.push_back(&newClient);
+//    }
+
+    sio::client newClient1;
+    newClient1.connect(serverUrl, query);
+    clients.push_back(&newClient1);
+
+    sio::client newClient2;
+    newClient2.connect(serverUrl, query);
+    clients.push_back(&newClient2);
+
+    sio::client newClient3;
+    newClient3.connect(serverUrl, query);
+    clients.push_back(&newClient3);
 
     Camera camera(&client);
     client.socket()->on("take_picture",
@@ -67,11 +90,13 @@ int main(int argc, char *argv[])
                             client.socket()->emit("calibration_status", sio::bool_message::create(camera.calibrate()));
                         });
     client.socket()->on("start_streaming",
-                        [&camera, &client] (sio::event& event)
+                        [&camera, &client, &clients] (sio::event& event)
                         {
                             INFO("started streaming");
-                            camera.startStreaming();
+                            camera.startStreaming(clients);
                         });
+
+    INFO("reached");
     camera.start();
 
     return 0;
