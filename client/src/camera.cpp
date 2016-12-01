@@ -22,13 +22,6 @@ Camera::Camera(sio::client* client) {
     this->client = client;
 }
 
-string Camera::serializeMatrix(cv::Mat image)
-{
-    ostringstream stream;
-    stream << image;
-    return stream.str();
-}
-
 void Camera::streamFramesWrapper(Camera* camera) {
     camera->streamFrames();
 }
@@ -67,8 +60,11 @@ string Camera::getPointCloudStream()
             xyzmat.at<cv::Vec3f>(i, j) = cv::Vec3f({x, y, z});
         }
     }
+
+    // perform transformation to bring the marker to [0,0,0]
     calibration.transformPoints(xyzmat, xyzmat);
 
+    // convert these points to a string message
     std::ostringstream buffer;
     for (int i = 0; i < rows; i++)
     {
@@ -115,6 +111,7 @@ string Camera::getPointCloudStream()
 
 void Camera::start()
 {
+    // init kinect
     libfreenect2::Freenect2 freenect2;
     libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::None));
     libfreenect2::SyncMultiFrameListener listener(libfreenect2::Frame::Color |
@@ -129,10 +126,7 @@ void Camera::start()
         throw;
     }
 
-    string serial = freenect2.getDefaultDeviceSerialNumber();
-
-    INFO("SERIAL: %s", serial.c_str());
-    dev = freenect2.openDevice(serial);
+    dev = freenect2.openDevice(freenect2.getDefaultDeviceSerialNumber());
 
     if(dev == 0)
     {
@@ -140,49 +134,41 @@ void Camera::start()
         throw;
     }
 
-
     dev->setColorFrameListener(&listener);
     dev->setIrAndDepthFrameListener(&listener);
 
     dev->start();
     calibration.setDevice(dev);
 
-    char serialNumber[100];
-    char firmwareVersion[100];
-    sprintf(serialNumber, "%s", dev->getSerialNumber().c_str());
-    sprintf(firmwareVersion, "%s", dev->getFirmwareVersion().c_str());
-    INFO("Device serial: %s", serialNumber);
-    INFO("Device firmware: %s", firmwareVersion);
-
+    // set up viewport
     cv::namedWindow("Camera", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Camera", 512, 424);
+    cv::resizeWindow("Camera", DEPTH_WIDTH, DEPTH_HEIGHT);
 
     bool shutdown = false;
-    cv::Mat rgbmat, depthmat, depthmatUndistorted, irmat, rgbd, rgbd2, registeredmat;
+    cv::Mat rgbmat, depthmat, rgbd, registeredmat;
     registration = new libfreenect2::Registration(dev->getIrCameraParams(), dev->getColorCameraParams());
-    libfreenect2::Frame undistortedLocal(512, 424, 4), registeredLocal(512, 424, 4), depth2rgb(1920, 1080 + 2, 4);
+    libfreenect2::Frame undistortedLocal(DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_CHANNELS), 
+                        registeredLocal(DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_CHANNELS), 
+                        depth2rgb(COLOR_WIDTH, COLOR_HEIGHT + 2, COLOR_CHANNELS);
     undistorted = &undistortedLocal;
     registered = &registeredLocal;
 
     while (!shutdown)
     {
+        // block until new frame arrives 
         listener.waitForNewFrame(frames);
         libfreenect2::Frame *rgb = frames[libfreenect2::Frame::Color];
-        libfreenect2::Frame *ir = frames[libfreenect2::Frame::Ir];
         libfreenect2::Frame *depth = frames[libfreenect2::Frame::Depth];
 
         cv::Mat(rgb->height, rgb->width, CV_8UC4, rgb->data).copyTo(rgbmat);
-        cv::Mat(ir->height, ir->width, CV_32FC1, ir->data).copyTo(irmat);
         cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(depthmat);
-        cv::cvtColor(rgbmat, rgbmat, CV_RGBA2RGB);
 
+        // generate color-depth frame, and convert to matrix
         registration->apply(rgb, depth, undistorted, registered, true, &depth2rgb);
-
-        cv::Mat(undistorted->height, undistorted->width, CV_32FC1, undistorted->data).copyTo(depthmatUndistorted);
         cv::Mat(registered->height, registered->width, CV_8UC4, registered->data).copyTo(rgbd);
-        cv::Mat(depth2rgb.height, depth2rgb.width, CV_32FC1, depth2rgb.data).copyTo(rgbd2);
         cv::cvtColor(rgbd, rgbd, CV_RGBA2RGB);
 
+        // handle picture signal
         if (!pictureFinished)
         {
             static future<string> future;
@@ -200,6 +186,7 @@ void Camera::start()
             }
         }
 
+        // handle calibration signal
         if (!calibrationFinished)
         {
             static future<bool> future;
@@ -217,21 +204,23 @@ void Camera::start()
             }
         }
 
+        // handle stream signal
         if (streamTriggered) {
             thread streamFrameThread(streamFramesWrapper, this);
             streamFrameThread.detach();
             streamTriggered = false;
         }
 
+        // draw markers/axis over image, then display it
         calibration.detectMarkers(&rgbd);
         cv::imshow("Camera", rgbd);
 
         int key = cv::waitKey(1);
 
-        /// Shutdown on escape
+        // Shutdown on escape
         shutdown = shutdown || (key > 0 && ((key & 0xFF) == 27));
 
-        /// Shutdown on window close
+        // Shutdown on window close
         try
         {
             int windowProperty = cv::getWindowProperty("Camera", 0);

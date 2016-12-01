@@ -38,6 +38,13 @@ private:
     void cameraLoop();
     void sendPicture(cv::Mat image);
 
+    int DEPTH_WIDTH = 512;
+    int DEPTH_HEIGHT = 424;
+    int DEPTH_CHANNELS = 4;
+    int COLOR_WIDTH = 1920;
+    int COLOR_HEIGHT = 1080;
+    int COLOR_CHANNELS = 4;
+
     int CALIBRATION_TIMEOUT = 3; // seconds
     int TAKEPICTURE_TIMEOUT = 3; // seconds
     bool streamTriggered = false;

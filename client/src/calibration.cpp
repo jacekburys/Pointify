@@ -7,7 +7,6 @@
 #include <cmdlog.h>
 #include <iostream>
 
-
 Calibration::Calibration(libfreenect2::Freenect2Device *device)
 {
     // Device used for calibration
@@ -28,15 +27,11 @@ void Calibration::setDevice(libfreenect2::Freenect2Device *device)
     this->device = device;
 }
 
-
 void Calibration::detectMarkers(cv::Mat* img)
 {
-//    Uncomment to draw axis on the marker
-//    if(calibrated) cv::aruco::drawAxis(*img, cameraMatrix, distCoeffs, rvec, tvec, 0.2);
     cv::aruco::detectMarkers(*img, dict, corners, ids);
     cv::aruco::drawDetectedMarkers(*img, corners, ids);
 }
-
 
 bool Calibration::calibrate(cv::Mat img)
 {
@@ -64,7 +59,7 @@ bool Calibration::calibrate(cv::Mat img)
     // rotation (rvecs) and translation (tvecs) vectors that bring the marker from it's coordinate space to world coordinate space
     vector<cv::Vec3d> rvecs, tvecs;
 
-    // calibrate
+    // find marker positions 
     cv::aruco::estimatePoseSingleMarkers(corners, MARKER_LENGTH, cameraMatrix, distCoeffs, rvecs, tvecs); 
 
     // build transformation to apply to point cloud
@@ -85,17 +80,7 @@ bool Calibration::calibrate(cv::Mat img)
     return true;
 }
 
-vector<float> Calibration::transformPoint(float x, float y, float z)
-{
-    cv::Mat_<float> input = (cv::Mat_<float>(4, 1) << x, y, z, 1);
-    cv::Mat processed(4, 1, CV_32F);
-
-    processed = transformation * input;
-
-    vector<float> result = { processed.at<float>(0,0), processed.at<float>(1,0), processed.at<float>(2,0) };
-    return result;
-}
-
+// maps each point in src into a point in dst, transformed such that that the marker is now on the origin
 void Calibration::transformPoints(cv::Mat src, cv::Mat dst)
 {
   if(!calibrated)

@@ -18,13 +18,15 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-
+    // handle parameters
     cmdline::parser cmdParser;
     cmdParser.add<string>("ip", 'i', "Server IP address", false, "127.0.0.1");
     cmdParser.add<unsigned short>("port", 'p', "Server port number", false, 9000);
     cmdParser.parse_check(argc, argv);
     const char* inputIp = cmdParser.get<string>("ip").c_str();
     unsigned short inputPort = cmdParser.get<unsigned short>("port");
+
+    // connect to server
     char serverUrl[100];
     sprintf(serverUrl, "http://%s:%hu", inputIp, inputPort);
     INFO("Trying to connect to %s", serverUrl);
@@ -42,21 +44,21 @@ int main(int argc, char *argv[])
                               {
                                   INFO("Closed");
                               });
-
     client.set_socket_open_listener([&] (string const& nsp)
                                     {
                                         INFO("Socket connected");
                                     });
-
     client.connect(serverUrl);
 
+    // init camera
     Camera camera(&client);
+
+    // add camera event listeners
     client.socket()->on("take_picture",
                         [&camera, &client] (sio::event& event)
                         {
                             INFO("taking picture");
                             string buffString = camera.takePicture();
-                            INFO("picture taken");
                             client.socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
                             INFO("picture sent");
                         });
@@ -72,6 +74,8 @@ int main(int argc, char *argv[])
                             INFO("started streaming");
                             camera.startStreaming();
                         });
+
+    // start camera display
     camera.start();
 
     return 0;
