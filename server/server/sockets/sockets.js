@@ -1,6 +1,5 @@
 export default function(io) {
 
-
   io.connectedClients = [];
   io.nextClientID = 0;
   io.viewerSocket = null;
@@ -8,10 +7,26 @@ export default function(io) {
   io.streaming = false;
   io.frameBuffer = [];
 
+  var d = new Date();
+  io.lastFrameTime = d.getTime();
+  io.frameRate = 0;
+
   function requestStreamingFrames() {
     if (io.streaming) {
       io.sockets.emit('send_streaming_frame');
     }
+  }
+
+  function updateFrameRate() {
+    var d = new Date();
+    var curr = d.getTime() / 1000;
+    var prev = io.lastFrameTime;
+    io.frameRate = 1.0 / (curr - prev);
+    io.lastFrameTime = curr;
+    console.log(curr);
+    console.log(prev);
+    console.log(curr - prev);
+    console.log('Frame Rate: ' + io.frameRate);
   }
 
   io.on('connection', function(socket) {
@@ -99,6 +114,7 @@ export default function(io) {
         // clear the buffer and request new frame
         io.frameBuffer = [];
         requestStreamingFrames();
+        updateFrameRate();
       }
     });
 
