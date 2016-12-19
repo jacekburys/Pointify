@@ -1,8 +1,19 @@
 export default function(io) {
 
+
   io.connectedClients = [];
   io.nextClientID = 0;
   io.viewerSocket = null;
+
+  io.streaming = false;
+  io.frameBuffer = [];
+
+  function requestStreamingFrames() {
+    if (io.streaming) {
+      io.sockets.emit('send_streaming_frame');
+    }
+  }
+
   io.on('connection', function(socket) {
 
     socket.clientID = io.nextClientID;
@@ -57,12 +68,38 @@ export default function(io) {
     socket.on('viewer_start_streaming', function() {
       console.log('Start Streaming button pressed');
       io.sockets.emit('start_streaming');
+      io.streaming = true;
+      requestStreamingFrames();
     });
 
     // the Stop Streaming button on the frontend was pressed
     socket.on('viewer_stop_streaming', function() {
       console.log('Stop Streaming button pressed');
+      io.streaming = false;
       io.sockets.emit('stop_streaming');
+    });
+
+    // got streaming frame
+    socket.on('new_streaming_frame', function(frame) {
+      console.log('new streaming frame');
+      console.log(frame);
+      var frameObj = {
+        frame : frame,
+        clientID : socket.clientID,
+      };
+      io.frameBuffer.push(frameObj);
+      console.log(io.frameBuffer.length);
+      console.log(io.connectedClients.length);
+      if (io.frameBuffer.length === io.connectedClients.length) {
+        // sent the frames from frameBuffer to the viewer
+        for (var ind in io.frameBuffer) {
+          console.log('emiting streaming frame to frontend');
+          io.viewerSocket.emit('viewer_pointcloud', io.frameBuffer[ind]);
+        }
+        // clear the buffer and request new frame
+        io.frameBuffer = [];
+        requestStreamingFrames();
+      }
     });
 
     // the Calibrate button on the frontend was pressed
