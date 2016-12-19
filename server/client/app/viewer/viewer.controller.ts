@@ -71,6 +71,9 @@ class ViewerController {
       _this.$scope.$apply();
     });
     socket.ioSocket.on('viewer_frame_rate', function(frameRate) {
+      if (!_this.streaming) {
+        return;
+      }
       _this.frameRate = frameRate.toFixed(2);
       _this.$scope.$apply();
     });
