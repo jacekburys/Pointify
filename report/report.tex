@@ -1,0 +1,60 @@
+\documentclass{article}
+\setcounter{tocdepth}{4}
+\usepackage[margin=1in]{geometry}
+
+\newcommand*{\titleGP}{\begingroup % Create the command for including the title page in the document
+\centering % Center all text
+\vspace*{\baselineskip} % White space at the top of the page
+
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal line
+\rule{\textwidth}{0.4pt}\\[\baselineskip] % Thin horizontal line
+
+{\LARGE POINTIFY}\\[0.2\baselineskip] % Title
+
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt} % Thin horizontal line
+\rule{\textwidth}{1.6pt}\\[\baselineskip] % Thick horizontal line
+
+\scshape % Small caps
+Tagline 1 \\ 
+Tagline 2\par
+
+\vspace*{2\baselineskip}
+
+Created by \\[\baselineskip]
+{\Large Jacek Burys \\ Kabeer Vohra \\ Adam Hosier \\ Rui Liu \\ Ayman Moussa \par} % Editor list
+
+\vspace*{1\baselineskip}
+{\itshape Imperial College London\par} % Editor affiliation
+
+\vfill 
+
+{\scshape 2016} \\[0.3\baselineskip] % Year published
+
+\endgroup}
+
+\begin{document} 
+
+\titleGP
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\thispagestyle{empty}
+
+\newpage
+\setcounter{page}{1}
+\section{Executive Summary}
+
+\newpage
+\section{Introduction}
+\subsection{Motivation}
+\subsection{Objectives}
+\subsection{Contributions}
+
+\newpage
+\section{Design}
+
+\newpage
+\section{Implementation}
+
+\end{document}
