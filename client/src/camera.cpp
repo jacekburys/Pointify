@@ -12,11 +12,13 @@
 #include <socketio/sio_client.h>
 #include <cmdlog.h>
 #include <queue>
+#include <chrono>
 
 #include "camera.hpp"
 
 typedef unsigned char byte;
 using namespace std;
+using namespace std::chrono;
 
 Camera::Camera(sio::client* client) {
     this->client = client;
@@ -111,6 +113,8 @@ string Camera::getPointCloudStream()
 
 void Camera::start()
 {
+    timeval tim;
+    int time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     // init kinect
     libfreenect2::Freenect2 freenect2;
     libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::None));
@@ -205,6 +209,10 @@ void Camera::start()
         }
 
         latestFrameTaken = getPointCloudStream();
+        int newtime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        int framerate = 1000 / (newtime - time);
+        time = newtime;
+        INFO("%d", framerate);
         // draw markers/axis over image, then display it
         calibration.detectMarkers(&rgbd);
         cv::imshow("Camera", rgbd);
