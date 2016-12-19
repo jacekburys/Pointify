@@ -9,11 +9,11 @@ class ViewerController {
     this.streaming = false;
     this.scene = null;
     this.connectedClients = [];
-    this.pointClouds = {};
+    this.pointCloud = null;
     this.frameNumber = 0;
     this.frameRate = 0;
     this.rendering = false;
-    this.pointCloudGeometries = {};
+    this.pointCloudGeometry = null;
     this.material = new THREE.PointsMaterial({
       size: 1,
       vertexColors: THREE.VertexColors,
@@ -21,11 +21,11 @@ class ViewerController {
 
     var _this = this;
     socket.ioSocket.on('viewer_calibration_status', function(stat) {
-      console.log('got calibration status');
+      //console.log('got calibration status');
       var clientID = stat.clientID;
       var statusBool = stat.stat;
-      console.log(_this.connectedClients);
-      console.log(clientID);
+      //console.log(_this.connectedClients);
+      //console.log(clientID);
       var index = _this.connectedClients.findIndex(function(client) {
         return client.clientID === clientID;
       });
@@ -40,22 +40,21 @@ class ViewerController {
       }
       _this.$scope.$apply();
     });
-    socket.ioSocket.on('viewer_pointcloud', function(frameObj) {
-      console.log('got frame from server');
-      console.log(frameObj);
-      console.log(_this.frameNumber);
+    socket.ioSocket.on('viewer_pointcloud', function(frameArr) {
+      //console.log('got frame from server');
+      //console.log(frameArr);
+      //console.log(_this.frameNumber);
       _this.frameNumber += 1;
-      _this.renderPointCloud(frameObj);
+      _this.renderPointCloud(frameArr);
     });
     socket.ioSocket.on('viewer_new_client', function(newClient) {
-      console.log('new client connected');
+      //console.log('new client connected');
       _this.connectedClients.push(newClient);
-      //_this.latestPointCloud[newClient.clientID] = null;
       _this.$scope.$apply();
-      console.log(_this.connectedClients);
+      //console.log(_this.connectedClients);
     });
     socket.ioSocket.on('viewer_client_disconnect', function(clientID) {
-      console.log('disconnect ' + clientID);
+      //console.log('disconnect ' + clientID);
       var index = _this.connectedClients.findIndex(function(client) {
         return client.clientID = clientID;
       });
@@ -63,12 +62,11 @@ class ViewerController {
         return;
       }
       _this.connectedClients.splice(index, 1);
-      _this.scene.remove(_this.pointClouds[clientID]);
       _this.$scope.$apply();
     });
     socket.ioSocket.on('viewer_on_connection', function(connectedClients) {
-      console.log('viewer_on_connection');
-      console.log(connectedClients);
+      //console.log('viewer_on_connection');
+      //console.log(connectedClients);
       _this.connectedClients = connectedClients;
       _this.$scope.$apply();
     });
@@ -93,72 +91,77 @@ class ViewerController {
 
   startStreaming() {
     this.streaming = true;
-    console.log('Trying to start streaming');
+    //console.log('Trying to start streaming');
     this.socket.startStreaming();
   }
 
   stopStreaming() {
     this.streaming = false;
-    console.log('Trying to stop streaming');
+    //console.log('Trying to stop streaming');
     this.socket.stopStreaming();
     this.frameRate = 0;
   }
 
   calibrate() {
-    console.log('Trying to calibrate');
+    //console.log('Trying to calibrate');
     this.socket.calibrate();
   }
 
-  renderPointCloud(frameObj) {
+  renderPointCloud(frameArr) {
     if (this.rendering) {
       return;
     }
     this.rendering = true;
     console.log('trying to render frame');
-    var clientID = frameObj.clientID;
     var isNew = false;
-    if (!this.pointCloudGeometries[clientID]) {
-      this.pointCloudGeometries[clientID] = new THREE.Geometry();
+    if (!this.pointCloudGeometry) {
+      this.pointCloudGeometry = new THREE.Geometry();
       isNew = true;
     }
-    this.pointCloudGeometries[clientID].vertices = [];
-    this.pointCloudGeometries[clientID].colors = [];
+    this.pointCloudGeometry.vertices = [];
+    this.pointCloudGeometry.colors = [];
 
-    var frame = frameObj.frame;
+    //var frame = frameObj.frame;
 
-    if (frame.byteLength % 15 !== 0) {
-      console.log('ERROR: byteLength % 15 != 0');
-      return;
+    for (var ind = 0; ind < frameArr.length; ind++) {
+
+      var frame = frameArr[ind].frame;
+
+      if (frame.byteLength % 15 !== 0) {
+        console.log('ERROR: byteLength % 15 != 0');
+        return;
+      }
+
+      var dataView = new DataView(frame);
+      var i = 0;
+      var x, y, z, r, g, b;
+      while (i < frame.byteLength) {
+        r = dataView.getUint8(i);
+        i++;
+        g = dataView.getUint8(i);
+        i++;
+        b = dataView.getUint8(i);
+        i++;
+        x = dataView.getFloat32(i, true);
+        i += 4;
+        y = dataView.getFloat32(i, true);
+        i += 4;
+        z = dataView.getFloat32(i, true);
+        i += 4;
+        this.pointCloudGeometry.vertices.push(new THREE.Vector3(x * 50, -y * 50, z * 50));
+        this.pointCloudGeometry.colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
+      }
     }
 
-    var dataView = new DataView(frame);
-    var i = 0;
-    var x, y, z, r, g, b;
-    while (i < frame.byteLength) {
-      r = dataView.getUint8(i);
-      i++;
-      g = dataView.getUint8(i);
-      i++;
-      b = dataView.getUint8(i);
-      i++;
-      x = dataView.getFloat32(i, true);
-      i += 4;
-      y = dataView.getFloat32(i, true);
-      i += 4;
-      z = dataView.getFloat32(i, true);
-      i += 4;
-      this.pointCloudGeometries[clientID].vertices.push(new THREE.Vector3(x * 50, -y * 50, z * 50));
-      this.pointCloudGeometries[clientID].colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
-    }
     if (isNew) {
-      var pointCloud = new THREE.Points(this.pointCloudGeometries[clientID], this.material);
+      var pointCloud = new THREE.Points(this.pointCloudGeometry, this.material);
       this.scene.add( pointCloud );
-      this.pointClouds[clientID] = pointCloud;
+      this.pointCloud = pointCloud;
     }
 
-    this.pointCloudGeometries[clientID].verticesNeedUpdate = true;
-    this.pointCloudGeometries[clientID].colorsNeedUpdate = true;
-    this.pointCloudGeometries[clientID].dynamic = true;
+    this.pointCloudGeometry.verticesNeedUpdate = true;
+    this.pointCloudGeometry.colorsNeedUpdate = true;
+    this.pointCloudGeometry.dynamic = true;
     this.rendering = false;
   }
 
