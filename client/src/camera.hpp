@@ -27,9 +27,6 @@ public:
     void start();
 string takePicture();
     bool calibrate();
-    void startStreaming();
-    void stopStreaming();
-    void sendStreamingFrame();
 private:
     string latestFrameTaken = "";
     static void streamFramesWrapper(Camera* camera);

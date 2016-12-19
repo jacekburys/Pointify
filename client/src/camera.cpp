@@ -204,13 +204,7 @@ void Camera::start()
             }
         }
 
-        // handle stream signal
-        if (streamTriggered) {
-//            thread streamFrameThread(streamFramesWrapper, this);
-//            streamFrameThread.detach();
-            latestFrameTaken = getPointCloudStream();
-        }
-
+        latestFrameTaken = getPointCloudStream();
         // draw markers/axis over image, then display it
         calibration.detectMarkers(&rgbd);
         cv::imshow("Camera", rgbd);
@@ -232,30 +226,14 @@ void Camera::start()
 
         listener.release(frames);
     }
+
     dev->stop();
     dev->close();
 }
 
 string Camera::takePicture()
 {
-    unique_lock<mutex> lock(pictureMutex);
-    pictureFinished = false;
-    pictureCv.wait(lock, [this] { return pictureFinished; });
-    return capturedPicture;
-}
-
-void Camera::startStreaming() {
-    streamTriggered = true;
-}
-
-void Camera::sendStreamingFrame() {
-    client->socket()->emit("new_streaming_frame", make_shared<string>(latestFrameTaken.c_str(), latestFrameTaken.size()));
-    INFO("sent streaming frame");
-}
-
-void Camera::stopStreaming() {
-    streamTriggered = false;
-    latestFrameTaken = "";
+    return latestFrameTaken;
 }
 
 bool Camera::calibrate()

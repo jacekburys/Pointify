@@ -57,7 +57,6 @@ int main(int argc, char *argv[])
     client.socket()->on("take_picture",
                         [&camera, &client] (sio::event& event)
                         {
-                            INFO("taking picture");
                             string buffString = camera.takePicture();
                             client.socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
                             INFO("picture sent");
@@ -67,23 +66,6 @@ int main(int argc, char *argv[])
                         {
                             INFO("got calibrate message");
                             client.socket()->emit("calibration_status", sio::bool_message::create(camera.calibrate()));
-                        });
-    client.socket()->on("start_streaming",
-                        [&camera, &client] (sio::event& event)
-                        {
-                            INFO("started streaming");
-                            camera.startStreaming();
-                        });
-    client.socket()->on("stop_streaming",
-                        [&camera, &client] (sio::event& event)
-                        {
-                            INFO("stopped streaming");
-                            camera.stopStreaming();
-                        });
-    client.socket()->on("send_streaming_frame",
-                        [&camera, &client] (sio::event& event)
-                        {
-                            camera.sendStreamingFrame();
                         });
 
     // start camera display
