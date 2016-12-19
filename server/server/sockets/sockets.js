@@ -59,6 +59,12 @@ export default function(io) {
       io.sockets.emit('start_streaming');
     });
 
+    // the Stop Streaming button on the frontend was pressed
+    socket.on('viewer_stop_streaming', function() {
+      console.log('Stop Streaming button pressed');
+      io.sockets.emit('stop_streaming');
+    });
+
     // the Calibrate button on the frontend was pressed
     socket.on('viewer_calibrate', function() {
       console.log('Calibrate button pressed');

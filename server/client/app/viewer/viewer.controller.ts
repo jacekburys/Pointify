@@ -6,6 +6,7 @@ class ViewerController {
   constructor($scope, socket) {
     this.$scope = $scope;
     this.socket = socket;
+    this.streaming = false;
     this.scene = null;
     this.connectedClients = [];
     this.pointClouds = {};
@@ -76,9 +77,24 @@ class ViewerController {
     this.socket.takePicture();
   }
 
+  toggleStreaming() {
+    if (this.streaming) {
+      this.stopStreaming();
+    } else {
+      this.startStreaming();
+    }
+  }
+
   startStreaming() {
+    this.streaming = true;
     console.log('Trying to start streaming');
     this.socket.startStreaming();
+  }
+
+  stopStreaming() {
+    this.streaming = false;
+    console.log('Trying to stop streaming');
+    this.socket.stopStreaming();
   }
 
   calibrate() {
