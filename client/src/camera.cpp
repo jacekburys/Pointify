@@ -206,9 +206,9 @@ void Camera::start()
 
         // handle stream signal
         if (streamTriggered) {
-            thread streamFrameThread(streamFramesWrapper, this);
-            streamFrameThread.detach();
-            streamTriggered = false;
+//            thread streamFrameThread(streamFramesWrapper, this);
+//            streamFrameThread.detach();
+            latestFrameTaken = getPointCloudStream();
         }
 
         // draw markers/axis over image, then display it
@@ -246,6 +246,16 @@ string Camera::takePicture()
 
 void Camera::startStreaming() {
     streamTriggered = true;
+}
+
+void Camera::sendStreamingFrame() {
+    client->socket()->emit("new_streaming_frame", make_shared<string>(latestFrameTaken.c_str(), latestFrameTaken.size()));
+    INFO("sent streaming frame");
+}
+
+void Camera::stopStreaming() {
+    streamTriggered = false;
+    latestFrameTaken = "";
 }
 
 bool Camera::calibrate()

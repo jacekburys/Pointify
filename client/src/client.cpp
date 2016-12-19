@@ -74,6 +74,17 @@ int main(int argc, char *argv[])
                             INFO("started streaming");
                             camera.startStreaming();
                         });
+    client.socket()->on("stop_streaming",
+                        [&camera, &client] (sio::event& event)
+                        {
+                            INFO("stopped streaming");
+                            camera.stopStreaming();
+                        });
+    client.socket()->on("send_streaming_frame",
+                        [&camera, &client] (sio::event& event)
+                        {
+                            camera.sendStreamingFrame();
+                        });
 
     // start camera display
     camera.start();
