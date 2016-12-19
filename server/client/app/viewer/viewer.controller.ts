@@ -11,6 +11,8 @@ class ViewerController {
     this.connectedClients = [];
     this.pointClouds = {};
     this.frameNumber = 0;
+    this.frameRate = 0;
+    this.rendering = false;
     this.pointCloudGeometries = {};
     this.material = new THREE.PointsMaterial({
       size: 1,
@@ -70,6 +72,10 @@ class ViewerController {
       _this.connectedClients = connectedClients;
       _this.$scope.$apply();
     });
+    socket.ioSocket.on('viewer_frame_rate', function(frameRate) {
+      _this.frameRate = frameRate.toFixed(2);
+      _this.$scope.$apply();
+    });
   }
 
   takePicture() {
@@ -95,6 +101,7 @@ class ViewerController {
     this.streaming = false;
     console.log('Trying to stop streaming');
     this.socket.stopStreaming();
+    this.frameRate = 0;
   }
 
   calibrate() {
@@ -103,6 +110,10 @@ class ViewerController {
   }
 
   renderPointCloud(frameObj) {
+    if (this.rendering) {
+      return;
+    }
+    this.rendering = true;
     console.log('trying to render frame');
     var clientID = frameObj.clientID;
     var isNew = false;
@@ -148,6 +159,7 @@ class ViewerController {
     this.pointCloudGeometries[clientID].verticesNeedUpdate = true;
     this.pointCloudGeometries[clientID].colorsNeedUpdate = true;
     this.pointCloudGeometries[clientID].dynamic = true;
+    this.rendering = false;
   }
 
   runThree() {

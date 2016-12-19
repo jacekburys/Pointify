@@ -23,10 +23,8 @@ export default function(io) {
     var prev = io.lastFrameTime;
     io.frameRate = 1.0 / (curr - prev);
     io.lastFrameTime = curr;
-    console.log(curr);
-    console.log(prev);
-    console.log(curr - prev);
     console.log('Frame Rate: ' + io.frameRate);
+    io.viewerSocket.emit('viewer_frame_rate', io.frameRate);
   }
 
   io.on('connection', function(socket) {
