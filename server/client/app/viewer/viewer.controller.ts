@@ -79,8 +79,9 @@ class ViewerController {
       _this.connectedClients.splice(index, 1);
       _this.$scope.$apply();
     });
-    socket.ioSocket.on('viewer_on_connection', function(connectedClients) {
-      _this.connectedClients = connectedClients;
+    socket.ioSocket.on('viewer_on_connection', function(onConnectionObj) {
+      _this.connectedClients = onConnectionObj.connectedClients;
+      _this.streaming = onConnectionObj.streaming;
       _this.$scope.$apply();
     });
     socket.ioSocket.on('viewer_frame_rate', function(frameRate) {

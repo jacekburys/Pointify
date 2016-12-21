@@ -53,7 +53,11 @@ export default function(io) {
       // viewers have negative ID
       socket.clientID = -1*io.nextClientID;
       io.viewerSocket = socket;
-      io.sockets.emit('viewer_on_connection', io.connectedClients);
+      var onConnectionObj = {
+        connectedClients : io.connectedClients,
+        streaming : io.streaming
+      };
+      io.sockets.emit('viewer_on_connection', onConnectionObj);
     } else {
       console.log('kinect client connected');
       var newClient = {
@@ -126,6 +130,14 @@ export default function(io) {
     // a client sent a calibration status
     // this may be Success or Failure
     socket.on('calibration_status', function(stat) {
+      var index = io.connectedClients.findIndex(function(client) {
+        return client.clientID === socket.clientID;
+      });
+      if (stat) {
+        io.connectedClients[index].calibStatus = 'Success';
+      } else {
+        io.connectedClients[index].calibStatus = 'Not calibrated';
+      }
       var obj = {
         clientID : socket.clientID,
         stat : stat,
