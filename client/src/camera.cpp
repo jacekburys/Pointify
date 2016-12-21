@@ -9,6 +9,7 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <socketio/sio_client.h>
 #include <cmdlog.h>
 #include <queue>
@@ -171,6 +172,11 @@ void Camera::start()
         // generate color-depth frame, and convert to matrix
         registration->apply(rgb, depth, undistorted, registered, true, &depth2rgb);
         cv::Mat(registered->height, registered->width, CV_8UC4, registered->data).copyTo(rgbd);
+
+//        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3), cv::Point(1, 1));
+//        erode(rgbd, rgbd, element);
+//        dilate(rgbd, rgbd, element);
+
         cv::cvtColor(rgbd, rgbd, CV_RGBA2RGB);
 
         // handle picture signal
