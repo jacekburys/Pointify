@@ -21,11 +21,8 @@ class ViewerController {
 
     var _this = this;
     socket.ioSocket.on('viewer_calibration_status', function(stat) {
-      //console.log('got calibration status');
       var clientID = stat.clientID;
       var statusBool = stat.stat;
-      //console.log(_this.connectedClients);
-      //console.log(clientID);
       var index = _this.connectedClients.findIndex(function(client) {
         return client.clientID === clientID;
       });
@@ -40,21 +37,39 @@ class ViewerController {
       }
       _this.$scope.$apply();
     });
+    socket.ioSocket.on('viewer_number_of_markers', function(numObj) {
+      var num = numObj.numberOfMarkers;
+      var clientID = numObj.clientID;
+      console.log('num of markers: ', num);
+      var index = _this.connectedClients.findIndex(function(client) {
+        return client.clientID === clientID;
+      });
+      if (index === -1) {
+        console.log('client for status update not found');
+        return;
+      }
+      if (_this.connectedClients[index].calibStatus === 'Success') {
+        return;
+      }
+      if (num === 0) {
+        _this.connectedClients[index].calibStatus = 'Marker not detected';
+      } else if (num === 1) {
+        _this.connectedClients[index].calibStatus = 'Marker detected';
+      } else {
+        _this.connectedClients[index].calibStatus = 'Marker detected';
+        //_this.connectedClients[index].calibStatus = 'Multiple markers';
+      }
+      _this.$scope.$apply();
+    });
     socket.ioSocket.on('viewer_pointcloud', function(frameArr) {
-      //console.log('got frame from server');
-      //console.log(frameArr);
-      //console.log(_this.frameNumber);
       _this.frameNumber += 1;
       _this.renderPointCloud(frameArr);
     });
     socket.ioSocket.on('viewer_new_client', function(newClient) {
-      //console.log('new client connected');
       _this.connectedClients.push(newClient);
       _this.$scope.$apply();
-      //console.log(_this.connectedClients);
     });
     socket.ioSocket.on('viewer_client_disconnect', function(clientID) {
-      //console.log('disconnect ' + clientID);
       var index = _this.connectedClients.findIndex(function(client) {
         return client.clientID = clientID;
       });
@@ -65,8 +80,6 @@ class ViewerController {
       _this.$scope.$apply();
     });
     socket.ioSocket.on('viewer_on_connection', function(connectedClients) {
-      //console.log('viewer_on_connection');
-      //console.log(connectedClients);
       _this.connectedClients = connectedClients;
       _this.$scope.$apply();
     });
@@ -94,19 +107,16 @@ class ViewerController {
 
   startStreaming() {
     this.streaming = true;
-    //console.log('Trying to start streaming');
     this.socket.startStreaming();
   }
 
   stopStreaming() {
     this.streaming = false;
-    //console.log('Trying to stop streaming');
     this.socket.stopStreaming();
     this.frameRate = 0;
   }
 
   calibrate() {
-    //console.log('Trying to calibrate');
     this.socket.calibrate();
   }
 
@@ -123,8 +133,6 @@ class ViewerController {
     }
     this.pointCloudGeometry.vertices = [];
     this.pointCloudGeometry.colors = [];
-
-    //var frame = frameObj.frame;
 
     for (var ind = 0; ind < frameArr.length; ind++) {
 

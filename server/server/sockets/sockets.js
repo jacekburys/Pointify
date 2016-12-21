@@ -39,7 +39,6 @@ export default function(io) {
     var prev = io.lastFrameTime;
     io.frameRate = 1.0 / (curr - prev);
     io.lastFrameTime = curr;
-    //console.log('Frame Rate: ' + io.frameRate);
     io.viewerSocket.emit('viewer_frame_rate', io.frameRate);
   }
 
@@ -66,7 +65,6 @@ export default function(io) {
       io.sockets.emit('viewer_new_client', newClient);
       newClient.calibStatus = '???';
       io.connectedClients.push(newClient);
-      //console.log(io.connectedClients);
     } 
 
     socket.on('disconnect', function() {
@@ -82,20 +80,16 @@ export default function(io) {
         console.log('client for status update not found');
         return;
       }
-      //console.log('removing');
-      //console.log(index);
       io.connectedClients.splice(index, 1);
     });
 
     // the Take Picture button on the frontend was pressed
     socket.on('viewer_take_picture', function() {
-      //console.log('Take Picture button pressed');
       io.sockets.emit('take_picture');
     });
 
     // the Start Streaming button on the frontend was pressed
     socket.on('viewer_start_streaming', function() {
-      //console.log('Start Streaming button pressed');
       io.sockets.emit('start_streaming');
       io.streaming = true;
       requestStreamingFrames();
@@ -103,29 +97,19 @@ export default function(io) {
 
     // the Stop Streaming button on the frontend was pressed
     socket.on('viewer_stop_streaming', function() {
-      //console.log('Stop Streaming button pressed');
       io.streaming = false;
       io.sockets.emit('stop_streaming');
     });
 
     // got streaming frame
     socket.on('new_frame', function(frame) {
-      //console.log('new streaming frame');
-      //console.log(frame);
       var frameObj = {
         frame : frame,
         clientID : socket.clientID,
       };
       io.frameBuffer.push(frameObj);
-      //console.log(io.frameBuffer.length);
-      //console.log(io.connectedClients.length);
       if (io.frameBuffer.length === io.connectedClients.length) {
         // sent the frames from frameBuffer to the viewer
-        //for (var ind in io.frameBuffer) {
-        //  console.log('emiting streaming frame to frontend');
-        //  io.viewerSocket.emit('viewer_pointcloud', io.frameBuffer[ind]);
-        //}
-        //mergeAndSendFrameBuffer();
         io.viewerSocket.emit('viewer_pointcloud', io.frameBuffer);
         // clear the buffer and request new frame
         io.frameBuffer = [];
@@ -136,30 +120,26 @@ export default function(io) {
 
     // the Calibrate button on the frontend was pressed
     socket.on('viewer_calibrate', function() {
-      //console.log('Calibrate button pressed');
       io.sockets.emit('calibrate');
     });
-
-    // the client sent a frame
-    //socket.on('new_frame', function(frame) {
-    //  console.log('new frame');
-    //  var frameObj = {
-    //    frame : frame,
-    //    clientID : socket.clientID,
-    //  };
-    //  //io.sockets.emit('viewer_pointcloud', frameObj);
-    //  io.viewerSocket.emit('viewer_pointcloud', frameObj);
-    //});
 
     // a client sent a calibration status
     // this may be Success or Failure
     socket.on('calibration_status', function(stat) {
-      //console.log('got calibration status');
       var obj = {
         clientID : socket.clientID,
         stat : stat,
       };
       io.sockets.emit('viewer_calibration_status', obj);
+    });
+
+    socket.on('number_of_markers', function(num) {
+      console.log(num);
+      var numObj = {
+        numberOfMarkers : num,
+        clientID : socket.clientID
+      };
+      io.viewerSocket.emit('viewer_number_of_markers', numObj);
     });
   });
 }
