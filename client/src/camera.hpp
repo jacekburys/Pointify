@@ -27,7 +27,10 @@ public:
     void start();
 string takePicture();
     bool calibrate();
+    void startStreaming();
+    void stopStreaming();
 private:
+    bool streaming = false;
     string latestFrameTaken = "";
     static void streamFramesWrapper(Camera* camera);
     sio::client* client;

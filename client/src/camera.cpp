@@ -173,10 +173,6 @@ void Camera::start()
         registration->apply(rgb, depth, undistorted, registered, true, &depth2rgb);
         cv::Mat(registered->height, registered->width, CV_8UC4, registered->data).copyTo(rgbd);
 
-//        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3), cv::Point(1, 1));
-//        erode(rgbd, rgbd, element);
-//        dilate(rgbd, rgbd, element);
-
         cv::cvtColor(rgbd, rgbd, CV_RGBA2RGB);
 
         // handle picture signal
@@ -197,6 +193,11 @@ void Camera::start()
             }
         }
 
+        latestFrameTaken = getPointCloudStream();
+        int newtime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        int framerate = 1000 / (newtime - time);
+        time = newtime;
+
         // handle calibration signal
         if (!calibrationFinished)
         {
@@ -215,20 +216,18 @@ void Camera::start()
             }
         }
 
-        latestFrameTaken = getPointCloudStream();
-        int newtime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-        int framerate = 1000 / (newtime - time);
-        time = newtime;
-        // draw markers/axis over image, then display it
-        int currentNumberOfMarkers = calibration.detectMarkers(&rgbd);
+        if (!streaming) {
+            // draw markers/axis over image, then display it
+            int currentNumberOfMarkers = calibration.detectMarkers(&rgbd);
 
-        if ((numberOfMarkers == 0 && currentNumberOfMarkers > 0) ||
-            (numberOfMarkers == 1 && currentNumberOfMarkers != 1) ||
-            (numberOfMarkers > 1 && currentNumberOfMarkers < 2)){
-            client->socket()->emit("number_of_markers", sio::int_message::create(currentNumberOfMarkers));
+            if ((numberOfMarkers == 0 && currentNumberOfMarkers > 0) ||
+                (numberOfMarkers == 1 && currentNumberOfMarkers != 1) ||
+                (numberOfMarkers > 1 && currentNumberOfMarkers < 2)){
+                client->socket()->emit("number_of_markers", sio::int_message::create(currentNumberOfMarkers));
+            }
+            
+            numberOfMarkers = currentNumberOfMarkers;
         }
-
-        numberOfMarkers = currentNumberOfMarkers;
 
         cv::imshow("Camera", rgbd);
 
@@ -267,3 +266,10 @@ bool Camera::calibrate()
     return calibrationSuccess;
 }
 
+void Camera::startStreaming() {
+    streaming = true;
+}
+
+void Camera::stopStreaming() {
+    streaming = false;
+}

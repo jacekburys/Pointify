@@ -67,6 +67,16 @@ int main(int argc, char *argv[])
                             INFO("got calibrate message");
                             client.socket()->emit("calibration_status", sio::bool_message::create(camera.calibrate()));
                         });
+    client.socket()->on("start_streaming",
+                        [&camera, &client] (sio::event& event)
+                        {
+                            camera.startStreaming();
+                        });
+    client.socket()->on("stop_streaming",
+                        [&camera, &client] (sio::event& event)
+                        {
+                            camera.stopStreaming();
+                        });
 
     // start camera display
     camera.start();
