@@ -156,6 +156,7 @@ void Camera::start()
                         depth2rgb(COLOR_WIDTH, COLOR_HEIGHT + 2, COLOR_CHANNELS);
     undistorted = &undistortedLocal;
     registered = &registeredLocal;
+    int numberOfMarkers = 0;
 
     while (!shutdown)
     {
@@ -212,9 +213,17 @@ void Camera::start()
         int newtime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
         int framerate = 1000 / (newtime - time);
         time = newtime;
-        INFO("%d", framerate);
         // draw markers/axis over image, then display it
-        calibration.detectMarkers(&rgbd);
+        int currentNumberOfMarkers = calibration.detectMarkers(&rgbd);
+
+        if ((numberOfMarkers == 0 && currentNumberOfMarkers > 0) ||
+            (numberOfMarkers == 1 && currentNumberOfMarkers != 1) ||
+            (numberOfMarkers > 1 && currentNumberOfMarkers < 2)){
+            client->socket()->emit("number_of_markers", sio::int_message::create(currentNumberOfMarkers));
+        }
+
+        numberOfMarkers = currentNumberOfMarkers;
+
         cv::imshow("Camera", rgbd);
 
         int key = cv::waitKey(1);

@@ -45,7 +45,7 @@ public:
     void setDevice(libfreenect2::Freenect2Device*);
     bool calibrate(cv::Mat);
     vector<float> transformPoint(float, float, float);
-    void detectMarkers(cv::Mat*);
+    int detectMarkers(cv::Mat*);
 
 };
 

@@ -27,10 +27,12 @@ void Calibration::setDevice(libfreenect2::Freenect2Device *device)
     this->device = device;
 }
 
-void Calibration::detectMarkers(cv::Mat* img)
+int Calibration::detectMarkers(cv::Mat* img)
 {
     cv::aruco::detectMarkers(*img, dict, corners, ids);
+    int numberOfMarkers = (int)ids.size();
     cv::aruco::drawDetectedMarkers(*img, corners, ids);
+    return numberOfMarkers;
 }
 
 bool Calibration::calibrate(cv::Mat img)
