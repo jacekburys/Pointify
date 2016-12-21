@@ -1,5 +1,9 @@
 export default function(io) {
 
+  var FRAME_RATE_CAP = 5;
+
+  io.requestInterval = 1000.0 / FRAME_RATE_CAP;
+
   io.connectedClients = [];
   io.nextClientID = 1;
   io.viewerSocket = null;
@@ -10,10 +14,22 @@ export default function(io) {
   var d = new Date();
   io.lastFrameTime = d.getTime();
   io.frameRate = 0;
+  io.lastRequestTime = 0;
 
   function requestStreamingFrames() {
     if (io.streaming) {
-      io.sockets.emit('take_picture');
+      var t = (new Date()).getTime();
+      if (t - io.lastRequestTime < io.requestInterval) {
+        var d = io.requestInterval - (t - io.lastRequestTime);
+        setTimeout(function(){
+          var t2 = (new Date()).getTime();
+          io.lastRequestTime = t2;
+          io.sockets.emit('take_picture');
+        }, d);
+      } else {
+        io.lastRequestTime = t;
+        io.sockets.emit('take_picture');
+      }
     }
   }
 
