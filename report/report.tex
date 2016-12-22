@@ -52,6 +52,25 @@ Created by \\[\baselineskip]
 \subsection{Contributions}
 
 \newpage
+\section{Project Management}
+\subsection{Project Plan}
+Before we started looking into the specific requirements of this project, we met to discuss how we would go about designing and integrating our code, planning how we would use project management tools, as well as setting specific goals for each two week checkpoint. \\
+\\
+TODO: talk about week to week plan
+\subsection{Management techniques}
+\subsubsection{Version Control}
+When working in a team this size, some form of version control is essential. We chose to use git, hosted on GitHub because of our teams' familiarity with the platform. We tried to follow the Git Flow branching model, as our project involved adding many features, one at a time, so following the "branch per feature" practice seemed logical. We mainly worked on our own separate branches, merging to master before a checkpoint, or when an important feature was complete and working.  
+\subsubsection{Task Board}
+We found a Kanban-style board very useful to help us manage tasks throughout the project. We chose to use a web platform called Trello for this, as it allowed for all team members to view and edit the board anywhere, as well as providing all the tools we were looking for. We classified each task in to three lists, one labeled "Queued" for tasks that have been planned but not started, then "In progress" for tasks that are currently being worked on, and a list for tasks that had been finished, called "Complete". We would assign these tasks to team members during our meetings, then update the status of the task as we worked on it. Trello would automatically notify team members when their tasks had been updated, which allowed us to effectively stay updated with the state of the project between meetings. 
+\subsubsection{Continuous Integration and Deployment}
+As our project involved building a client/server style system, we wanted somewhere that was able to constantly run the server to help when developing and demonstrating the tool. We used the Department of Computing's CloudStack instance for this, because of it's easy availability and powerful resources. \\
+We wanted to spend as little time as possible manually running automated tests and following deployment processes, so decided to use a continuous integration and deployment tool to automate this for us. We chose TeamCity as our tool, as it integrated well with our GitHub repository, and would run in the background of our deployment server. TeamCity would listen for pushes to the master branch of the GitHub repository, then try to build the code and run all automated tests over it. If all these steps were successful, and all the tests passed, we would push the changes to the deployment instance, which would be available to anyone in the college. This proved to be very useful when a single member was testing the functionality of the client software, as it required a connection to the server to run, so having a persistent instance of the server available at all times was essential.  
+\subsection{Team Meetings}
+As our project involved a lot of interaction between different parts of the code base, we had to meet often in order to discuss how this would work. We aimed to hold formal group meetings weekly, to update the team on our progress and allocate tasks for the next week, as well as meet with our supervisor to demonstrate our progress and listen to his advice. The meetings helped us keep track of what each team member was doing, as well as giving us insight into when specific parts of the project would be completed. We also held more frequent meetings during the week to discuss specific tasks that needed collaboration, and sometimes work on important features together, in a pair programming environment to ensure their quality. 
+\subsection{Task Allocation}
+After we had investigated the task in more detail, and understood exactly what was needed of us, we were in a position to allocate tasks to group members. The main tasks involved building the client system, the server system, working with the ArUco calibration library and ensuring the software could be built cross platform. We informally assigned team members to these tasks, with each member putting most of their focus on to their task. From these general aims, we would break them down into more specific tasks, such as "Improve frontend playback framerate". We tried to write our tasks such that each of them would give a real benefit to the end user, and improve their experience with the product. 
+
+\newpage
 \section{Design}
 
 \newpage
