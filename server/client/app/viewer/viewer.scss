@@ -27,7 +27,7 @@
 }
 
 .list-group-item {
-  background-color: red;
+  background-color: blackss;
 }
 
 ::-webkit-scrollbar {
@@ -35,7 +35,7 @@
 }
 
 .main {
-  background-color: red;
+  background-color: green;
   color: white;
 }
 
@@ -50,5 +50,18 @@
 viewer {
   border: 20px;
   background-color: red;
+}
+
+.client {
+  background-color: powderblue;
+  height: 400px;
+}
+
+.buttons {
+  background-color: red;
+}
+
+.frame_rate {
+  background-color: grey;
 }
 
