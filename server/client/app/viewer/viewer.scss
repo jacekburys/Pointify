@@ -49,16 +49,27 @@
 
 viewer {
   border: 20px;
-  background-color: red;
+  background-color: green;
 }
 
 .client {
   background-color: powderblue;
-  height: 400px;
+  float:left;
+  width: 350px;
+  height: 650px;
 }
 
 .buttons {
   background-color: red;
+  width: 100%;
+  float:left;
+}
+
+.right_slice {
+  padding-left: 25px;
+  float:left;
+  background-color: purple;
+  width: 750px;
 }
 
 .frame_rate {
