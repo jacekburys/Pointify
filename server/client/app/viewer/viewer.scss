@@ -47,20 +47,22 @@
   background-color: grey;
 }
 
-viewer {
-  border: 20px;
-  background-color: green;
+.viewer {
+  margin-top: 40px;
+  border-style: solid;
+  border-color: white;
+  height: 610px;
 }
 
 .client {
   background-color: powderblue;
   float:left;
   width: 350px;
-  height: 650px;
+  height: 100%;
 }
 
 .buttons {
-  background-color: red;
+ 
   width: 100%;
   float:left;
 }
@@ -69,10 +71,12 @@ viewer {
   padding-left: 25px;
   float:left;
   background-color: purple;
+  height: 100%;
   width: 750px;
 }
 
 .frame_rate {
   background-color: grey;
+  padding-left: 370px;
 }
 

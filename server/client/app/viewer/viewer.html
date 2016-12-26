@@ -24,7 +24,7 @@
 
 
 
-  <div class="container">
+  <div class="container" style="height: 650px">
 
     <!-- Pointify goes here -->
     <div class="bs-docs-section">
@@ -35,59 +35,65 @@
           </div>
         </div>
       </div>
+    </div>
 
-      
-        <!-- Client lists goes here -->
-        <div class="client">
-          <!-- Clients list -->
-          <h2 class="text-center" style="color: white;"> Clients </h2>
-          <ul class="list-group pre-scrollable">
-            <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
-              <div class="row">
-                <div class="col-sm-3">
-                  {{client.clientID}}
-                </div>
-                <div class="col-sm-6">
-                  {{client.ip}}
-                </div>
-                <div class="col-sm-3">
-                  {{client.calibStatus}}
-                </div>
+      <!-- Client lists goes here -->
+      <div class="client">
+        <!-- Clients list -->
+        <h2 class="text-center" style="color: white;"> Clients </h2>
+        <ul class="list-group pre-scrollable">
+          <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
+            <div class="row">
+              <div class="col-sm-3">
+                {{client.clientID}}
               </div>
-            </li>
-          </ul>
+              <div class="col-sm-6">
+                {{client.ip}}
+              </div>
+              <div class="col-sm-3">
+                {{client.calibStatus}}
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="right_slice">
+
+        <!-- Buttons goes here -->
+        <div class="buttons">
+          <div class="row">
+            <div class="col-lg-7">
+              <p class="bs-component">
+                <button type="button" class="btn btn-default" ng-click="$ctrl.takePicture()">Take Picture</button>
+                <button type="button" class="btn btn-default" ng-click="$ctrl.toggleStreaming()">
+                  <span ng-if="$ctrl.streaming">Stop Streaming</span>
+                  <span ng-if="!$ctrl.streaming">Start Streaming</span>
+                </button>
+                <button type="button" class="btn btn-default" ng-click="$ctrl.calibrate()">Calibrate</button>
+                <button type="button" class="btn btn-default" ng-click="">Record</button>
+              </p>
+            </div>
+          </div>
+
         </div>
 
+        <div id="viewer" class = "viewer" ng-init="$ctrl.runThree()"></div>
 
-	<div class = "right_slice">
+      </div>
+  	<div class="frame_rate">
+          <h3>Frame Rate: {{$ctrl.frameRate}}</h3>
+        </div>
 
-			<!-- Buttons goes here -->
-		<div class="buttons">
-		  <div class="row">
-		    <div class="col-lg-7">
-		      <p class="bs-component">
-		        <button type="button" class="btn btn-default" ng-click="$ctrl.takePicture()">Take Picture</button>
-		        <button type="button" class="btn btn-default" ng-click="$ctrl.toggleStreaming()">
-		          <span ng-if="$ctrl.streaming">Stop Streaming</span>
-		          <span ng-if="!$ctrl.streaming">Start Streaming</span>
-		        </button>
-		        <button type="button" class="btn btn-default" ng-click="$ctrl.calibrate()">Calibrate</button>
-		        <button type="button" class="btn btn-default" ng-click="">Record</button>
-		      </p>
-		    </div>
-		  </div>
-		</div>
-
-
-           <div id="viewer" ng-init="$ctrl.runThree()"> </div>
-
-	</div>
+    </div>
 
 
 
-    
 
-<!--
+    <script src="bootstrap/jquery-1.js"></script>
+    <script src="bootstrap/bootstrap.js"></script>
+    <script src="bootstrap/custom.js"></script>
+    <!--
     <div class="row main">
       <div class="col-sm-4">
         <div class="col-sm-10 col-sm-offset-1">
@@ -103,24 +109,13 @@
 
 
 
-
+   </div>
 
 
 
 -->
 
-        <!-- Frame rate goes here 
-    <div class="frame_rate">
-      <h3>Frame Rate: {{$ctrl.frameRate}}</h3>
-    </div>-->
-
-
-  </div>
-
-
-  <script src="bootstrap/jquery-1.js"></script>
-  <script src="bootstrap/bootstrap.js"></script>
-  <script src="bootstrap/custom.js"></script>
+    <!-- Frame rate goes here 
 
 
 </body>
