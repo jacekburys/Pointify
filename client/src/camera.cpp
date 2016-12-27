@@ -225,7 +225,7 @@ void Camera::start()
                 (numberOfMarkers > 1 && currentNumberOfMarkers < 2)){
                 client->socket()->emit("number_of_markers", sio::int_message::create(currentNumberOfMarkers));
             }
-            
+
             numberOfMarkers = currentNumberOfMarkers;
         }
 
