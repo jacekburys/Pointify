@@ -43,9 +43,7 @@
   padding-right: -15px;
 }
 
-.button {
-  background-color: grey;
-}
+
 
 .viewer {
   margin-top: 40px;
@@ -55,14 +53,12 @@
 }
 
 .client {
-  background-color: powderblue;
   float:left;
   width: 350px;
   height: 100%;
 }
 
 .buttons {
- 
   width: 100%;
   float:left;
 }
@@ -70,13 +66,13 @@
 .right_slice {
   padding-left: 25px;
   float:left;
-  background-color: purple;
   height: 100%;
-  width: 750px;
+  width: 780px;
 }
 
 .frame_rate {
-  background-color: grey;
-  padding-left: 370px;
+  color: white;
+  
+  text-align: center;
 }
 
