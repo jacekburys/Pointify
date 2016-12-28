@@ -1,39 +1,106 @@
-<div class="row main"> 
-  <div class="col-sm-4">
-    <div class="col-sm-10 col-sm-offset-1">
-      <!-- TODO : put a logo or something here -->
-      <!-- TODO : make buttons change color depending on situation -->
-      <h1 class="text-center">Pointify</h1>
-      <h2>Frame Rate: {{$ctrl.frameRate}}</h2>
-      <button type="button" class="btn-block btn-lg btn-default button"
-              ng-click="$ctrl.takePicture()">Take Picture</button>
-      <button type="button" class="btn-block btn-lg btn-default button"
-              ng-click="$ctrl.toggleStreaming()">
-              <span ng-if="$ctrl.streaming">Stop Streaming</span>
-              <span ng-if="!$ctrl.streaming">Start Streaming</span>
-              </button>
-      <button type="button" class="btn-block btn-lg btn-default button"
-              ng-click="$ctrl.calibrate()">Calibrate</button>
-      <h1 class="text-center"> Clients </h1>
-      <ul class="list-group pre-scrollable">
-        <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
-          <div class="row">
-            <div class="col-sm-3">
-              {{client.clientID}} 
-            </div>
-            <div class="col-sm-6">
-              {{client.ip}}
-            </div>
-            <div class="col-sm-3">
-              {{client.calibStatus}}
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <div class="col-sm-8">
-    <div id="viewer" ng-init="$ctrl.runThree()">
-    </div>
-  </div>
-</div>
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+	<title>Pointify</title>
+
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+	<link rel="stylesheet" type="text/css" href="viewer_extras/css.css">
+	<link rel="stylesheet" type="text/css" href="viewer_extras/main.css">
+
+	<link rel="stylesheet" type="text/css" href="viewer_extras/tabs.css">
+
+	<script async="" src="viewer_extras/analytics_002.js"></script><script type="text/javascript" src="viewer_extras/jquery.js"></script>
+	<script type="text/javascript" src="viewer_extras/tabs.js"></script>
+
+	<script type="text/javascript" src="viewer_extras/analytics.js"></script>
+</head>
+<body>
+	<header class="site-header-wrap">
+		<div class="site-header">
+			<span class="site-tagline"></span>
+
+			<nav class="site-nav">
+
+			</nav>
+		</div>
+	</header>
+
+	<div class="wrap">
+		<div class="main">
+			<h2>Standard Tabs</h2>
+
+		</div><!--end .main-->
+
+		<br><br><br><br><br><br>
+
+		<div class="main">
+			<h2>Animated 'Fade' Tabs</h2>
+
+			
+		</div><!--end .main-->
+
+		<br><br><br><br><br><br>
+
+		<div class="main">
+			<h2>Animated 'Slide 1' Tabs</h2>
+
+			<div class="tabs animated-slide-1">
+				<ul class="tab-links">
+					<li class="active"><a href="#tab111">Tab #1</a></li>
+					<li><a href="#tab222">Tab #2</a></li>
+					<li><a href="#tab333">Tab #3</a></li>
+				</ul>
+
+				<div class="tab-content">
+					<div id="tab111" class="tab active">
+						<p>Tab #1 content goes here!</p>
+						<p></p>
+					</div>
+
+					<div id="tab222" class="tab">
+						<p>Tab #2 content goes here!</p>
+						<p></p>
+					</div>
+
+					<div id="tab333" class="tab">
+						<p>Tab #3 content goes here!</p>
+						<p></p>
+					</div>
+				</div>
+			</div>
+		
+		</div><!--end .main-->
+
+		<br><br><br><br><br><br>
+
+		<div class="main">
+			<h2>Animated 'Slide 2' Tabs</h2>
+
+			<div class="tabs animated-slide-2">
+				<ul class="tab-links">
+					<li class="active"><a href="#tab1111">Tab #1</a></li>
+					<li><a href="#tab2222">Tab #2</a></li>
+					<li><a href="#tab3333">Tab #3</a></li>
+				</ul>
+
+				<div class="tab-content">
+					<div id="tab1111" class="tab active">
+						<p>Tab #1 content goes here!</p>
+						<p></p>
+					</div>
+
+					<div id="tab2222" class="tab">
+						<p>Tab #2 content goes here!</p>
+						<p></p>
+					</div>
+
+					<div id="tab3333" class="tab">
+</p>
+					</div>
+				</div>
+			</div>
+		</div><!--end .main-->
+	</div>
+
+</body></html>
