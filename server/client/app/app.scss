@@ -57,6 +57,15 @@ body {
 
 /* Sidebar Styles */
 
+.pointify {
+    color: white;
+}
+
+.clients {
+    color: white; 
+    text-align: center;
+}
+
 .sidebar-nav {
     position: absolute;
     top: 0;
@@ -130,6 +139,8 @@ body {
         margin-right: 0;
     }
 }
+
+
 
 // Component styles are injected through grunt
 /* inject:scss */
