@@ -26,17 +26,18 @@
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
-                      <h2 class = "pointify"> Pointify <!-- DOESNT WORK <img  width="75%" height="100%" src = "img/pointify.png"/> !-->
+ 		
+                   <!-- Copyrighted image used here !-->
+		<img  width="50%" height="100%" src = "assets/images/pointify.png"/>  
                 </li>
                 <li>
-                    <a type="button" 
-              ng-click="$ctrl.toggleStreaming()">
-              <span ng-if="$ctrl.streaming">Stop Streaming</span>
-              <span ng-if="!$ctrl.streaming">Start Streaming</span>
+                    <a type="button"  ng-click="$ctrl.toggleStreaming()">
+	      <span ng-if="$ctrl.streaming">Stop Streaming  </span>
+              <span style = "color: green;" ng-if="!$ctrl.streaming">Start Streaming <img width ="5%" height= "5%"src = "assets/images/stream.png" /></span>
 		</a>
                 </li>
                 <li>
-                    <a href="#">Take picture</a>
+                    <a href="#">Take picture <img width ="5%" height= "5%"src = "assets/images/camera2.png" /></a>
                 </li>
                 <li>
                     <a href="#">Calibrate</a>
@@ -45,7 +46,7 @@
                <a type="button" 
               ng-click="$ctrl.toggleRecording()">
               <span ng-if="$ctrl.recording">Stop Recording</span>
-              <span ng-if="!$ctrl.recording">Start Recording</span>
+              <span ng-if="!$ctrl.recording">Start Recording <img width ="5%" height= "5%"src = "assets/images/record2.png" /></span>
 	      </a>
                 </li>
                 <li class="sidebar-brand">
@@ -229,10 +230,9 @@
         <!-- Page Content -->
         <div id="page-content-wrapper">
             <div class="container-fluid">
-		<a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Hide menu</a>
+		<!--<a href="#menu-toggle" ng-click = "$ctrl.onWindowResize()" class="btn btn-default" id="menu-toggle">Hide menu</a>!-->
                 <div class="row">
                     <div class="col-lg-12">
-                        <h1>3D render goes here</h1>
 			<div id="viewer" ng-init="$ctrl.runThree()">
                     </div>
                 </div>
@@ -254,6 +254,7 @@
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
+
     });
     </script>
 
