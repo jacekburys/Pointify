@@ -3,9 +3,11 @@
 (function() {
 
 class ViewerController {
-  constructor($scope, socket) {
+  constructor($scope, socket, FileSaver, Blob) {
     this.$scope = $scope;
     this.socket = socket;
+    this.FileSaver = FileSaver;
+    this.Blob = Blob;
     this.streaming = false;
     this.scene = null;
     this.connectedClients = [];
@@ -228,6 +230,12 @@ class ViewerController {
     }
   }
 
+  saveAsPLY() {
+    console.log('trying to save ply');
+    var text = 'ply';
+    var data = new this.Blob([text], {type: 'application/ply' });
+    this.FileSaver.saveAs(data, 'cloud.ply');
+  }
 }
 
 angular.module('serverApp')
