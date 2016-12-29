@@ -1,107 +1,100 @@
 <!DOCTYPE html>
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=windows-1252">
-	<title>Pointify</title>
+<html lang="en">
 
-	<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+<head>
 
-	<link rel="stylesheet" type="text/css" href="viewer_extras/css.css">
-	<link rel="stylesheet" type="text/css" href="viewer_extras/main.css">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, shrink-to-fit=no, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-	<link rel="stylesheet" type="text/css" href="viewer_extras/tabs.css">
+    <title>Simple Sidebar - Start Bootstrap Template</title>
 
-	<script async="" src="viewer_extras/analytics_002.js"></script><script type="text/javascript" src="viewer_extras/jquery.js"></script>
-	<script type="text/javascript" src="viewer_extras/tabs.js"></script>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 
-	<script type="text/javascript" src="viewer_extras/analytics.js"></script>
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
 </head>
+
 <body>
-	<header class="site-header-wrap">
-		<div class="site-header">
-			<span class="site-tagline"></span>
 
-			<nav class="site-nav">
+    <div id="wrapper">
 
-			</nav>
-		</div>
-	</header>
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Start Bootstrap
+                    </a>
+                </li>
+                <li>
+                    <a href="#">Dashboard</a>
+                </li>
+                <li>
+                    <a href="#">Shortcuts</a>
+                </li>
+                <li>
+                    <a href="#">Overview</a>
+                </li>
+                <li>
+                    <a href="#">Events</a>
+                </li>
+                <li>
+                    <a href="#">About</a>
+                </li>
+                <li>
+                    <a href="#">Services</a>
+                </li>
+                <li>
+                    <a href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
 
-	<div class="wrap">
-		<button class = "btn"> Test </button>
-		<div class="main">
-			<h2>Standard Tabs</h2>
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1>Simple Sidebar</h1>
+                        <p>This template has a responsive menu toggling system. The menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will appear/disappear. On small screens, the page content will be pushed off canvas.</p>
+                        <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>.</p>
+                        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
 
-		</div><!--end .main-->
+    </div>
+    <!-- /#wrapper -->
 
-		<br><br><br><br><br><br>
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
 
-		<div class="main">
-			<h2>Animated 'Fade' Tabs</h2>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
 
-			
-		</div><!--end .main-->
+    <!-- Menu Toggle Script -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
 
-		<br><br><br><br><br><br>
+</body>
 
-		<div class="main">
-			<h2>Animated 'Slide 1' Tabs</h2>
-
-			<div class="tabs animated-slide-1">
-				<ul class="tab-links">
-					<li class="active"><a href="#tab111">Tab #1</a></li>
-					<li><a href="#tab222">Tab #2</a></li>
-					<li><a href="#tab333">Tab #3</a></li>
-				</ul>
-
-				<div class="tab-content">
-					<div id="tab111" class="tab active">
-						<p>Tab #1 content goes here!</p>
-						<p></p>
-					</div>
-
-					<div id="tab222" class="tab">
-						<p>Tab #2 content goes here!</p>
-						<p></p>
-					</div>
-
-					<div id="tab333" class="tab">
-						<p>Tab #3 content goes here!</p>
-						<p></p>
-					</div>
-				</div>
-			</div>
-		
-		</div><!--end .main-->
-
-		<br><br><br><br><br><br>
-
-		<div class="main">
-			<h2>Animated 'Slide 2' Tabs</h2>
-
-			<div class="tabs animated-slide-2">
-				<ul class="tab-links">
-					<li class="active"><a href="#tab1111">Tab #1</a></li>
-					<li><a href="#tab2222">Tab #2</a></li>
-					<li><a href="#tab3333">Tab #3</a></li>
-				</ul>
-
-				<div class="tab-content">
-					<div id="tab1111" class="tab active">
-						<p>Tab #1 content goes here!</p>
-						<p></p>
-					</div>
-
-					<div id="tab2222" class="tab">
-						<p>Tab #2 content goes here!</p>
-						<p></p>
-					</div>
-
-					<div id="tab3333" class="tab">
-</p>
-					</div>
-				</div>
-			</div>
-		</div><!--end .main-->
-	</div>
-
-</body></html>
+</html>
