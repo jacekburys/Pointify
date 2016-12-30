@@ -48,13 +48,13 @@ body {
 
 /* Sidebar Styles */
 
-.pointify {
-    color: white;
+.client-name {
+    text-align: center;
+    padding-right:20px;
 }
 
+
 .table-client {
-
-
 	border: 1px solid #303030;
 	border-collapse: separate;
 	border-left: 0;
@@ -66,15 +66,14 @@ body {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-	
 
 .table-client td {
 	border-left: 1px solid #303030;
 	padding: 8px;
-line-height: 18px;
-text-align: left;
-vertical-align: top;
-border-top: 1px solid #303030;
+	line-height: 18px;
+	text-align: left;
+	vertical-align: top;
+	border-top: 1px solid #303030;
 }
 
 .table-client thead {
@@ -89,12 +88,19 @@ border-top: 1px solid #303030;
     border-top: 0;
 }
 
+.table-client-border {
+	border:1px solid #373737;
+	height: 100%;
+}
+
 .widgetBody {
 	padding:10px;
 	border:1px solid #1f1f1f;
 	padding-left:20px;
 	padding-right:20px;
+	position:relative;
 	margin: 0;
+	height: 100%;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 13px;
 	line-height: 18px;
@@ -106,6 +112,7 @@ border-top: 1px solid #303030;
     position: absolute;
     top: 0;
     width: 350px;
+    
     margin: 0;
     padding: 0;
     list-style: none;

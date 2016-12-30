@@ -27,14 +27,14 @@
             <span ng-if="!$ctrl.recording">Start Recording </span>
           </button>
         </li>
-
-
-        <li class="sidebar-brand">
-          <h2>Clients</h2>
-
+	</br>
+	</br>
+	<li class="sidebar-brand">
+		
 	<div class = "widgetBody">
-	 <div style = "height: 300px; color: #fff;">
-
+		<h2 class = "client-name">Clients</h2>
+	<!--<div class = "table-client-border"> 
+	
           <table class="table-client">
             <thead>
               <tr>
@@ -44,64 +44,34 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+	    <tr ng-repeat="client in $ctrl.connectedClients"> 
+		<td>{{client.clientID}}</td>
+		<td>{{client.ip}}</td>
+		<td>{{client.calibStatus}}</td>
+	    </tr>
+          <tr>
                 <td>1</td>
                 <td>127.0.0.1</td>
                 <td style="color: green">Calibrated</td>
               </tr>
-              <tr>
-                <td>2</td>
-                <td>32</td>
-                <td style="color: red">Not calibrated</td>
-              </tr>
+
               <tr>
                 <td>3</td>
                 <td>127.128.129.131</td>
                 <td style="color: green">Calibrated</td>
               </tr>
-              <tr>
-                <td>4</td>
-                <td>0.1.2.3</td>
-                <td style="color: green">Calibrated</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>127.0.0.3</td>
-                <td style="color: red">Not calibrated</td> 
-              </tr>
+		
             </tbody>
           </table>
+		</div>!-->
 	</div>
-	</div>
-
-          <!--<div class = "client_box">
-
-		</div> !-->
-
-
-          <!--
-          <ul class="list-group pre-scrollable">
-            <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
-              <div class="row">
-                <div class="col-sm-3">
-                  {{client.clientID}}
-                </div>
-                <div class="col-sm-6">
-                  {{client.ip}}
-                </div>
-                <div class="col-sm-3">
-                  {{client.calibStatus}}
-                </div>
-              </div>
-            </li>
-          </ul>
-!-->
-        </li>
+	</li>
       </ul>
 
+     
+
     </div>
-    <div id="viewer" ng-init="$ctrl.runThree()">
-    </div>
+    <div id="viewer" ng-init="$ctrl.runThree()"/>
 </body>
 
 </html>
