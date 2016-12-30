@@ -178,4 +178,22 @@ This involved working with a third party library called ArUco, which is a well e
 
 \subsubsection{Point cloud transformation}
 Once we have found the transformation matrix as in the previous part, we must apply it to each point cloud before they are is sent to the server. We experimented with doing this by multiplying each xyz point by the transformation matrix to give the transformed point, but this was causing some performance issues due to the amount of points needed to be transformed at once. A better way of doing this would be to apply the transformation to all points in one operation with a more complex matrix operation. We used an optimised implementation of this in opencv called perspectiveTransform to do this efficiently, which when given the set of input points, and the transformation function we calculated earlier, would return the transformed points we needed. When each client calculated the transformation to bring their origin to the marker, and applied this transformation to the point clouds captured from the connect, they could be successfully combined such that they would align.
+
+\newpage
+\section{Evaluation}
+\subsubsection{Design}
+\subsubsection{Code Quality}
+\subsubsection{Calibration Accuracy}
+\subsubsection{Testing}
+\subsubsection{Build Server}
+\subsubsection{Deployment} %gulp
+\subsubsection{Streaming}
+
+\newpage
+\section{Conclusion and Future Extensions}
+\subsubsection{Conclusion}
+\subsubsection{Future Extensions}
+
+% TODO : references
+
 \end{document}
