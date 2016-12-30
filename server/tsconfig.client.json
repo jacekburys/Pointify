@@ -19,6 +19,7 @@
         "client/components/modal/modal.service.ts",
         "client/components/navbar/navbar.controller.ts",
         "client/components/navbar/navbar.directive.ts",
+        "client/components/ply/ply.service.ts",
         "client/components/socket/socket.service.ts",
         "client/components/util/util.module.ts",
         "client/components/util/util.service.ts",
