@@ -48,6 +48,32 @@ Created by \\[\baselineskip]
 \setcounter{page}{1}
 \section{Executive Summary}
 
+The ability to take an image and generate a 3D point cloud in real time, with multiple calibrated cameras, giving both depth and colour information has multiple use cases today. Through Pointify we have developed a system that utilises Microsoft’s proprietary Xbox Kinect hardware to generate these point clouds based on the XYZ and RGB data from the sensors on the devices. It is a truly cross-platform service which allows the camera clients and the server to run on Windows, OS X or Linux operating systems. We achieve this by using services and programming languages that run on all operating systems. Having multiple calibrated Kinect cameras allows for a full 360 degree view of the object or scene that is being photographed.
+\\\\
+The system works by:
+\\\\
+Client
+\begin{itemize}
+\item Uses industry standard open source computer vision library OpenCV to perform matrix operations as efficiently as possible.
+\item Uses open source libfreenect2 drivers from OpenKinect to extract the colour and depth camera data from the camera.
+\item Uses AruCo calibration as a module for OpenCV which we use to detect the marker within the scene and use it to calibrate the co-ordinate spaces of all cameras.
+\item Uses open-source C++11 implementation of socket.io client to communicate with the server and send the point cloud data when requested.
+\end{itemize}
+~\\
+Server:
+
+\begin{itemize}
+\item Based on an AngularJS frontend and a NodeJS backend.
+\item Run using the Gulp build system to automatically host the server using localhost.
+\item Uses socket.io to calibrate the clients and synchronise the frames when taking a picture or streaming.
+\item Uses ThreeJS renderer to display the received point clouds in real-time.
+\item Can export current picture or video stream as a PLY file or STL file.
+\end{itemize}
+~\\
+For static imaging there are two main use cases. In manufacturing, it is often the case that people wish to create duplicates of objects they already own. For example drill bits or trimmer attachments. Our system can achieve this by taking a picture and then exporting the STL file which can be immediately used to 3D print the object. For medical reasons, the system can create 360 degree images of the human body and then send it off to remote doctors for an online diagnosis.
+\\\\
+For live imaging there are also two main use cases. For virtual reality gaming it can be useful to be able to map out the scene and work out the distance of the user from certain objects within their room. This could then be used to create live warnings in the virtual reality headset to alert the user when they are about to come into contact with an object in their gaming space. Also much like google street view our system can be used to create a live 3D view of certain points of interest or general roads which can be live streamed over the internet.
+
 \newpage
 \section{Introduction}
 
