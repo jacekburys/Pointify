@@ -1,217 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <body>
-    <div id="wrapper">
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand">
-                </li>
-                <li>
-                    <a type="button"  ng-click="$ctrl.toggleStreaming()">
-	      <span ng-if="$ctrl.streaming">Stop Streaming  </span>
-              <span style = "color: green;" ng-if="!$ctrl.streaming">Start Streaming</span>
-		</a>
-                </li>
-                <li>
-                    <a href="#">Take picture</a>
-                </li>
-                <li>
-                    <a href="#">Calibrate</a>
-                </li>
-                <li>
-               <a type="button" 
-              ng-click="$ctrl.toggleRecording()">
-              <span ng-if="$ctrl.recording">Stop Recording</span>
-              <span ng-if="!$ctrl.recording">Start Recording </span>
-	      </a>
-                </li>
-                <li class="sidebar-brand">
-                        <h2 class = "clients">Clients</h2>
-		      <ul class="list-group pre-scrollable">
- 			<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      133
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-<li class "list-group-item">
-			  <div class="row">
-			    <div class="clientID col-sm-2">
-			      1
-			    </div>
-			    <div class="ip col-sm-5">
-			      127.127.127.127
-			    </div>
-			    <div class="status col-sm-5">
-			      Not calibrated
-			    </div>
-			  </div>
-			</li>
-			<li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
-			  <div class="row">
-			    <div class="col-sm-3">
-			      {{client.clientID}}
-			    </div>
-			    <div class="col-sm-6">
-			      {{client.ip}}
-			    </div>
-			    <div class="col-sm-3">
-			      {{client.calibStatus}}
-			    </div>
-			  </div>
-			</li>
-		      </ul>
-                </li>
-            </ul>
-        </div>
-        <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-12">
-			<div id="viewer" ng-init="$ctrl.runThree()">
-                    </div>
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+      <ul class="sidebar-nav">
+        <li class="sidebar-brand">
+          <h2> Pointify </h2>
+        </li>
+        <li>
+          <button type="button" class="btn btn-default" ng-click="$ctrl.toggleStreaming()">
+            <span ng-if="$ctrl.streaming"> Stop Streaming  </span>
+            <span ng-if="!$ctrl.streaming">Start Streaming</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="btn btn-default" ng-click="$ctrl.takePicture()">Take Picture</button>
+        </li>
+        <li>
+          <button type="button" class="btn btn-default" ng-click="$ctrl.calibrate()">Calibrate</button>
+        </li>
+        <li>
+          <button type="button" class="btn btn-default" ng-click="$ctrl.toggleRecording()">
+            <span ng-if="$ctrl.recording">Stop Recording</span>
+            <span ng-if="!$ctrl.recording">Start Recording </span>
+          </button>
+        </li>
+
+
+        <li class="sidebar-brand">
+          <h2>Clients</h2>
+
+	<div class = "widgetBody">
+	 <div style = "height: 300px; color: #fff;">
+
+          <table class="table-client">
+            <thead>
+              <tr>
+                <td style="width:25%">Client ID</td>
+                <td>Client IP</td>
+                <td>Status</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>127.0.0.1</td>
+                <td style="color: green">Calibrated</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>32</td>
+                <td style="color: red">Not calibrated</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>127.128.129.131</td>
+                <td style="color: green">Calibrated</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>0.1.2.3</td>
+                <td style="color: green">Calibrated</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>127.0.0.3</td>
+                <td style="color: red">Not calibrated</td> 
+              </tr>
+            </tbody>
+          </table>
+	</div>
+	</div>
+
+          <!--<div class = "client_box">
+
+		</div> !-->
+
+
+          <!--
+          <ul class="list-group pre-scrollable">
+            <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
+              <div class="row">
+                <div class="col-sm-3">
+                  {{client.clientID}}
                 </div>
-            </div>
-        </div>
+                <div class="col-sm-6">
+                  {{client.ip}}
+                </div>
+                <div class="col-sm-3">
+                  {{client.calibStatus}}
+                </div>
+              </div>
+            </li>
+          </ul>
+!-->
+        </li>
+      </ul>
+
+    </div>
+    <div id="viewer" ng-init="$ctrl.runThree()">
     </div>
 </body>
+
 </html>

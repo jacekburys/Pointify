@@ -184,7 +184,7 @@ class ViewerController {
 
     function init() {
       var width = document.getElementById('viewer').clientWidth;
-      var height = 850;
+      var height = window.innerHeight;
       console.log(width, height);
       camera = new THREE.PerspectiveCamera( 70, width / height, 1, 1000 );
       camera.position.z = 100;
@@ -216,7 +216,7 @@ class ViewerController {
 
     function onWindowResize() {
       var width = document.getElementById('viewer').clientWidth;
-      var height = 850;
+      var height = window.innerHeight;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize( width, height );
