@@ -1,4 +1,7 @@
 \documentclass{article}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage{hyperref}
 \setcounter{tocdepth}{4}
 \usepackage[margin=1in]{geometry}
 
@@ -47,9 +50,66 @@ Created by \\[\baselineskip]
 
 \newpage
 \section{Introduction}
-\subsection{Motivation}
+
+% TODO : maybe put these side by side
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.3]{placeholder}
+  \caption{placeholder}
+  \label{fig:placeholder1}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.3]{placeholder}
+  \caption{placeholder}
+  \label{fig:placeholder2}
+\end{figure}
+
+\subsection{Background and Motivation}
+
+A point cloud is a set of data points in some coordinate system. These sets of data can find use in many fields,
+for example to create 3D models for VR games, manufacturing, 3D printing and medical applications.
+Gathering the points is done using one or more 3D scanners. Microsoft Kinect is one such device which
+is widely available and affordable. Pointify is an application that makes use of multiple Kinects to easily
+create point clouds which can then be viewed and exported for use in other applications.
+
+\subsection{LiveScan3D}
+
+The initial goal of our project was actually to improve an existing open source application called LiveScan3D.
+It has the same purpose as Pointify. Our supervisor, Ben Glocker, proposed that we could
+improve the calibration step in LiveScan3D. As that time LiveScan3D was using its own implementation
+of marker detection and pose estimation, and it was not making use of the open source libraries like
+ArUco or OpenCV. LiveScan3D is only available on Windows and has to be compiled using Visual Studio.
+The fact that it is not cross pratform resulted in quite a few difficulties relating to project management.
+Furthermore, although LiveScan3D works, we found out that the code was lacking proper software engineering
+practices and documentation. We spent almost 2 weeks trying to make progress with the project, but eventually
+we decided to pivot and proposed that we could implement our own version that would be cross platform, as well
+as incorporating OpenCV and ArUco. This would make the application more flexible for the users
+as well as making the product more extensible for developers who may choose to work on different platforms.
+By approaching it from the development standpoint rather than a research one, we ensured that our code was readable,
+extensible, and used industry-standard and cross-platform drivers, libraries and frameworks.
+
 \subsection{Objectives}
-\subsection{Contributions}
+The first two weeks that we spent working on LiveScan3D gave us a clear understanding of what our application
+should do and how we can achieve that. We decided to follow LiveScan3D's idea with one server and multiple
+clients sending fragments of the scene to it. However, we decided to add a webapp that would be used
+to control the clients.
+\begin{itemize}
+  \item Build a distributed system that can gather and merge point cloud data from multiple Kinect cameras.
+  \item Be able to display the point clouds in a way that is convinient for the user.
+  \item Use standard libraries and frameworks, making the code easy to understand and robust.
+  \item Make the project cross-platform (Windows, Linux, Mac).
+  % TODO : anything else?
+\end{itemize}
+
+\subsection{Achievements}
+\begin{itemize}
+  \item Distributed system consisting of multiple clients with Kinect cameras, a server and a viewer allowing the user to easily control the Kinect clients and generate the point clouds.
+  \item Usage of cross-platform frameworks and drivers allowing the project to be run on Windows, Linux and Mac operating systems.
+  \item Exporting the data in PLY and STL file formats.
+  \item 3D video streaming and recording.
+  % TODO : anything else?
+\end{itemize}
 
 \newpage
 \section{Project Management}
