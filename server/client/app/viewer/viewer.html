@@ -2,59 +2,64 @@
 <html lang="en">
 
 <body>
-
   <div id="wrapper">
-
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
-      <div class="sidebar-nav">
-        <div class="sidebar-brand">
+      <ul class="sidebar-nav">
+        <li class="sidebar-brand">
+          <h2> Pointify </h2>
+        </li>
+        <li>
+          <button type="button" class="btn btn-default" ng-click="$ctrl.toggleStreaming()">
+            <span ng-if="$ctrl.streaming"> Stop Streaming  </span>
+            <span ng-if="!$ctrl.streaming">Start Streaming</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="btn btn-default" ng-click="$ctrl.takePicture()">Take Picture</button>
+        </li>
+        <li>
+          <button type="button" class="btn btn-default" ng-click="$ctrl.calibrate()">Calibrate</button>
+        </li>
+        <li>
+          <button type="button" class="btn btn-default" ng-click="$ctrl.toggleRecording()">
+            <span ng-if="$ctrl.recording">Stop Recording</span>
+            <span ng-if="!$ctrl.recording">Start Recording </span>
+          </button>
+        </li>
 
-        <div class="pointify-div">
-          <li>
-            <h2> Pointify </h2>
-          </li>
-          <li>
-            <button type="button" class="btn btn-default" ng-click="$ctrl.toggleStreaming()">
-              <span ng-if="$ctrl.streaming"> Stop Streaming  </span>
-              <span ng-if="!$ctrl.streaming">Start Streaming</span>
-            </button>
-          </li>
-          <li>
-            <button type="button" class="btn btn-default" ng-click="$ctrl.takePicture()">Take Picture</button>
-          </li>
-          <li>
-            <button type="button" class="btn btn-default" ng-click="$ctrl.calibrate()">Calibrate</button>
-          </li>
-          <li>
-            <button type="button" class="btn btn-default" ng-click="$ctrl.toggleRecording()">
-              <span ng-if="$ctrl.recording">Stop Recording</span>
-              <span ng-if="!$ctrl.recording">Start Recording </span>
-            </button>
-          </li>
-        </div>
-	</div>
-      </div>
+        <li class="sidebar-brand">
+
+          <div class="widgetBody">
+            <h2 class="client-name">Clients</h2>
+            <div class="table-client-border">
+
+              <table class="table-client">
+                <thead>
+                  <tr>
+                    <td style="width:25%">Client ID</td>
+                    <td>Client IP</td>
+                    <td>Status</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="client in $ctrl.connectedClients">
+                    <td>{{client.clientID}}</td>
+                    <td>{{client.ip}}</td>
+                    <td>{{client.calibStatus}}</td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+
+
     </div>
-
-    <!-- /#sidebar-wrapper -->
-    <!-- Page Content -->
-    <div id="page-content-wrapper">
-      <div class="viewer-div">
-        <div id="viewer" ng-init="$ctrl.runThree()" />
-      </div>
-    </div>
-    <!-- /#page-content-wrapper -->
-
-  </div>
-
-  <script>
-    $("#menu-toggle").click(function(e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-    });
-  </script>
-
+    <div id="viewer" ng-init="$ctrl.runThree()" />
 </body>
 
 </html>

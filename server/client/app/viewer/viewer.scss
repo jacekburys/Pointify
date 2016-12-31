@@ -21,8 +21,7 @@
 }
 .client-div {
     width: 100%;
-    height: 1000px;
-    overflow: hidden;
+    height: 100%;
 }
 .table-client {
     border: 1px solid #303030;
@@ -95,14 +94,14 @@ body {
     height: 100%;
     margin-left: -250px;
     overflow-y: auto;
-    background: #1f1f1f;
+    background: #1C2331;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
 }
 #wrapper.toggled #sidebar-wrapper {
-    width: 250px;
+    width: 350px;
 }
 #page-content-wrapper {
     width: 100%;
@@ -117,7 +116,7 @@ body {
 .sidebar-nav {
     position: absolute;
     top: 0;
-    width: 250px;
+    width: 350px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -160,7 +159,7 @@ body {
         padding-left: 0;
     }
     #sidebar-wrapper {
-        width: 250px;
+        width: 350px;
     }
     #wrapper.toggled #sidebar-wrapper {
         width: 0;
