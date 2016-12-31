@@ -1,89 +1,175 @@
-body {
-    background: yellow;
+.child1 {
+    float: left;
+    background-color: blue;
+    width: 20%;
+    height: 100%;
+    overflow: hidden;
+}
+.child2 {
+    float: left;
+    width: 80%;
     height: 100%;
 }
-
-.client-name {
-    text-align: center;
-    padding-right:20px;
+.pointify-name {} .client-name {} .viewer-div {
+    float: left;
+    width: 100%;
 }
-
-.ud-container {
-	width: 350px;
-	height: 100%;
-	float:left;
-	background-color: red;
-	position: relative;
-}
-
 .pointify-div {
-	width: 100%;
-	background-color: green;
-	
+    width: 100%;
+    height: 300px;
+    background-color: green;
 }
-
 .client-div {
-	width: 100%;
-	height: 100%;
-	background-color: #1f1f1f;
+    width: 100%;
+    height: 1000px;
+    overflow: hidden;
 }
-
-.viewer-div {
-	width: 100%;
-}
-
-
 .table-client {
-	border: 1px solid #303030;
-	border-collapse: separate;
-	border-left: 0;
-	border-radius: 4px;
-	width: 100%;
-	margin-bottom: 18px;
-	max-width: 100%;
-	background-color: transparent;
-	border-collapse: collapse;
-	border-spacing: 0;
+    border: 1px solid #303030;
+    border-collapse: separate;
+    border-left: 0;
+    border-radius: 4px;
+    width: 100%;
+    margin-bottom: 18px;
+    max-width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+    overflow-x: auto;
 }
-
 .table-client td {
-	border-left: 1px solid #303030;
-	padding: 8px;
-	line-height: 18px;
-	text-align: left;
-	vertical-align: top;
-	border-top: 1px solid #303030;
+    border-left: 1px solid #303030;
+    padding: 8px;
+    line-height: 18px;
+    text-align: left;
+    vertical-align: top;
+    border-top: 1px solid #303030;
 }
-
 .table-client thead {
-	background: #373737;
-	border-collapse: separate;
-	border-spacing: 0;
-	color: #fff;
-	line-height: 18px;
+    background: #373737;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: #fff;
+    line-height: 18px;
 }
-
 .table-client thead:first-child tr:first-child td {
     border-top: 0;
 }
-
 .table-client-border {
-	border:1px solid #373737;
-	height: 100%;
+    border: 1px solid #373737;
+    height: 80%;
 }
-
 .widgetBody {
-	padding:10px;
-	border:1px solid #1f1f1f;
-	padding-left:20px;
-	padding-right:20px;
-	position:relative;
-	margin: 0;
-	height: 100%;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 13px;
-	line-height: 18px;
-	color: #f3f3f3;
-	background-color: #414141;
+    padding: 10px;
+    border: 1px solid #1f1f1f;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 0;
+    height: 60%;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    color: #f3f3f3;
+    background-color: #414141;
 }
+body {
+    overflow-x: hidden;
+}
+/* Toggle Styles */
 
+#wrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+#wrapper.toggled {
+    padding-left: 250px;
+}
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 0;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    background: #1f1f1f;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+#wrapper.toggled #sidebar-wrapper {
+    width: 250px;
+}
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+}
+#wrapper.toggled #page-content-wrapper {
+    position: absolute;
+    margin-right: -250px;
+}
+/* Sidebar Styles */
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+}
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+}
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+.sidebar-nav > .sidebar-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+.sidebar-nav > .sidebar-brand a {
+    color: #999999;
+}
+.sidebar-nav > .sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 250px;
+    }
+    #wrapper.toggled {
+        padding-left: 0;
+    }
+    #sidebar-wrapper {
+        width: 250px;
+    }
+    #wrapper.toggled #sidebar-wrapper {
+        width: 0;
+    }
+    #page-content-wrapper {
+        position: relative;
+    }
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 0;
+    }
+}
