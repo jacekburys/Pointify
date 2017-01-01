@@ -3,12 +3,13 @@
 (function() {
 
 class ViewerController {
-  constructor($scope, socket, FileSaver, Blob, ply) {
+  constructor($scope, socket, FileSaver, Blob, ply, $mdDialog) {
     this.$scope = $scope;
     this.socket = socket;
     this.FileSaver = FileSaver;
     this.Blob = Blob;
     this.ply = ply;
+    this.mdDialog = $mdDialog;
     this.streaming = false;
     this.recording = false;
     this.scene = null;
@@ -137,6 +138,7 @@ class ViewerController {
   stopRecording() {
     this.recording = false;
     this.socket.stopRecording();
+    this.showRecordingNamePrompt();
   }
 
   calibrate() {
@@ -262,6 +264,26 @@ class ViewerController {
     var plyText = this.ply.toPly(vertices, colors);
     var data = new this.Blob([plyText], {type: 'application/ply' });
     this.FileSaver.saveAs(data, 'cloud.ply');
+  }
+
+  showRecordingNamePrompt() {
+    var confirm = this.mdDialog.prompt()
+      .title('Would you like to save this recording?')
+      .textContent('Recording name')
+      .placeholder('Recording name')
+      .ariaLabel('Recording name')
+      .initialValue('recording')
+      //.targetEvent(ev)
+      .ok('OK')
+      .cancel('Cancel');
+
+    this.mdDialog.show(confirm).then(function(result) {
+      //$scope.status = 'You decided to name your dog ' + result + '.';
+      console.log(result);
+    }, function() {
+      //$scope.status = 'You didn\'t name your dog.';
+      console.log('cancel');
+    });
   }
 }
 
