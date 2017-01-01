@@ -1,6 +1,7 @@
 export default function(io) {
 
-  var Recording = require('./recording.model.js');
+  var Recording = require('./recording.model.js').default;
+
   var FRAME_RATE_CAP = 5;
 
   io.requestInterval = 1000.0 / FRAME_RATE_CAP;
@@ -149,6 +150,7 @@ export default function(io) {
     // the current recording should be discarded 
     socket.on('viewer_discard_recording', function() {
       io.recordingBuffer = [];
+      console.log('recording discarded');
     });
 
     // got streaming frame

@@ -278,12 +278,12 @@ class ViewerController {
       .cancel('Cancel');
 
     this.mdDialog.show(confirm).then(function(result) {
-      //$scope.status = 'You decided to name your dog ' + result + '.';
       console.log(result);
-    }, function() {
-      //$scope.status = 'You didn\'t name your dog.';
+      this.socket.saveRecording(result);
+    }.bind(this), function() {
       console.log('cancel');
-    });
+      this.socket.discardRecording();
+    }.bind(this));
   }
 }
 

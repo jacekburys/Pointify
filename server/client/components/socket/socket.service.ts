@@ -36,6 +36,14 @@ angular.module('serverApp')
         console.log('Trying to emit stop_recording');
         ioSocket.emit('viewer_stop_recording');
       },
+      saveRecording: function(recordingName) {
+        console.log('Trying to emit save_recording');
+        ioSocket.emit('viewer_save_recording', recordingName);
+      },
+      discardRecording: function() {
+        console.log('Trying to emit discard_recording');
+        ioSocket.emit('viewer_discard_recording');
+      },
       calibrate : function() {
         console.log('Trying to emit calibrate');
         ioSocket.emit('viewer_calibrate');
