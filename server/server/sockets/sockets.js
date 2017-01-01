@@ -1,5 +1,6 @@
 export default function(io) {
 
+  var Recording = require('./recording.model.js');
   var FRAME_RATE_CAP = 5;
 
   io.requestInterval = 1000.0 / FRAME_RATE_CAP;
@@ -11,6 +12,8 @@ export default function(io) {
   io.streaming = false;
   io.recording = false;
   io.frameBuffer = [];
+  io.recordingBuffer = [];
+  io.recordingFrameTimes = [];
 
   var d = new Date();
   io.lastFrameTime = d.getTime();
@@ -41,6 +44,14 @@ export default function(io) {
     io.frameRate = 1.0 / (curr - prev);
     io.lastFrameTime = curr;
     io.viewerSocket.emit('viewer_frame_rate', io.frameRate);
+  }
+
+  function updateRecording() {
+    if (io.recording) {
+      io.recordingBuffer.push(io.frameBuffer);
+      var d = new Date();
+      io.recordingFrametimes.push(d.getTime());
+    }
   }
 
   io.on('connection', function(socket) {
@@ -109,12 +120,35 @@ export default function(io) {
     // the Start Recording button on the frontend was pressed
     socket.on('viewer_start_recording', function() {
       io.recording = true;
+      // TODO : possible issue with not recording first frame
       // TODO : recording implementation
     });
 
     // the Stop Recording button on the frontend was pressed
     socket.on('viewer_stop_recording', function() {
       io.recording = false;
+    });
+
+    // the current recording should be saved
+    socket.on('viewer_save_recording', function() {
+      // TODO
+      var recording = new Recording({
+        name : 'recording',
+        frames : io.recordingBuffer,
+        frameTimes : io.recordingFrameTimes,
+      });
+      recording.save(function(err) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log('recording saved');
+      });
+    });
+
+    // the current recording should be discarded 
+    socket.on('viewer_discard_recording', function() {
+      io.recordingBuffer = [];
     });
 
     // got streaming frame
@@ -128,6 +162,7 @@ export default function(io) {
         // sent the frames from frameBuffer to the viewer
         io.viewerSocket.emit('viewer_pointcloud', io.frameBuffer);
         // clear the buffer and request new frame
+        updateRecording();
         io.frameBuffer = [];
         requestStreamingFrames();
         updateFrameRate();
