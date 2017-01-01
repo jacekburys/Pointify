@@ -5,13 +5,13 @@
     <div class="pointify-div">
       <div class="pointify-name">Pointify</div>
       <div class="buttons-interact btn-group-vertical">
-        <button type="button" class="btn btn-default btn-sample" ng-click="$ctrl.toggleStreaming()">
+        <button type="button" class="btn btn-default btn-interact" ng-click="$ctrl.toggleStreaming()">
           <span ng-if="$ctrl.streaming"><img class = "img-icon" src="assets/images/stream.png"/> Stop Streaming</span>
           <span ng-if="!$ctrl.streaming"><img class = "img-icon" src="assets/images/stream.png"/>Start Streaming</span>
         </button>
-        <button type="button" class="btn btn-default btn-sample" ng-click="$ctrl.takePicture()"> <img class = "img-icon" src="assets/images/camera.png"/>Take Picture</button>
-        <button type="button" class="btn btn-default btn-sample" ng-click="$ctrl.calibrate()"><img class = "img-icon" src="assets/images/calibrate.png"/>Calibrate</button>
-        <button type="button" class="btn btn-default btn-sample" ng-click="$ctrl.toggleRecording()">
+        <button type="button" class="btn btn-default btn-interact" ng-click="$ctrl.takePicture()"> <img class = "img-icon" src="assets/images/camera.png"/>Take Picture</button>
+        <button type="button" class="btn btn-default btn-interact" ng-click="$ctrl.calibrate()"><img class = "img-icon" src="assets/images/calibrate.png"/>Calibrate</button>
+        <button type="button" class="disabled btn btn-default btn-interact" ng-click="$ctrl.toggleRecording()">
           <span ng-if="$ctrl.recording"><img class = "img-icon" src="assets/images/record.png"/> Stop Recording</span>
           <span ng-if="!$ctrl.recording"><img class = "img-icon" src="assets/images/record.png"/> Start Recording </span>
         </button>
@@ -61,5 +61,6 @@
       <div id="viewer" ng-init="$ctrl.runThree()" />
     </div>
   </div>
+
 </body>
 </html>

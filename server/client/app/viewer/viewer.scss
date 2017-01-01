@@ -1,3 +1,58 @@
+/* Button styles */
+
+.btn-interact { 
+  color: #ffffff; 
+  background-color: #373737; 
+  border-color: #000000; 
+} 
+ 
+.btn-interact:hover
+{
+  color: #ffffff; 
+  background-color: #8E8F99; 
+  border-color: #000000; 
+}
+
+.btn-interact:focus,
+.btn-interact:active, 
+.btn-interact.active, 
+.open .dropdown-toggle.btn-interact { 
+  color: #ffffff; 
+  background-color: #15DB3A; 
+  border-color: #000000; 
+} 
+ 
+.btn-interact:active, 
+.btn-interact.active, 
+.open .dropdown-toggle.btn-interact { 
+  background-image: none; 
+} 
+ 
+.btn-interact.disabled, 
+.btn-interact[disabled], 
+fieldset[disabled] .btn-interact, 
+.btn-interact.disabled:hover, 
+.btn-interact[disabled]:hover, 
+fieldset[disabled] .btn-interact:hover, 
+.btn-interact.disabled:focus, 
+.btn-interact[disabled]:focus, 
+fieldset[disabled] .btn-interact:focus, 
+.btn-interact.disabled:active, 
+.btn-interact[disabled]:active, 
+fieldset[disabled] .btn-interact:active, 
+.btn-interact.disabled.active, 
+.btn-interact[disabled].active, 
+fieldset[disabled] .btn-interact.active { 
+  background-color: #373737; 
+  border-color: #000000; 
+} 
+ 
+.btn-interact .badge { 
+  color: #373737; 
+  background-color: #ffffff; 
+}
+
+/* Image styles */
 
 .img-icon {
 	max-width: 16px; 
@@ -8,6 +63,21 @@
 
 
 
+/* Text styles */
+
+.client-name {
+    text-align: center;
+    padding-right: 20px;
+    font-size: 30px;
+}
+.pointify-name {
+    text-align: center;
+    color: white;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 30px;
+}
+
+/* Div styles */
 .child1 {
     float: left;
     width: 20%;
@@ -22,22 +92,14 @@
 .ng-scope {
     height: 100%;
 }
-.client-name {
-    text-align: center;
-    padding-right: 20px;
-}
-.pointify-name {
-    text-align: center;
-    color: white;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 26px;
-}
+
 .buttons-interact {
     padding-top: 20px;
     display: table;
     margin: 0 auto;
     margin-top: 20px;
     width: 80%;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .btn-group-vertical > button {
     margin-bottom: 10px;
