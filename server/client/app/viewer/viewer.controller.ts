@@ -10,6 +10,7 @@ class ViewerController {
     this.Blob = Blob;
     this.ply = ply;
     this.streaming = false;
+    this.recording = false;
     this.scene = null;
     this.connectedClients = [];
     this.pointCloud = null;
@@ -118,6 +119,24 @@ class ViewerController {
     this.streaming = false;
     this.socket.stopStreaming();
     this.frameRate = 0;
+  }
+
+  toggleRecording() {
+    if (this.recording) {
+      this.stopRecording();
+    } else {
+      this.startRecording();
+    }
+  }
+
+  startRecording() {
+    this.recording = true;
+    this.socket.startRecording();
+  }
+
+  stopRecording() {
+    this.recording = false;
+    this.socket.stopRecording();
   }
 
   calibrate() {

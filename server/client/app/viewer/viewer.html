@@ -13,6 +13,11 @@
               <span ng-if="!$ctrl.streaming">Start Streaming</span>
               </button>
       <button type="button" class="btn-block btn-lg btn-default button"
+              ng-click="$ctrl.toggleRecording()">
+              <span ng-if="$ctrl.recording">Stop Recording</span>
+              <span ng-if="!$ctrl.recording">Start Recording</span>
+              </button>
+      <button type="button" class="btn-block btn-lg btn-default button"
               ng-click="$ctrl.calibrate()">Calibrate</button>
       <button type="button" class="btn-block btn-lg btn-default button"
               ng-click="$ctrl.saveAsPLY()">Save as PLY file</button>
