@@ -146,7 +146,7 @@ export default function(io) {
     });
 
     socket.on('number_of_markers', function(num) {
-      console.log(num);
+      //console.log(num);
       var numObj = {
         numberOfMarkers : num,
         clientID : socket.clientID

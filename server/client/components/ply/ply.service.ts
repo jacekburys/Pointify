@@ -9,7 +9,7 @@ angular.module('serverApp')
         if (!vertices || !colors) {
           return '';
         }
-        if (verices.length !== colors.length) {
+        if (vertices.length !== colors.length) {
           // TODO : handle this error better
           return '';
         }
@@ -34,10 +34,10 @@ angular.module('serverApp')
           var vertex = vertices[i];
           var color = colors[i];
           text.push(vertex.x + ' ' + vertex.y + ' ' + vertex.z + ' ' +
-                    Math.round(color.r * 255) +
-                    Math.round(color.g * 255) +
-                    Math.round(color.b * 255) +
-                    ' 255');
+                    Math.round(color.r * 255) + ' ' +
+                    Math.round(color.g * 255) + ' ' +
+                    Math.round(color.b * 255) + ' ' +
+                    '255 ');
         }
 
         return text.join('\n');

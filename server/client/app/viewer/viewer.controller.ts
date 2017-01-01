@@ -43,7 +43,7 @@ class ViewerController {
     socket.ioSocket.on('viewer_number_of_markers', function(numObj) {
       var num = numObj.numberOfMarkers;
       var clientID = numObj.clientID;
-      console.log('num of markers: ', num);
+      //console.log('num of markers: ', num);
       var index = _this.connectedClients.findIndex(function(client) {
         return client.clientID === clientID;
       });
