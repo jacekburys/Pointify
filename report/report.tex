@@ -179,11 +179,38 @@ When we opted to pivot the project and work on Pointify, we were able to allevia
 There were also hardware issues that we had to deal with. We had designed the system to be able to work with multiple cameras and calibrate them correctly. We however for the project were only provided with two kinect cameras to develop with. For testing with the picture taking, we were able to use the cameras in different positions in order to emulate how the system would be able to deal with multiple cameras. This was a sufficient method to be able to test how the calibration would be able to cope and how the rendering was able to cope with a large volume of points. For live streaming however this proved to be much more difficult. We were unable to test how the system would be able to cope with multiple cameras sending data at once and how this would affect the framerate. The fact that we needed to use the hardware to test the system was also a problem that we faced which meant that we were only able to work on the project when we were in university rather than being able to do any work remotely. For testing purposes we set the build server to be a persistent server for Pointify as well which allowed us to test the client in isolation without having to use a seperate machine to act as the server for our distributed system. We had a problem with usb 3.0 ports as well, some of the computers that we were trying to use did not have usb 3.0 which is required for \texttt{libfreenect2} drivers to be able to communicate with the camera.
 \newpage
 \section{Design}
+We designed the project as a distributed system which has one server and multiple clients. We decided to do it like this to allow for further usability in the future if the user decides to use multiple cameras in a space and also to improve the extensibility of the product for potential new developers who may wish to create different types of clients that this is possible with a standard interface.
+\subsection{SocketIO}
+We decided to use SocketIO to communicate between the clients and the server as it provides a simple to use decorator to the underlying networking code. This allows us to create an abstraction away from the underlying network code as well as allowing a standard interface if in the future alternative clients wish to be developed. SocketIO also has a C++ client as well as a JavaScript client which meant that we did not need to consider the networking protocols for dealing with the sockets between the server and the client. When calibrating, the server simply sends a calibration request to the client which then sends back a boolean callback if the calibration was successful or unsuccessful. When streaming, the server simply requests a picture from each client every frame and synchronises the recieved frames itself so that all the client needs to do is implement one function to take a picture and does not need to know whether it is streaming or not. The server also sends start streaming and stop streaming notifications over socket.io so that the client can change its state when streaming if required. This is done to aid further extensibility.
+\subsection{Distributed System}
+(diagram of the client server communication)
+\newpage
+\subsection{Client}
+The UML sequence diagram of the client's structure is shown below:
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.7]{clientUML}
+  \caption{UML sequence diagram of the client}
+\end{figure}
+\subsubsection{C++}
+\subsubsection{ArUco}
+\subsubsection{Libfreenect}
+\subsubsection{Data}
+We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data.
+\subsection{Server}
+The UML sequence diagram of the server's structure is shown below:
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.7]{clientUML}
+  \caption{UML sequence diagram of the server}
+\end{figure}
+\subsubsection{Gulp} %webapp
+\subsubsection{AngularJS}
 
 \newpage
 \section{Implementation}
 \subsection{Calibration}
-\subsubsection{Marker position estimation}
+\subsubsection{Marker pose estimation}
 When streaming with more than one camera, we required the point clouds they send to be aligned such that they can be displayed seamlessly on top of each other, building a 3 dimensional representation of the scene. The idea behind this involves applying a transformation to each point in the scene, to bring it from the camera's perspective to some common perspective shared by all the cameras. We discussed two ways of doing this, one of which chooses one of the cameras as the "master" camera, then synchronises the other cameras around it. The alternative method is by centering all of the cameras on a common point, in our case the calibration marker we use. An advantage of using the first method is that one less camera would need to be calibrated, as all of the other cameras would be centered around the master, but this would lead to more complicated code, and more difficult communication between the cameras. The second approach would give more elegant and maintainable code, as each of the cameras performs the same calibration, but sacrificing a small amount of efficiency on one of the cameras. For these reasons, we chose to use the second approach, calibrating all cameras around the marker placed in the scene.
 \\
 This involved working with a third party library called ArUco, which is a well established computer vision library for c++ that helps with the calibration process. In the method we chose, the cameras are all centered around a stationary marker placed in the scene, so we required ArUco to detect these markers and calculate the camera's position relative to the marker. The aim is to find the transformation that brings points centered around the camera, into a space with the marker as the origin, then once this is calculated we can apply this transformation to each point cloud to align them. We start this process by detecting any markers visible in the scene, then finding rotation and translation vectors from the camera to this marker, adjusting for intrinsic camera parameters such as focal length and principal point offset. From this we can build up a transformation matrix to combine both the rotation and translation, before inverting it to get the translation from camera to marker as required.
@@ -191,6 +218,14 @@ This involved working with a third party library called ArUco, which is a well e
 
 \subsubsection{Point cloud transformation}
 Once we have found the transformation matrix as in the previous part, we must apply it to each point cloud before they are is sent to the server. We experimented with doing this by multiplying each xyz point by the transformation matrix to give the transformed point, but this was causing some performance issues due to the amount of points needed to be transformed at once. A better way of doing this would be to apply the transformation to all points in one operation with a more complex matrix operation. We used an optimised implementation of this in opencv called perspectiveTransform to do this efficiently, which when given the set of input points, and the transformation function we calculated earlier, would return the transformed points we needed. When each client calculated the transformation to bring their origin to the marker, and applied this transformation to the point clouds captured from the connect, they could be successfully combined such that they would align.
+
+%adam can you please write about the matrix transformations you did and why
+
+\subsection{Challenges}
+\subsection{Dual Camera Sensors}
+When performing the calibration we noticed that the calibration was slightly off....
+\\
+(image of calibration without registered and with registered)
 
 \newpage
 \section{Evaluation}
