@@ -28,6 +28,14 @@ angular.module('serverApp')
         console.log('Trying to emit stop_streaming');
         ioSocket.emit('viewer_stop_streaming');
       },
+      startRecording: function() {
+        console.log('Trying to emit start_recording');
+        ioSocket.emit('viewer_start_recording');
+      },
+      stopRecording: function() {
+        console.log('Trying to emit stop_recording');
+        ioSocket.emit('viewer_stop_recording');
+      },
       calibrate : function() {
         console.log('Trying to emit calibrate');
         ioSocket.emit('viewer_calibrate');

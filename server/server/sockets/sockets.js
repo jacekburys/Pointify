@@ -9,6 +9,7 @@ export default function(io) {
   io.viewerSocket = null;
 
   io.streaming = false;
+  io.recording = false;
   io.frameBuffer = [];
 
   var d = new Date();
@@ -103,6 +104,17 @@ export default function(io) {
     socket.on('viewer_stop_streaming', function() {
       io.streaming = false;
       io.sockets.emit('stop_streaming');
+    });
+
+    // the Start Recording button on the frontend was pressed
+    socket.on('viewer_start_recording', function() {
+      io.recording = true;
+      // TODO : recording implementation
+    });
+
+    // the Stop Recording button on the frontend was pressed
+    socket.on('viewer_stop_recording', function() {
+      io.recording = false;
     });
 
     // got streaming frame

@@ -8,12 +8,14 @@
       <button type="button" class="btn-block btn-lg btn-default button"
               ng-click="$ctrl.takePicture()">Take Picture</button>
       <button type="button" class="btn-block btn-lg btn-default button"
-              ng-click="$ctrl.toggleStreaming()">
+              ng-click="$ctrl.toggleStreaming()"
+              ng-disabled="$ctrl.recording">
               <span ng-if="$ctrl.streaming">Stop Streaming</span>
               <span ng-if="!$ctrl.streaming">Start Streaming</span>
               </button>
       <button type="button" class="btn-block btn-lg btn-default button"
-              ng-click="$ctrl.toggleRecording()">
+              ng-click="$ctrl.toggleRecording()"
+              ng-disabled="!$ctrl.streaming">
               <span ng-if="$ctrl.recording">Stop Recording</span>
               <span ng-if="!$ctrl.recording">Start Recording</span>
               </button>
