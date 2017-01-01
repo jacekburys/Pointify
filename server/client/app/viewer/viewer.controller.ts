@@ -202,6 +202,7 @@ class ViewerController {
       renderer = new THREE.WebGLRenderer();
       renderer.setPixelRatio( window.devicePixelRatio );
       renderer.setSize( width, height );
+      renderer.domElement.id = 'viewer_canvas';
 
       controls = new THREE.OrbitControls(camera, renderer.domElement);
 
@@ -210,7 +211,6 @@ class ViewerController {
 
       document.getElementById('viewer').appendChild( renderer.domElement );
       window.addEventListener( 'resize', onWindowResize, false );
-
       this.scene = scene;
     }
 
