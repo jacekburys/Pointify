@@ -43,7 +43,9 @@
               <tr ng-repeat="client in $ctrl.connectedClients">
                 <td>{{client.clientID}}</td>
                 <td>{{client.ip}}</td>
-                <td>{{client.calibStatus}}</td>
+                <td style = "color:green;" ng-if="client.calibStatus == 'Success'">{{client.calibStatus}}</td>
+	 	<td style = "color:red;" ng-if="client.calibStatus == 'Not calibrated'">{{client.calibStatus}}</td>
+		<td style = "color:white;" ng-if="client.calibStatus != 'Success' && client.calibStatus != 'Not calibrated'">{{client.calibStatus}}</td>
               </tr>
             </tbody>
           </table>
@@ -64,6 +66,5 @@
       <div class = "frame-rate">FPS: {{$ctrl.frameRate}} </div> 
     </div>
   </div>
-
 </body>
 </html>
