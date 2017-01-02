@@ -3,6 +3,7 @@
 \graphicspath{ {images/} }
 \usepackage{hyperref}
 \setcounter{tocdepth}{4}
+\setlength\parindent{0pt}
 \usepackage[margin=1in]{geometry}
 
 \newcommand*{\titleGP}{\begingroup % Create the command for including the title page in the document
@@ -31,7 +32,7 @@ Created by \\[\baselineskip]
 
 \vfill 
 
-{\scshape 2016} \\[0.3\baselineskip] % Year published
+{\scshape 2017} \\[0.3\baselineskip] % Year published
 
 \endgroup}
 
@@ -41,11 +42,10 @@ Created by \\[\baselineskip]
 \thispagestyle{empty}
 
 \newpage
+\setcounter{page}{1}
 \tableofcontents
-\thispagestyle{empty}
 
 \newpage
-\setcounter{page}{1}
 \section{Executive Summary}
 
 The ability to take an image and generate a 3D point cloud in real time, with multiple calibrated cameras, giving both depth and colour information has multiple use cases today. Through Pointify we have developed a system that utilises Microsoft’s proprietary Xbox Kinect hardware to generate these point clouds based on the XYZ and RGB data from the sensors on the devices. It is a truly cross-platform service which allows the camera clients and the server to run on Windows, OS X or Linux operating systems. We achieve this by using services and programming languages that run on all operating systems. Having multiple calibrated Kinect cameras allows for a full 360 degree view of the object or scene that is being photographed.
@@ -78,13 +78,13 @@ For live imaging there are also two main use cases. For virtual reality gaming i
 \section{Introduction}
 
 % TODO : maybe put these side by side
-\begin{figure}[h]
+\begin{figure}
   \centering
   \includegraphics[scale=0.3]{placeholder}
   \caption{placeholder}
   \label{fig:placeholder1}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}
   \centering
   \includegraphics[scale=0.3]{placeholder}
   \caption{placeholder}
@@ -222,11 +222,45 @@ Once we have found the transformation matrix as in the previous part, we must ap
 %adam can you please write about the matrix transformations you did and why
 
 \subsection{Challenges}
-\subsection{Dual Camera Sensors}
-When performing the calibration we noticed that the calibration was slightly off....
+\subsubsection{Dual Camera Sensors}
+When performing the calibration we noticed that the calibration was slightly off. After doing some research we worked out that this was caused by the offset between the depth and rgb cameras on the kinect hardware. The reason for this was that we were performing the AruCo calibration on the rgb matrix from the colour camera and then we were using the obtained rotation and translation vectors to calibrate the output from the depth camera. This slight offset caused the obtained origin in the coordinate space to be different and then caused the point clouds obtained from the different cameras to not align correctly. This is demonstrated in figure~\ref{fig:rgbdepth} below.
+\newpage
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.7]{rgbdepth}
+  \caption{Showing the offset between the field of view of rgb and depth cameras on the kinect}
+  \label{fig:rgbdepth}
+\end{figure}
+This produces an offset in the calibration as shown in figure~\ref{fig:calibrationoffset} below.
 \\
-(image of calibration without registered and with registered)
-
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.3]{placeholder}
+  \caption{Showing the difference between the calibration accuracy of registered and unregistered}
+  \label{fig:calibrationoffset}
+\end{figure}
+\\
+To fix this issue we needed to use the registered camera matrix from the \texttt{apply} function within \texttt{libfreenect2}. This gave us a matrix which provided the rgb data points mapped onto the corresponding points from the depth camera's field of view. We therefore performed the calibration from the depth cameras field of view and output the correct resultant rotation and translation vectors for the point cloud generated from this camera.
+\newpage
+\subsubsection{Calibration Accuracy}
+When using the registered matrix, we encountered a much worse camera matrix than the one directly taken from the rgb camera as shown in figure~\ref{fig:registeredaccuracy} below.
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.3]{placeholder}
+  \caption{Showing the difference between the registered and rgb matrices}
+  \label{fig:registeredaccuracy}
+\end{figure}
+\\
+This reduced quality meant that AruCo was unable to accurately detect the markers in the scene. To rectify this we noticed that where \texttt{libfreenect2} was unable to detect the marker accurately, there were very small parts of the screen that were being detected as a marker as well as the main marker. This caused us issues as with multiple markers on the screen, when performing the calibration, AruCo may take the wrong marker to calibrate on, causing the points to be calibrated on the wrong location. To rectify this, during the calibration step, if there were more than one marker in the scene we would calculate the size of the 3d planes and then keep only the largest plane and remove the smaller ones. This would then return us with only the main marker in the scene if it was detected correctly.
+\subsubsection{Current Challenges}
+There were also a few current challenges that we face with the project that we have been unable to find a solution to at this time. These challenges that we face are related to the streaming capability of our system and they are related to the obtainable frame rate of the streaming.
+\subsubsection{TCP vs UDP}
+With the network we had a major problem with the protocols of TCP vs UDP. Since we are streaming the frames, UDP is a much more desirable protocol to be using to increase the framerate of our system. The first problem we encountered with using this is that socket.io only supports TCP communication. We then considered using standard networking protocols rather than socket.io for the streaming of the frames between the client and the server but we realised that, for the server to communicate between its node.js backend and its angular.js frontend, it needs to use JavaScript for the rendering of the point clouds. JavaScript as a language does not natively support UDP therefore we realised that even if we would be able to communicate the server and the client, we would encounter a bottleneck between the backend and the frontend of the server and experience no additional improvement on the framerate.
+\subsubsection{Synchronisation Lag}
+Lag is another issue we encountered. We were able to obtain a moderate framerate between the server and the client for streaming but we experienced on average a 3-second delay between the camera display on the client and the server. We have not found any bottlenecks within our system that could be causing this lag and we are assuming that it is simply the network delay that is causing it.
+\subsubsection{Socket.io C++ Client}
+The TCP based streaming protocol that it uses has not been implemented with the current C++ client offered.
+We were also experiencing problems with the network queues on the socket.
 \newpage
 \section{Evaluation}
 \subsubsection{Design}
