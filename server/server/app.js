@@ -10,7 +10,6 @@ mongoose.Promise = require('bluebird');
 import config from './config/environment';
 import http from 'http';
 
-// INFO : we are not using MongoDB yet, maybe later for storing the frames
 // Connect to MongoDB
 mongoose.connect(config.mongo.uri, config.mongo.options);
 mongoose.connection.on('error', function(err) {

@@ -1,6 +1,6 @@
 export default function(io) {
 
-  var Recording = require('./recording.model.js').default;
+  var Recording = require('../api/recording.model.js').default;
 
   var FRAME_RATE_CAP = 5;
 
@@ -131,10 +131,9 @@ export default function(io) {
     });
 
     // the current recording should be saved
-    socket.on('viewer_save_recording', function() {
-      // TODO
+    socket.on('viewer_save_recording', function(recordingName) {
       var recording = new Recording({
-        name : 'recording',
+        name : recordingName,
         frames : io.recordingBuffer,
         frameTimes : io.recordingFrameTimes,
       });

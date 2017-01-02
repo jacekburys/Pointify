@@ -3,16 +3,18 @@
 (function() {
 
 class ViewerController {
-  constructor($scope, socket, FileSaver, Blob, ply, $mdDialog) {
+  constructor($scope, socket, FileSaver, Blob, ply, $mdDialog, recordingService) {
     this.$scope = $scope;
     this.socket = socket;
     this.FileSaver = FileSaver;
     this.Blob = Blob;
     this.ply = ply;
     this.mdDialog = $mdDialog;
+    this.recordingService = recordingService;
     this.streaming = false;
     this.recording = false;
     this.showingRecordings = false;
+    this.recordingList = [];
     this.scene = null;
     this.connectedClients = [];
     this.pointCloud = null;
@@ -289,6 +291,16 @@ class ViewerController {
 
   toggleShowRecordings() {
     this.showingRecordings = !this.showingRecordings;
+    if (this.showingRecordings) {
+      this.updateRecordingList();
+    }
+  }
+
+  updateRecordingList() {
+    this.recordingService.getRecordingNamesAndIds(function(res) {
+      console.log(res);
+      this.recordingList = res.data;
+    }.bind(this));
   }
 }
 
