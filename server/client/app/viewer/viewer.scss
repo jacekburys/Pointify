@@ -1,74 +1,70 @@
 /* Button styles */
 
-.btn-interact { 
-  color: #ffffff; 
-  background-color: #373737; 
-  border-color: #000000; 
-} 
- 
-.btn-interact:hover
-{
-  color: #ffffff; 
-  background-color: #8E8F99; 
-  border-color: #000000; 
+.btn-stream,
+.btn-interact {
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: $btn-font-weight;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    width: 100%;
+    height: 100%;
+    padding: 6px 12px;
+    color: #ffffff;
+    background-color: #373737;
+    border-color: #000000;
 }
-
-.btn-interact:focus,
-.btn-interact:active, 
-.btn-interact.active, 
-.open .dropdown-toggle.btn-interact { 
-  color: #ffffff; 
-  background-color: #15DB3A; 
-  border-color: #000000; 
-} 
- 
-.btn-interact:active, 
-.btn-interact.active, 
-.open .dropdown-toggle.btn-interact { 
-  background-image: none; 
-} 
- 
-.btn-interact.disabled, 
-.btn-interact[disabled], 
-fieldset[disabled] .btn-interact, 
-.btn-interact.disabled:hover, 
-.btn-interact[disabled]:hover, 
-fieldset[disabled] .btn-interact:hover, 
-.btn-interact.disabled:focus, 
-.btn-interact[disabled]:focus, 
-fieldset[disabled] .btn-interact:focus, 
-.btn-interact.disabled:active, 
-.btn-interact[disabled]:active, 
-fieldset[disabled] .btn-interact:active, 
-.btn-interact.disabled.active, 
-.btn-interact[disabled].active, 
-fieldset[disabled] .btn-interact.active { 
-  background-color: #373737; 
-  border-color: #000000; 
-} 
- 
-.btn-interact .badge { 
-  color: #373737; 
-  background-color: #ffffff; 
+.btn-stream:hover,
+.btn-interact:hover {
+    color: #ffffff;
+    background-color: #8E8F99;
+    border-color: #000000;
 }
-
+.btn-stream.highlight {
+    color: #ffffff;
+    background-color: #15DB3A;
+    border-color: #000000;
+}
+.btn-interact.disabled,
+.btn-interact[disabled],
+fieldset[disabled] .btn-interact,
+.btn-interact.disabled:hover,
+.btn-interact[disabled]:hover,
+fieldset[disabled] .btn-interact:hover,
+.btn-interact.disabled:focus,
+.btn-interact[disabled]:focus,
+fieldset[disabled] .btn-interact:focus,
+.btn-interact.disabled:active,
+.btn-interact[disabled]:active,
+fieldset[disabled] .btn-interact:active,
+.btn-interact.disabled.active,
+.btn-interact[disabled].active,
+fieldset[disabled] .btn-interact.active {
+    background-color: #373737;
+    border-color: #000000;
+}
+.btn-interact .badge {
+    color: #373737;
+    background-color: #ffffff;
+}
 /* Image styles */
 
 .img-icon {
-	max-width: 16px; 
-	max-height: 16px;
-	margin-bottom: 3px;
-	margin-right: 4px;
+    max-width: 16px;
+    max-height: 16px;
+    margin-bottom: 3px;
+    margin-right: 4px;
 }
-
 .img-pointify {
-	margin-bottom: 3px;
-	margin-right: 4px;
-	max-width: 32px; 
-	max-height: 32px;
+    margin-bottom: 3px;
+    margin-right: 4px;
+    max-width: 32px;
+    max-height: 32px;
 }
-
-
 /* Text styles */
 
 .client-name {
@@ -84,18 +80,17 @@ fieldset[disabled] .btn-interact.active {
     font-size: 30px;
     padding-top: 16px;
 }
-
 .frame-rate {
-  position: absolute;
-  right: 40px;
-  top: 10px;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    position: absolute;
+    right: 40px;
+    top: 10px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-
 /* Div styles */
+
 .child1 {
     float: left;
     width: 20%;
@@ -110,7 +105,6 @@ fieldset[disabled] .btn-interact.active {
 .ng-scope {
     height: 100%;
 }
-
 .buttons-interact {
     padding-top: 20px;
     display: table;
@@ -126,23 +120,21 @@ fieldset[disabled] .btn-interact.active {
     width: 100%;
     height: 320px;
     background-color: #1f1f1f;
-
 }
 .client-empty {
-   width: 100%;
-   height: 100%;
-   padding-top: 130px;
-   text-align: center;
-   vertical-align: middle;
-   color: red;
+    width: 100%;
+    height: 100%;
+    padding-top: 130px;
+    text-align: center;
+    vertical-align: middle;
+    color: red;
 }
-
 .client-div {
     width: 100%;
     height: 100%;
     background-color: #1f1f1f;
 }
-.viewer-div {} .table-client {
+.table-client {
     border: 1px solid #303030;
     border-collapse: separate;
     border-left: 0;
