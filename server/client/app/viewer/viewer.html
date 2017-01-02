@@ -25,7 +25,13 @@
       <div class="client-table-back">
         <h2 class="client-name">Clients</h2>
         <div class="table-client-border">
-          <table class="table-client">
+          
+   <!--
+       <div class = "empty">
+	 NO clients
+       </div>!-->
+
+	<table class="table-client">
             <thead>
               <tr>
                 <td style="width:25%">Client ID</td>
@@ -39,22 +45,13 @@
                 <td>{{client.ip}}</td>
                 <td>{{client.calibStatus}}</td>
               </tr>
-              <tr>
-                <td>1</td>
-                <td>127.0.0.1</td>
-                <td style="color: green">Calibrated</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>127.128.129.131</td>
-                <td style="color: red">Not calibrated</td>
-              </tr>
-
             </tbody>
           </table>
+
+
         </div>
         <div class="client-connected">
-          Connected clients: 2 </br>
+          Connected clients: {{$ctrl.connectedClients.length}} </br>
           Calibrated: 1/2
         </div>
       </div>

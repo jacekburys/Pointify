@@ -86,7 +86,7 @@ fieldset[disabled] .btn-interact.active {
 
 .frame-rate {
   position: absolute;
-  left: 400px;
+  right: 40px;
   top: 10px;
   color: red;
   font-size: 20px;
@@ -126,6 +126,12 @@ fieldset[disabled] .btn-interact.active {
     height: 320px;
     background-color: #1f1f1f;
 
+}
+
+.empty {
+   width: 100%;
+   height: 100%;
+   background-color: red;
 }
 
 .client-div {
