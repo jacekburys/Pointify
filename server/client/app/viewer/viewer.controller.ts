@@ -230,6 +230,7 @@ class ViewerController {
 
 }
 
+
 angular.module('serverApp')
   .component('viewer', {
     templateUrl: 'app/viewer/viewer.html',

@@ -47,12 +47,13 @@
               </tr>
             </tbody>
           </table>
-
-
         </div>
         <div class="client-connected">
           Connected clients: {{$ctrl.connectedClients.length}} </br>
-          Calibrated: 1/2
+	  <div ng-repeat= "client in $ctrl.connectedClients | filter : 'Success' as calibrated"/>
+	  <div>
+  	    Calibrated: {{calibrated.length }}/{{$ctrl.connectedClients.length}}
+          </div>
         </div>
       </div>
     </div>
