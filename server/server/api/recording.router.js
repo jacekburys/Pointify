@@ -16,9 +16,17 @@ function getRecording(req, res) {
 }
 
 function deleteRecording(req, res) {
-  console.log('trying to delete recording');
-  res.status(200).json({});
-  // TODO
+  console.log('trying to delete recording ' + req.params.id);
+  //res.status(200).json({});
+  Recording.findById(req.params.id).remove(function(err) {
+    if (err) {
+      console.log(err);
+      // TODO : handle this error
+      return;
+    }
+    // TODO : send something?
+    res.status(200).json();
+  });
 }
 
 var express = require('express');

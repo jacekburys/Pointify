@@ -51,8 +51,16 @@
       <ul class="list-group pre-scrollable">
         <li ng-repeat="rec in $ctrl.recordingList" class="list-group-item">
           <div class="row">
-            <div class="col-sm-6 col-sm-offset-3">
+            <div class="col-sm-6">
               {{rec.name}}
+            </div>
+            <div class="col-sm-3">
+              <button type="button" class="btn-block btn-lg btn-default button"
+                ng-click="$ctrl.deleteRecording(rec)">Delete</button>
+            </div>
+            <div class="col-sm-3">
+              <button type="button" class="btn-block btn-lg btn-default button"
+                ng-click="$ctrl.playRecording(rec)">Play</button>
             </div>
           </div>
         </li>

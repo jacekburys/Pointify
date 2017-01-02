@@ -10,6 +10,13 @@ angular.module('serverApp')
           console.log(res);
           cb(res);
         });
+      },
+      deleteRecording : function(id, cb) {
+        $http.delete('api/recordings/' + id).then(function(res) {
+          console.log('got response from api/recordings DELETE');
+          console.log(res);
+          cb(res);
+        });
       }
     };
   });

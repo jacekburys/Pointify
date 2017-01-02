@@ -302,6 +302,19 @@ class ViewerController {
       this.recordingList = res.data;
     }.bind(this));
   }
+
+  deleteRecording(rec) {
+    console.log('trying to remove ' + rec._id);
+    this.recordingService.deleteRecording(rec._id, function(res) {
+      if (res.status === 200) {
+        this.recordingList.splice(this.recordingList.indexOf(rec), 1);
+      }
+    }.bind(this));
+  }
+
+  playRecording(rec) {
+    console.log('trying to play ' + rec._id);
+  }
 }
 
 angular.module('serverApp')
