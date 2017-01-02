@@ -1,5 +1,5 @@
 <div class="row main">
-  <div class="col-sm-4">
+  <div class="col-sm-4" ng-show="!$ctrl.showingRecordings">
     <div class="col-sm-10 col-sm-offset-1">
       <!-- TODO : put a logo or something here -->
       <!-- TODO : make buttons change color depending on situation -->
@@ -23,6 +23,8 @@
               ng-click="$ctrl.calibrate()">Calibrate</button>
       <button type="button" class="btn-block btn-lg btn-default button"
               ng-click="$ctrl.saveAsPLY()">Save as PLY file</button>
+      <button type="button" class="btn-block btn-lg btn-default button"
+              ng-click="$ctrl.toggleShowRecordings()">Load Recording</button>
       <h1 class="text-center"> Clients </h1>
       <ul class="list-group pre-scrollable">
         <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
@@ -39,6 +41,13 @@
           </div>
         </li>
       </ul>
+    </div>
+  </div>
+  <div class="col-sm-4" ng-show="$ctrl.showingRecordings">
+    <div class="col-sm-10 col-sm-offset-1">
+      <h1>Recordings</h1>
+      <button type="button" class="btn-block btn-lg btn-default button"
+              ng-click="$ctrl.toggleShowRecordings()">Back</button>
     </div>
   </div>
   <div class="col-sm-8">

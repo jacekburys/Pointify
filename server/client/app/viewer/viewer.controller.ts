@@ -12,6 +12,7 @@ class ViewerController {
     this.mdDialog = $mdDialog;
     this.streaming = false;
     this.recording = false;
+    this.showingRecordings = false;
     this.scene = null;
     this.connectedClients = [];
     this.pointCloud = null;
@@ -284,6 +285,10 @@ class ViewerController {
       console.log('cancel');
       this.socket.discardRecording();
     }.bind(this));
+  }
+
+  toggleShowRecordings() {
+    this.showingRecordings = !this.showingRecordings;
   }
 }
 
