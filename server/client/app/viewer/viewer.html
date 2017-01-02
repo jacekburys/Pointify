@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <body>
-  
-<head>
-<title>HTML Reference</title>
-</head>
+
+  <head>
+    <title>HTML Reference</title>
+  </head>
   <div class="child1">
     <div class="pointify-div">
-      <div class="pointify-name">Pointify <img class = "img-pointify" src="assets/images/pointify_wand.png"/> </div>
+      <div class="pointify-name">Pointify <img class="img-pointify" src="assets/images/pointify_wand.png" /> </div>
       <div class="buttons-interact btn-group-vertical">
         <button type="button" class="btn btn-default btn-interact" ng-click="$ctrl.toggleStreaming()">
           <span ng-if="$ctrl.streaming"><img class = "img-icon" src="assets/images/stream.png"/> Stop Streaming</span>
           <span ng-if="!$ctrl.streaming"><img class = "img-icon" src="assets/images/stream.png"/>Start Streaming</span>
         </button>
-        <button type="button" class="btn btn-default btn-interact" ng-click="$ctrl.takePicture()"> <img class = "img-icon" src="assets/images/camera.png"/>Take Picture</button>
-        <button type="button" class="btn btn-default btn-interact" ng-click="$ctrl.calibrate()"><img class = "img-icon" src="assets/images/calibrate.png"/>Calibrate</button>
+        <button type="button" class="btn btn-default btn-interact" ng-click="$ctrl.takePicture()"> <img class="img-icon" src="assets/images/camera.png" />Take Picture</button>
+        <button type="button" class="btn btn-default btn-interact" ng-click="$ctrl.calibrate()"><img class="img-icon" src="assets/images/calibrate.png" />Calibrate</button>
         <button type="button" class="disabled btn btn-default btn-interact" ng-click="$ctrl.toggleRecording()">
           <span ng-if="$ctrl.recording"><img class = "img-icon" src="assets/images/record.png"/> Stop Recording</span>
           <span ng-if="!$ctrl.recording"><img class = "img-icon" src="assets/images/record.png"/> Start Recording </span>
@@ -23,38 +24,40 @@
     </div>
     <div class="client-div">
       <div class="client-table-back">
-        <h2 class="client-name">Clients</h2>
+        <div class="client-name">Clients</div>
         <div class="table-client-border">
-          
-   <!--
-       <div class = "empty">
-	 NO clients
-       </div>!-->
-
-	<table class="table-client">
-            <thead>
-              <tr>
-                <td style="width:25%">Client ID</td>
-                <td>Client IP</td>
-                <td>Status</td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="client in $ctrl.connectedClients">
-                <td>{{client.clientID}}</td>
-                <td>{{client.ip}}</td>
-                <td style = "color:green;" ng-if="client.calibStatus == 'Success'">{{client.calibStatus}}</td>
-	 	<td style = "color:red;" ng-if="client.calibStatus == 'Not calibrated'">{{client.calibStatus}}</td>
-		<td style = "color:white;" ng-if="client.calibStatus != 'Success' && client.calibStatus != 'Not calibrated'">{{client.calibStatus}}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="client-empty" ng-if="$ctrl.connectedClients.length == 0">
+            - No clients connected -
+          </div>
+          <div ng-if="$ctrl.connectedClients.length != 0">
+            <table class="table-client">
+              <thead>
+                <tr>
+                  <td style="width:25%">Client ID</td>
+                  <td>Client IP</td>
+                  <td>Status</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="client in $ctrl.connectedClients">
+                  <td>{{client.clientID}}</td>
+                  <td>{{client.ip}}</td>
+                  <td style="color:green;" ng-if="client.calibStatus == 'Success'">{{client.calibStatus}}</td>
+                  <td style="color:red;" ng-if="client.calibStatus == 'Not calibrated'">{{client.calibStatus}}</td>
+                  <td style="color:white;" ng-if="client.calibStatus != 'Success' && client.calibStatus != 'Not calibrated'">{{client.calibStatus}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <div class="client-connected">
           Connected clients: {{$ctrl.connectedClients.length}} </br>
-	  <div ng-repeat= "client in $ctrl.connectedClients | filter : 'Success' as calibrated"/>
-	  <div>
-  	    Calibrated: {{calibrated.length }}/{{$ctrl.connectedClients.length}}
+          <div ng-repeat="client in $ctrl.connectedClients | filter : 'Success' as calibrated" />
+          <div ng-if="$ctrl.connectedClients.length ==0">
+            Calibrated clients: -N/A-
+          </div>
+          <div ng-if="$ctrl.connectedClients.length !=0">
+            Calibrated clients: {{calibrated.length }}/{{$ctrl.connectedClients.length}}
           </div>
         </div>
       </div>
@@ -63,8 +66,9 @@
   <div class="child2">
     <div class="viewer-div">
       <div id="viewer" ng-init="$ctrl.runThree()" />
-      <div class = "frame-rate">FPS: {{$ctrl.frameRate}} </div> 
+      <div class="frame-rate">FPS: {{$ctrl.frameRate}} </div>
     </div>
   </div>
 </body>
+
 </html>

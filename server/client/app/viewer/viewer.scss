@@ -73,8 +73,9 @@ fieldset[disabled] .btn-interact.active {
 
 .client-name {
     text-align: center;
-    padding-right: 20px;
+    width: 100%;
     font-size: 30px;
+    padding-top: 16px;
 }
 .pointify-name {
     text-align: center;
@@ -88,7 +89,7 @@ fieldset[disabled] .btn-interact.active {
   position: absolute;
   right: 40px;
   top: 10px;
-  color: red;
+  color: white;
   font-size: 20px;
   font-weight: bold;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -127,11 +128,13 @@ fieldset[disabled] .btn-interact.active {
     background-color: #1f1f1f;
 
 }
-
-.empty {
+.client-empty {
    width: 100%;
    height: 100%;
-   background-color: red;
+   padding-top: 130px;
+   text-align: center;
+   vertical-align: middle;
+   color: red;
 }
 
 .client-div {
@@ -174,6 +177,7 @@ fieldset[disabled] .btn-interact.active {
     padding: 10px;
     border: 1px solid #1f1f1f;
     height: 340px;
+    margin-top: 16px;
 }
 .client-connected {
     padding-top: 10px;
