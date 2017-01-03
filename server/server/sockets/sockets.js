@@ -49,7 +49,10 @@ export default function(io) {
 
   function updateRecording() {
     if (io.recording) {
-      io.recordingBuffer.push(io.frameBuffer);
+      var temp = {
+        frameParts : io.frameBuffer
+      };
+      io.recordingBuffer.push(temp);
       var d = new Date();
       io.recordingFrametimes.push(d.getTime());
     }
@@ -154,11 +157,12 @@ export default function(io) {
 
     // got streaming frame
     socket.on('new_frame', function(frame) {
-      var frameObj = {
-        frame : frame,
-        clientID : socket.clientID,
-      };
-      io.frameBuffer.push(frameObj);
+      //var frameObj = {
+      //  frame : frame,
+      //  clientID : socket.clientID,
+      //};
+      //io.frameBuffer.push(frameObj);
+      io.frameBuffer.push(frame);
       if (io.frameBuffer.length === io.connectedClients.length) {
         // sent the frames from frameBuffer to the viewer
         io.viewerSocket.emit('viewer_pointcloud', io.frameBuffer);

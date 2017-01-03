@@ -48,11 +48,16 @@
       <h1>Recordings</h1>
       <!-- TODO : use icons -->
 			<div class="btn-group" role="group" aria-label="Basic example">
-				<button type="button" class="btn btn-default"> Start </button>
-				<button type="button" class="btn btn-default"> &lt; </button>
-				<button type="button" class="btn btn-default"> X </button>
-				<button type="button" class="btn btn-default"> &gt; </button>
-				<button type="button" class="btn btn-default"> End </button>
+				<button type="button" class="btn btn-default"
+         ng-click="$ctrl.goToStart()"> Start </button>
+				<button type="button" class="btn btn-default"
+         ng-click="$ctrl.goFrameBackward()"> &lt; </button>
+				<button type="button" class="btn btn-default"
+         ng-click="$ctrl.togglePlay()"> X </button>
+				<button type="button" class="btn btn-default"
+         ng-click="$ctrl.goFrameForward()"> &gt; </button>
+				<button type="button" class="btn btn-default"
+         ng-click="$ctrl.goToEnd()"> End </button>
 			</div> 
       <button type="button" class="btn-block btn-lg btn-default button"
               ng-click="$ctrl.toggleShowRecordings()">Back</button>
@@ -68,7 +73,7 @@
             </div>
             <div class="col-sm-3">
               <button type="button" class="btn-block btn-lg btn-default button"
-                ng-click="$ctrl.playRecording(rec)">Play</button>
+                ng-click="$ctrl.loadRecording(rec)">Play</button>
             </div>
           </div>
         </li>

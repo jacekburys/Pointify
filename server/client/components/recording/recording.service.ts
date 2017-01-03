@@ -22,6 +22,7 @@ angular.module('serverApp')
         $http.get('api/recordings/' + id).then(function(res) {
           console.log('got response from api/recordings GET');
           console.log(res);
+          cb(res);
         });
       }
     };

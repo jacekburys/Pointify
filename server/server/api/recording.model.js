@@ -2,9 +2,13 @@
 
 import mongoose from 'mongoose';
 
+var FrameSchema = new mongoose.Schema({
+  frameParts : [Buffer],
+});
+
 var RecordingSchema = new mongoose.Schema({
   name : String,
-  frames : [Buffer],
+  frames : [FrameSchema],
   frameTimes : [Number],
 });
 

@@ -15,6 +15,10 @@ class ViewerController {
     this.recording = false;
     this.showingRecordings = false;
     this.recordingList = [];
+    this.recordingFrames = [];
+    this.recordingFrameTimes = [];
+    this.recordingCurrentFrame = 0;
+    this.playingRecording = false;
     this.scene = null;
     this.connectedClients = [];
     this.pointCloud = null;
@@ -164,7 +168,7 @@ class ViewerController {
 
     for (var ind = 0; ind < frameArr.length; ind++) {
 
-      var frame = frameArr[ind].frame;
+      var frame = frameArr[ind];
 
       if (frame.byteLength % 15 !== 0) {
         console.log('ERROR: byteLength % 15 != 0');
@@ -312,11 +316,72 @@ class ViewerController {
     }.bind(this));
   }
 
-  playRecording(rec) {
+  loadRecording(rec) {
     console.log('trying to play ' + rec._id);
     this.recordingService.getRecording(rec._id, function(res) {
-      console.log(res);
+      var data = res.data;
+      this.recordingFrameTimes = data.frameTimes;
+      this.recordingFrames = data.frames;
+      console.log('recording loaded');
     }.bind(this));
+  }
+
+  // recording controls
+
+  goToStart() {
+    if (!this.showingRecordings) {
+      // TODO : refactor maybe?
+      return;
+    }
+    this.recordingCurrentFrame = 0;
+  }
+
+  goToEnd() {
+    if (!this.showingRecordings) {
+      return;
+    }
+    this.recordingCurrentFrame = this.recordingFrames.length - 1;
+  }
+
+  goFrameForward() {
+    if (!this.showingRecordings) {
+      return;
+    }
+    if (this.recordingCurrentFrame < this.recordingFrames.length - 1) {
+      this.recordingCurrentFrame++;
+    }
+  }
+
+  goFrameBackward() {
+    if (!this.showingRecordings) {
+      return;
+    }
+    if (this.recordingCurrentFrame > 0) {
+      this.recordingCurrentFrame--;
+    }
+  }
+
+  togglePlay() {
+    if (!this.showingRecordings) {
+      return;
+    }
+    this.playingRecording = !this.playingRecording;
+  }
+
+  recordingLoop() {
+    if (!this.showingRecordings || !this.playingRecording) {
+      return;
+    }
+    var ind = this.recordingCurrentFrame;
+    this.renderPointCloud(this.recordingFrames[ind].frameParts);
+    if (ind == this.recordingFrames.length - 1) {
+      return;
+    }
+    var timeDiff = this.recordingFrameTimes[ind + 1] - this.recordingFrameTimes[ind];
+    setTimeout(function() {
+      goFrameForward();
+      recordingLoop();
+    }, timeDiff);
   }
 }
 
