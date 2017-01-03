@@ -17,6 +17,12 @@ angular.module('serverApp')
           console.log(res);
           cb(res);
         });
+      },
+      getRecording : function(id, cb) {
+        $http.get('api/recordings/' + id).then(function(res) {
+          console.log('got response from api/recordings GET');
+          console.log(res);
+        });
       }
     };
   });

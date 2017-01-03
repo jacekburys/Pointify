@@ -11,8 +11,9 @@ function getRecordingNamesAndIds(req, res) {
 
 function getRecording(req, res) {
   console.log('trying to get specific recording');
-  res.status(200).json({});
-  // TODO
+  Recording.findById(req.params.id).exec().then(function(result) {
+    res.status(200).json(result);
+  });
 }
 
 function deleteRecording(req, res) {

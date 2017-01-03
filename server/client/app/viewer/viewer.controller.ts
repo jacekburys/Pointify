@@ -314,6 +314,9 @@ class ViewerController {
 
   playRecording(rec) {
     console.log('trying to play ' + rec._id);
+    this.recordingService.getRecording(rec._id, function(res) {
+      console.log(res);
+    }.bind(this));
   }
 }
 

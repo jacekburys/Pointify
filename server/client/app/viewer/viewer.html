@@ -46,6 +46,14 @@
   <div class="col-sm-4" ng-show="$ctrl.showingRecordings">
     <div class="col-sm-10 col-sm-offset-1">
       <h1>Recordings</h1>
+      <!-- TODO : use icons -->
+			<div class="btn-group" role="group" aria-label="Basic example">
+				<button type="button" class="btn btn-default"> Start </button>
+				<button type="button" class="btn btn-default"> &lt; </button>
+				<button type="button" class="btn btn-default"> X </button>
+				<button type="button" class="btn btn-default"> &gt; </button>
+				<button type="button" class="btn btn-default"> End </button>
+			</div> 
       <button type="button" class="btn-block btn-lg btn-default button"
               ng-click="$ctrl.toggleShowRecordings()">Back</button>
       <ul class="list-group pre-scrollable">
