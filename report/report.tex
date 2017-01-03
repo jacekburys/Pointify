@@ -183,7 +183,12 @@ We designed the project as a distributed system which has one server and multipl
 \subsection{SocketIO}
 We decided to use SocketIO to communicate between the clients and the server as it provides a simple to use decorator to the underlying networking code. This allows us to create an abstraction away from the underlying network code as well as allowing a standard interface if in the future alternative clients wish to be developed. SocketIO also has a C++ client as well as a JavaScript client which meant that we did not need to consider the networking protocols for dealing with the sockets between the server and the client. When calibrating, the server simply sends a calibration request to the client which then sends back a boolean callback if the calibration was successful or unsuccessful. When streaming, the server simply requests a picture from each client every frame and synchronises the recieved frames itself so that all the client needs to do is implement one function to take a picture and does not need to know whether it is streaming or not. The server also sends start streaming and stop streaming notifications over socket.io so that the client can change its state when streaming if required. This is done to aid further extensibility.
 \subsection{Distributed System}
-(diagram of the client server communication)
+We chose to design our system as a distributed system for a few main reasons. Using a distributed system is good for applications like these because when adding more devices to the system, you are also adding more computers and computing power. This means that increased number of cameras has a negligible increase on the load of the server which makes the system more powerful. Another advantage of this design is that the cameras do not need to be physically connected to a single computer and can be situated in different corners of the space. This is a vital feature for some of the use cases of our system, such as imaging a point of interest which would require the cameras to be quite far from each other. There are also drawbacks of the distributed approach however. Having a computer dedicated to each camera means that the hardware requirements are greater and having the system run over the network means that the framerate and latency will be worse than having it all run on one server.
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.6]{distributed}
+  \caption{Diagram of the distributed system design of the project}
+\end{figure}
 \newpage
 \subsection{Client}
 The UML sequence diagram of the client's structure is shown below:
@@ -220,11 +225,11 @@ This involved working with a third party library called ArUco, which is a well e
 Once we have found the transformation matrix as in the previous part, we must apply it to each point cloud before they are is sent to the server. We experimented with doing this by multiplying each xyz point by the transformation matrix to give the transformed point, but this was causing some performance issues due to the amount of points needed to be transformed at once. A better way of doing this would be to apply the transformation to all points in one operation with a more complex matrix operation. We used an optimised implementation of this in opencv called perspectiveTransform to do this efficiently, which when given the set of input points, and the transformation function we calculated earlier, would return the transformed points we needed. When each client calculated the transformation to bring their origin to the marker, and applied this transformation to the point clouds captured from the connect, they could be successfully combined such that they would align.
 
 %adam can you please write about the matrix transformations you did and why
-
+\newpage
 \subsection{Challenges}
 \subsubsection{Dual Camera Sensors}
 When performing the calibration we noticed that the calibration was slightly off. After doing some research we worked out that this was caused by the offset between the depth and rgb cameras on the kinect hardware. The reason for this was that we were performing the AruCo calibration on the rgb matrix from the colour camera and then we were using the obtained rotation and translation vectors to calibrate the output from the depth camera. This slight offset caused the obtained origin in the coordinate space to be different and then caused the point clouds obtained from the different cameras to not align correctly. This is demonstrated in figure~\ref{fig:rgbdepth} below.
-\newpage
+
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.7]{rgbdepth}
@@ -274,6 +279,13 @@ We were also experiencing problems with the network queues on the socket.
 \newpage
 \section{Conclusion and Future Extensions}
 \subsubsection{Conclusion}
+The initial goal of the project was to improve an open source 3d live reconstruction application that is hosted on github. We were suggested to read and analyse its source code, and make improvement by replacing the existing code on calibration with markers. However, as we dig deeper and played with its code, we found the project was far from perfect. We were more and more convinced that the code was not structured very well and was over complex on some parts that don't need to be so complicated. We believed we could do a better job by starting a new project from scratch with the knowledge learnt from the good parts of the original project. We explained this idea to our supervisor, Ben. He has agreed and offered his support.
+\\\\
+From then, the goal of the project became building an application that is able to take normal depth images from multiple Kinect cameras and merge them into one 3d point cloud (and view it) in real time. After several discussion, we decided to build command line tools to be the driver of Kinect cameras and image data sender, and a web application to process data and render it on screen. This development plan worked quite well as proved afterwards.
+\\\\
+We use C++ for client (command line tools), as we need to use languages that can drive Kinect and OpenCV. Some of the documentation for these libraries were not very well written but we managed to figure out the ambiguity. We also explored the C++11 concurrency features to speed up the client processing. For the server (web app), we used nodeJS as back end and angularJS as front end. Both frameworks are mature enough to allow us developing fast and yield productive result. Since we wrote the C++ client in a platform independent way, and the server side is a web application that runs everywhere, the result product actually can run on different operating systems. As far as we tested, it runs on [Some OS], [Some OS], and [Some other OS].
+\\\\
+Overall, we are very happy about the result we did in the amount of time that we consider not very long. We have decided to release it open source on github with name Pointify.
 \subsubsection{Future Extensions}
 
 % TODO : references
