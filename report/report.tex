@@ -257,12 +257,13 @@ When using the registered matrix, we encountered a much worse camera matrix than
 \end{figure}
 \\
 This reduced quality meant that AruCo was unable to accurately detect the markers in the scene. To rectify this we noticed that where \texttt{libfreenect2} was unable to detect the marker accurately, there were very small parts of the screen that were being detected as a marker as well as the main marker. This caused us issues as with multiple markers on the screen, when performing the calibration, AruCo may take the wrong marker to calibrate on, causing the points to be calibrated on the wrong location. To rectify this, during the calibration step, if there were more than one marker in the scene we would calculate the size of the 3d planes and then keep only the largest plane and remove the smaller ones. This would then return us with only the main marker in the scene if it was detected correctly.
-\subsubsection{Current Challenges}
-There were also a few current challenges that we face with the project that we have been unable to find a solution to at this time. These challenges that we face are related to the streaming capability of our system and they are related to the obtainable frame rate of the streaming.
+\subsection{Unsolved Challenges}
+There were also a few unsolved challenges that we face with the project that we have been unable to find a solution to at this time. These challenges that we face are related to the streaming capability of our system and they are related to the obtainable frame rate of the streaming.
 \subsubsection{TCP vs UDP}
 With the network we had a major problem with the protocols of TCP vs UDP. Since we are streaming the frames, UDP is a much more desirable protocol to be using to increase the framerate of our system. The first problem we encountered with using this is that socket.io only supports TCP communication. We then considered using standard networking protocols rather than socket.io for the streaming of the frames between the client and the server but we realised that, for the server to communicate between its node.js backend and its angular.js frontend, it needs to use JavaScript for the rendering of the point clouds. JavaScript as a language does not natively support UDP therefore we realised that even if we would be able to communicate the server and the client, we would encounter a bottleneck between the backend and the frontend of the server and experience no additional improvement on the framerate.
 \subsubsection{Synchronisation Lag}
 Lag is another issue we encountered. We were able to obtain a moderate framerate between the server and the client for streaming but we experienced on average a 3-second delay between the camera display on the client and the server. We have not found any bottlenecks within our system that could be causing this lag and we are assuming that it is simply the network delay that is causing it.
+\newpage
 \subsubsection{Socket.io C++ Client}
 The TCP based streaming protocol that it uses has not been implemented with the current C++ client offered.
 We were also experiencing problems with the network queues on the socket.
@@ -278,7 +279,7 @@ We were also experiencing problems with the network queues on the socket.
 
 \newpage
 \section{Conclusion and Future Extensions}
-\subsubsection{Conclusion}
+\subsection{Conclusion}
 The initial goal of the project was to improve an open source 3d live reconstruction application that is hosted on github. We were suggested to read and analyse its source code, and make improvement by replacing the existing code on calibration with markers. However, as we dig deeper and played with its code, we found the project was far from perfect. We were more and more convinced that the code was not structured very well and was over complex on some parts that don't need to be so complicated. We believed we could do a better job by starting a new project from scratch with the knowledge learnt from the good parts of the original project. We explained this idea to our supervisor, Ben. He has agreed and offered his support.
 \\\\
 From then, the goal of the project became building an application that is able to take normal depth images from multiple Kinect cameras and merge them into one 3d point cloud (and view it) in real time. After several discussion, we decided to build command line tools to be the driver of Kinect cameras and image data sender, and a web application to process data and render it on screen. This development plan worked quite well as proved afterwards.
@@ -286,7 +287,12 @@ From then, the goal of the project became building an application that is able t
 We use C++ for client (command line tools), as we need to use languages that can drive Kinect and OpenCV. Some of the documentation for these libraries were not very well written but we managed to figure out the ambiguity. We also explored the C++11 concurrency features to speed up the client processing. For the server (web app), we used nodeJS as back end and angularJS as front end. Both frameworks are mature enough to allow us developing fast and yield productive result. Since we wrote the C++ client in a platform independent way, and the server side is a web application that runs everywhere, the result product actually can run on different operating systems. As far as we tested, it runs on [Some OS], [Some OS], and [Some other OS].
 \\\\
 Overall, we are very happy about the result we did in the amount of time that we consider not very long. We have decided to release it open source on github with name Pointify.
-\subsubsection{Future Extensions}
+\subsection{Future Extensions}
+There are features that we believe can improve the usability of this product, but didn't implement due to the harsh time limit on the project. We managed to identifier some top ranking future extensions and listed them below. Hopefully we can have a slim chance to implement them in the future.
+\\\\
+1. We can try to build up GUI implementation on client side. This will allow people who don't have technical background to use the product with ease, instead of looking up "what is command line?". And this will allow us to integrate more things with ease, for example, we can simply display the current frame rate on the screen. We can try to use some platform-independent UI library to achieve this, possibly Qt.
+\\\\
+2. We can try to make the product work with more types of cameras. There might be other types of cameras that can capture depth information. What we can do is to build up a layer of indirection on hardware driver, so that current existing calculation code will work with different camera implementations. We also need to unify the format data is passed so that we can maximise the amount of code that can be reused.
 
 % TODO : references
 
