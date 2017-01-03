@@ -1,6 +1,6 @@
 /* Button styles */
 
-.btn-stream,
+.btn-toggle,
 .btn-interact {
     display: inline-block;
     margin-bottom: 0;
@@ -18,17 +18,34 @@
     background-color: #373737;
     border-color: #000000;
 }
-.btn-stream:hover,
+.btn-toggle:hover,
 .btn-interact:hover {
     color: #ffffff;
     background-color: #8E8F99;
     border-color: #000000;
 }
-.btn-stream.highlight {
+.btn-toggle.highlight {
     color: #ffffff;
     background-color: #15DB3A;
     border-color: #000000;
 }
+
+
+.btn-toggle.disabled,
+.btn-toggle[disabled],
+fieldset[disabled] .btn-toggle,
+.btn-toggle.disabled:hover,
+.btn-toggle[disabled]:hover,
+fieldset[disabled] .btn-toggle:hover,
+.btn-toggle.disabled:focus,
+.btn-toggle[disabled]:focus,
+fieldset[disabled] .btn-toggle:focus,
+.btn-toggle.disabled:active,
+.btn-toggle[disabled]:active,
+fieldset[disabled] .btn-toggle:active,
+.btn-toggle.disabled.active,
+.btn-toggle[disabled].active,
+fieldset[disabled] .btn-toggle.active,
 .btn-interact.disabled,
 .btn-interact[disabled],
 fieldset[disabled] .btn-interact,
