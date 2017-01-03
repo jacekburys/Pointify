@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <body>
   <script>
     jQuery(function($) {
@@ -11,7 +12,7 @@
   <div class="child1">
     <div class="pointify-div">
       <div class="pointify-name">Pointify <img class="img-pointify" src="assets/images/pointify_wand.png" /> </div>
-      <div  class="buttons-interact btn-group-vertical">
+      <div class="buttons-interact btn-group-vertical">
         <button type="button" ng-disabled="$ctrl.connectedClients.length == 0" class="btn-toggle" ng-click="$ctrl.toggleStreaming()">
           <span ng-if="$ctrl.streaming"><img class = "img-icon" src="assets/images/stream.png"/> Stop Streaming</span>
           <span ng-if="!$ctrl.streaming"><img class = "img-icon" src="assets/images/stream.png"/>Start Streaming</span>
@@ -72,4 +73,5 @@
     </div>
   </div>
 </body>
+
 </html>

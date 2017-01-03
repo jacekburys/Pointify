@@ -17,6 +17,12 @@
     color: #ffffff;
     background-color: #373737;
     border-color: #000000;
+    &.disabled, &[disabled], fieldset[disabled] & {
+        cursor: not-allowed;
+        pointer-events: none; // Future-proof disabling of clicks
+        @include opacity(.65);
+        @include box-shadow(none);
+    }
 }
 .btn-toggle:hover,
 .btn-interact:hover {
@@ -27,41 +33,6 @@
 .btn-toggle.highlight {
     color: #ffffff;
     background-color: #15DB3A;
-    border-color: #000000;
-}
-
-
-.btn-toggle.disabled,
-.btn-toggle[disabled],
-fieldset[disabled] .btn-toggle,
-.btn-toggle.disabled:hover,
-.btn-toggle[disabled]:hover,
-fieldset[disabled] .btn-toggle:hover,
-.btn-toggle.disabled:focus,
-.btn-toggle[disabled]:focus,
-fieldset[disabled] .btn-toggle:focus,
-.btn-toggle.disabled:active,
-.btn-toggle[disabled]:active,
-fieldset[disabled] .btn-toggle:active,
-.btn-toggle.disabled.active,
-.btn-toggle[disabled].active,
-fieldset[disabled] .btn-toggle.active,
-.btn-interact.disabled,
-.btn-interact[disabled],
-fieldset[disabled] .btn-interact,
-.btn-interact.disabled:hover,
-.btn-interact[disabled]:hover,
-fieldset[disabled] .btn-interact:hover,
-.btn-interact.disabled:focus,
-.btn-interact[disabled]:focus,
-fieldset[disabled] .btn-interact:focus,
-.btn-interact.disabled:active,
-.btn-interact[disabled]:active,
-fieldset[disabled] .btn-interact:active,
-.btn-interact.disabled.active,
-.btn-interact[disabled].active,
-fieldset[disabled] .btn-interact.active {
-    background-color: #373737;
     border-color: #000000;
 }
 .btn-interact .badge {
