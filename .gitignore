@@ -75,8 +75,6 @@ $RECYCLE.BIN/
 .nfs*
 
 
-
-
 client/bin
 client/lib
 lib
@@ -87,6 +85,7 @@ client/shell
 # Intellij Files
 .idea
 
-CMakeLists.txt
-
-
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+CMakeFiles
