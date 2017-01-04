@@ -186,7 +186,7 @@ We decided to use SocketIO to communicate between the clients and the server as 
 We chose to design our system as a distributed system for a few main reasons. Using a distributed system is good for applications like these because when adding more devices to the system, you are also adding more computers and computing power. This means that increased number of cameras has a negligible increase on the load of the server which makes the system more powerful. Another advantage of this design is that the cameras do not need to be physically connected to a single computer and can be situated in different corners of the space. This is a vital feature for some of the use cases of our system, such as imaging a point of interest which would require the cameras to be quite far from each other. There are also drawbacks of the distributed approach however. Having a computer dedicated to each camera means that the hardware requirements are greater and having the system run over the network means that the framerate and latency will be worse than having it all run on one server.
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.6]{distributed}
+  \includegraphics[scale=0.35]{distributed}
   \caption{Diagram of the distributed system design of the project}
 \end{figure}
 \newpage
@@ -236,11 +236,11 @@ When performing the calibration we noticed that the calibration was slightly off
   \caption{Showing the offset between the field of view of rgb and depth cameras on the kinect}
   \label{fig:rgbdepth}
 \end{figure}
-This produces an offset in the calibration as shown in figure~\ref{fig:calibrationoffset} below.
+This produces an offset in the calibration as shown in figure~\ref{fig:calibrationoffset} below. The registered calibration is on the left and the unregistered directly from the camera is on the right. It can be seen that the axis is very slightly off centre for the right image, causing the calibration to be worse when applied.
 \\
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.3]{placeholder}
+  \includegraphics[scale=0.3]{registeredunregisteredpointcloud}
   \caption{Showing the difference between the calibration accuracy of registered and unregistered}
   \label{fig:calibrationoffset}
 \end{figure}
@@ -251,7 +251,7 @@ To fix this issue we needed to use the registered camera matrix from the \texttt
 When using the registered matrix, we encountered a much worse camera matrix than the one directly taken from the rgb camera as shown in figure~\ref{fig:registeredaccuracy} below.
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.3]{placeholder}
+  \includegraphics[scale=0.75]{registeredunregisteredview}
   \caption{Showing the difference between the registered and rgb matrices}
   \label{fig:registeredaccuracy}
 \end{figure}
