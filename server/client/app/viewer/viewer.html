@@ -16,6 +16,9 @@
               ng-click="$ctrl.calibrate()">Calibrate</button>
       <button type="button" class="btn-block btn-lg btn-default button"
               ng-click="$ctrl.saveAsPLY()">Save as PLY file</button>
+      <md-slider-container>
+        <md-slider flex min="0.01" max="5" step="0.01" ng-model="$ctrl.material.size" aria-label="pointSize" id="pointSizeSlider">
+      </md-slider-container>
       <h1 class="text-center"> Clients </h1>
       <ul class="list-group pre-scrollable">
         <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">

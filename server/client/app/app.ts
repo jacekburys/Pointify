@@ -6,6 +6,7 @@ angular.module('serverApp', [
   'ngResource',
   'ngSanitize',
   'ngFileSaver',
+  'ngMaterial',
 //  'btford.socket-io',
   'ui.router',
   'ui.bootstrap'
