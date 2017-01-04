@@ -3,21 +3,29 @@
 (function() {
 
 class ViewerController {
-  constructor($scope, socket) {
+  constructor($scope, socket, FileSaver, Blob, ply) {
     this.$scope = $scope;
     this.socket = socket;
+    this.FileSaver = FileSaver;
+    this.Blob = Blob;
+    this.ply = ply;
+    this.streaming = false;
     this.scene = null;
-    this.connectedClients = [
-    ];
-    this.latestPointCloud = {};
+    this.connectedClients = [];
+    this.pointCloud = null;
+    this.frameNumber = 0;
+    this.frameRate = 0;
+    this.rendering = false;
+    this.pointCloudGeometry = null;
+    this.material = new THREE.PointsMaterial({
+      size: 1,
+      vertexColors: THREE.VertexColors,
+    });
 
     var _this = this;
     socket.ioSocket.on('viewer_calibration_status', function(stat) {
-      console.log('got calibration status');
       var clientID = stat.clientID;
       var statusBool = stat.stat;
-      console.log(_this.connectedClients);
-      console.log(clientID);
       var index = _this.connectedClients.findIndex(function(client) {
         return client.clientID === clientID;
       });
@@ -32,22 +40,41 @@ class ViewerController {
       }
       _this.$scope.$apply();
     });
-    socket.ioSocket.on('viewer_pointcloud', function(frameObj) {
-      console.log('got frame from server');
-      console.log(frameObj);
-      _this.renderPointCloud(frameObj);
+    socket.ioSocket.on('viewer_number_of_markers', function(numObj) {
+      var num = numObj.numberOfMarkers;
+      var clientID = numObj.clientID;
+      //console.log('num of markers: ', num);
+      var index = _this.connectedClients.findIndex(function(client) {
+        return client.clientID === clientID;
+      });
+      if (index === -1) {
+        console.log('client for status update not found');
+        return;
+      }
+      if (_this.connectedClients[index].calibStatus === 'Success') {
+        return;
+      }
+      if (num === 0) {
+        _this.connectedClients[index].calibStatus = 'Marker not detected';
+      } else if (num === 1) {
+        _this.connectedClients[index].calibStatus = 'Marker detected';
+      } else {
+        _this.connectedClients[index].calibStatus = 'Marker detected';
+        //_this.connectedClients[index].calibStatus = 'Multiple markers';
+      }
+      _this.$scope.$apply();
+    });
+    socket.ioSocket.on('viewer_pointcloud', function(frameArr) {
+      _this.frameNumber += 1;
+      _this.renderPointCloud(frameArr);
     });
     socket.ioSocket.on('viewer_new_client', function(newClient) {
-      console.log('new client connected');
       _this.connectedClients.push(newClient);
-      _this.latestPointCloud[newClient.clientID] = null;
       _this.$scope.$apply();
-      console.log(_this.connectedClients);
     });
     socket.ioSocket.on('viewer_client_disconnect', function(clientID) {
-      console.log('disconnect ' + clientID);
       var index = _this.connectedClients.findIndex(function(client) {
-        return client.id = clientID;
+        return client.clientID = clientID;
       });
       if (index === -1) {
         return;
@@ -55,10 +82,16 @@ class ViewerController {
       _this.connectedClients.splice(index, 1);
       _this.$scope.$apply();
     });
-    socket.ioSocket.on('viewer_on_connection', function(connectedClients) {
-      console.log('viewer_on_connection');
-      console.log(connectedClients);
-      _this.connectedClients = connectedClients;
+    socket.ioSocket.on('viewer_on_connection', function(onConnectionObj) {
+      _this.connectedClients = onConnectionObj.connectedClients;
+      _this.streaming = onConnectionObj.streaming;
+      _this.$scope.$apply();
+    });
+    socket.ioSocket.on('viewer_frame_rate', function(frameRate) {
+      if (!_this.streaming) {
+        return;
+      }
+      _this.frameRate = frameRate.toFixed(2);
       _this.$scope.$apply();
     });
   }
@@ -68,88 +101,83 @@ class ViewerController {
     this.socket.takePicture();
   }
 
+  toggleStreaming() {
+    if (this.streaming) {
+      this.stopStreaming();
+    } else {
+      this.startStreaming();
+    }
+  }
+
   startStreaming() {
-    console.log('Trying to start streaming');
+    this.streaming = true;
     this.socket.startStreaming();
   }
 
+  stopStreaming() {
+    this.streaming = false;
+    this.socket.stopStreaming();
+    this.frameRate = 0;
+  }
+
   calibrate() {
-    console.log('Trying to calibrate');
     this.socket.calibrate();
   }
 
-  renderPointCloud(frameObj) {
-    //this.scene.children.forEach(function(object){
-    //    this.scene.remove(object);
-    //});
-    console.log('trying to render frame');
-    var material = new THREE.PointsMaterial({
-      size: 0.5,
-      vertexColors: THREE.VertexColors,
-    });
-    var geometry = new THREE.Geometry();
-    var x, y, z, r, g, b;
-    var i = 0;
-    var frame = frameObj.frame;
-
-    console.log('new string frame');
-    if (frame.byteLength % 15 !== 0) {
-      console.log('ERROR');
+  renderPointCloud(frameArr) {
+    if (this.rendering) {
       return;
     }
-
-    var dataView = new DataView(frame);
-
-    while (i < frame.byteLength) {
-      /*
-      x = frame[i];
-      i++;
-      y = frame[i];
-      i++;
-      z = frame[i];
-      i++;
-      r = frame[i];
-      i++;
-      g = frame[i];
-      i++;
-      b = frame[i];
-      i++;
-      */
-
-      r = dataView.getUint8(i);
-      i++;
-
-      g = dataView.getUint8(i);
-      i++;
-
-      b = dataView.getUint8(i);
-      i++;
-
-      x = dataView.getFloat32(i, true);
-      i += 4;
-
-      y = dataView.getFloat32(i, true);
-      i += 4;
-
-      z = dataView.getFloat32(i, true);
-      i += 4;
-
-      geometry.vertices.push(new THREE.Vector3(x * 50, -y * 50, z * 50));
-      geometry.colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
+    this.rendering = true;
+    console.log('trying to render frame');
+    var isNew = false;
+    if (!this.pointCloudGeometry) {
+      this.pointCloudGeometry = new THREE.Geometry();
+      isNew = true;
     }
-    var pointCloud = new THREE.Points(geometry, material);
+    this.pointCloudGeometry.vertices = [];
+    this.pointCloudGeometry.colors = [];
 
-    var clientID = frameObj.clientID;
+    for (var ind = 0; ind < frameArr.length; ind++) {
 
-    if (this.latestPointCloud[clientID]) {
-      console.log('latest not null');
-      this.scene.remove(this.latestPointCloud[clientID]);
-      console.log('removed for ' + clientID);
-    } else {
-      console.log('latest null');
+      var frame = frameArr[ind].frame;
+
+      if (frame.byteLength % 15 !== 0) {
+        console.log('ERROR: byteLength % 15 != 0');
+        return;
+      }
+
+      var dataView = new DataView(frame);
+      var i = 0;
+      var x, y, z, r, g, b;
+      while (i < frame.byteLength) {
+        r = dataView.getUint8(i);
+        i++;
+        g = dataView.getUint8(i);
+        i++;
+        b = dataView.getUint8(i);
+        i++;
+        x = dataView.getFloat32(i, true);
+        i += 4;
+        y = dataView.getFloat32(i, true);
+        i += 4;
+        z = dataView.getFloat32(i, true);
+        i += 4;
+        this.pointCloudGeometry.vertices.push(new THREE.Vector3(x * 50, -y * 50, z * 50));
+        this.pointCloudGeometry.colors.push(new THREE.Color(r / 255.0, g / 255.0, b / 255.0));
+      }
     }
-    this.scene.add( pointCloud );
-    this.latestPointCloud[clientID] = pointCloud;
+
+    if (isNew) {
+      var pointCloud = new THREE.Points(this.pointCloudGeometry, this.material);
+      this.scene.add( pointCloud );
+      this.pointCloud = pointCloud;
+    }
+
+    this.pointCloudGeometry.verticesNeedUpdate = true;
+    this.pointCloudGeometry.colorsNeedUpdate = true;
+    this.pointCloudGeometry.dynamic = true;
+    this.rendering = false;
   }
 
   runThree() {
@@ -203,6 +231,19 @@ class ViewerController {
     }
   }
 
+  saveAsPLY() {
+    if (!this.pointCloudGeometry) {
+      // TODO : handle this error
+      console.log('no pointCloudGeometry');
+      return;
+    }
+    console.log('trying to save ply');
+    var vertices = this.pointCloudGeometry.vertices;
+    var colors = this.pointCloudGeometry.colors;
+    var plyText = this.ply.toPly(vertices, colors);
+    var data = new this.Blob([plyText], {type: 'application/ply' });
+    this.FileSaver.saveAs(data, 'cloud.ply');
+  }
 }
 
 angular.module('serverApp')

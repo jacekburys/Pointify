@@ -21,8 +21,12 @@ angular.module('serverApp')
         ioSocket.emit('viewer_take_picture');
       },
       startStreaming : function() {
-        console.log('Trying to emit startstreaming');
+        console.log('Trying to emit start_streaming');
         ioSocket.emit('viewer_start_streaming');
+      },
+      stopStreaming : function() {
+        console.log('Trying to emit stop_streaming');
+        ioSocket.emit('viewer_stop_streaming');
       },
       calibrate : function() {
         console.log('Trying to emit calibrate');
