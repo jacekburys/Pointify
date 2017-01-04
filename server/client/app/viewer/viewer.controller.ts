@@ -27,7 +27,7 @@ class ViewerController {
     this.rendering = false;
     this.pointCloudGeometry = null;
     this.material = new THREE.PointsMaterial({
-      size: 1,
+      size: 0.3,
       vertexColors: THREE.VertexColors,
     });
 
