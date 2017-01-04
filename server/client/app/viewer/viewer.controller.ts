@@ -374,7 +374,7 @@ class ViewerController {
     }
     var ind = this.recordingCurrentFrame;
     this.renderPointCloud(this.recordingFrames[ind].frameParts);
-    if (ind == this.recordingFrames.length - 1) {
+    if (ind === this.recordingFrames.length - 1) {
       return;
     }
     var timeDiff = this.recordingFrameTimes[ind + 1] - this.recordingFrameTimes[ind];
