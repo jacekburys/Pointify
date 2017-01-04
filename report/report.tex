@@ -5,6 +5,7 @@
 \setcounter{tocdepth}{4}
 \setlength\parindent{0pt}
 \usepackage[margin=1in]{geometry}
+\usepackage{multirow}
 
 \newcommand*{\titleGP}{\begingroup % Create the command for including the title page in the document
 \centering % Center all text
@@ -161,7 +162,8 @@ When working in a team this size, some form of version control is essential. We 
 \subsubsection{Task Board}
 We found a Kanban-style board very useful to help us manage tasks throughout the project. We chose to use a web platform called Trello for this, as it allowed for all team members to view and edit the board anywhere, as well as providing all the tools we were looking for. We classified each task in to three lists, one labeled "Queued" for tasks that have been planned but not started, then "In progress" for tasks that are currently being worked on, and a list for tasks that had been finished, called "Complete". We would assign these tasks to team members during our meetings, then update the status of the task as we worked on it. We aimed to keep the amount of "In progress" tasks as low as possible, focusing on finishing tasks that were semi-completed before moving on to something new. Trello would automatically notify team members when their tasks had been updated, which allowed us to effectively stay updated with the state of the project between meetings. 
 \subsubsection{Continuous Integration and Deployment}
-As our project involved building a client/server style system, we wanted somewhere that was able to constantly run the server to help when developing and demonstrating the tool. We used the Department of Computing's CloudStack instance for this, because of it's easy availability and powerful resources. \\
+As our project involved building a client/server style system, we wanted somewhere that was able to constantly run the server to help when developing and demonstrating the tool. We used the Department of Computing's CloudStack instance for this, because of it's easy availability and powerful resources. 
+\\\\
 We wanted to spend as little time as possible manually running automated tests and following deployment processes, so we decided to use a continuous integration and deployment tool to automate this for us. We chose TeamCity as our tool, as it integrated well with our GitHub repository, and would run in the background of our deployment server. TeamCity would listen for pushes to the master branch of the GitHub repository, then try to build the code and run all automated tests over it. If all these steps were successful, and all the tests passed, we would push the changes to the deployment instance, which would be available to anyone in the college. This proved to be very useful when a single member was testing the functionality of the client software, as it required a connection to the server to run, so having a persistent instance of the server available at all times was essential.  
 \subsection{Team Meetings}
 As our project involved a lot of interaction between different parts of the code base, we had to meet often in order to discuss how this would work. We aimed to hold formal group meetings weekly, to update the team on our progress and allocate tasks for the next week, as well as meet with our supervisor to demonstrate our progress and listen to his advice. The meetings helped us keep track of what each team member was doing, as well as giving us insight into when specific parts of the project would be completed. We also held more frequent meetings during the week to discuss specific tasks that needed collaboration, and sometimes work on important features together, in a pair programming environment to ensure their quality. 
@@ -216,15 +218,38 @@ The UML sequence diagram of the server's structure is shown below:
 \section{Implementation}
 \subsection{Calibration}
 \subsubsection{Marker pose estimation}
-When streaming with more than one camera, we required the point clouds they send to be aligned such that they can be displayed seamlessly on top of each other, building a 3D representation of the scene. The idea behind this involves applying a transformation to each point in the scene, to bring it from the camera's perspective to some common perspective shared by all the cameras. We discussed two ways of doing this; one of which chooses one of the cameras as the "master" camera, then synchronises the other cameras around it. The alternative method is by centering all of the cameras on a common point, in our case the calibration marker we use. An advantage of using the first method is that one less camera would need to be calibrated, as all of the other cameras would be centered around the master, but this would lead to more complicated code, and more difficult communication between the cameras. The second approach would give more elegant and maintainable code, as each of the cameras performs the same calibration, but sacrificing a small amount of efficiency on one of the cameras. For these reasons, we chose to use the second approach, calibrating all cameras around the marker placed in the scene.
+When streaming with more than one camera, we required the point clouds they send to be aligned such that they can be displayed seamlessly on top of each other, building a 3 dimensional representation of the scene. The idea behind this involves applying a transformation to each point in the scene, to bring it from the camera's perspective to some common perspective shared by all the cameras. We discussed two ways of doing this, one of which chooses one of the cameras as the "master" camera, then synchronises the other cameras around it. The alternative method is by centering all of the cameras on a common point, in our case the calibration marker we use. An advantage of using the first method is that one less camera would need to be calibrated, as all of the other cameras would be centered around the master, but this would lead to more complicated code, and more difficult communication between the cameras. The second approach would give more elegant and maintainable code, as each of the cameras performs the same calibration, but sacrificing a small amount of efficiency on one of the cameras. For these reasons, we chose to use the second approach, calibrating all cameras around the marker placed in the scene.
+\\\\
+This involved working with a third party library called ArUco, which is a well established computer vision library for C++ that helps with the calibration process. In the method we chose, the cameras are all centered around a stationary marker placed in the scene, so we required ArUco to detect these markers and calculate the camera's position relative to the marker. The aim is to find the transformation that brings points centered around the camera, into a space with the marker as the origin, then once this is calculated we can apply this transformation to each point cloud to align them. We start this process by detecting any markers visible in the scene, then finding rotation and translation vectors from the camera to this marker, adjusting for intrinsic camera parameters such as focal length and principal point offset. From this we can build up a transformation matrix to combine both the rotation and translation, before inverting it to get the translation from camera to marker as shown in Figure \ref{fig:transformationMatrix}. \\
+\begin{figure}[h]
+  \[\left(\begin{array}{cccc}
+  \multicolumn{3}{c}{\multirow{3}{*}{\textbf{r}}} & \multirow{3}{*}{\textbf{t}} \\
+      &   &   & \\ 
+      &   &   & \\
+    0 & 0 & 0 & 1
+    \end{array}\right)^{-1}\]
+  \caption{Transformation matrix, where \textbf{r} is the rotation and \textbf{t} is the translation}
+  \label{fig:transformationMatrix}
+\end{figure}
 \\
-This involved working with a third party library called ArUco, which is a well established computer vision library for C++ that helps with the calibration process. In the method we chose, the cameras are all centered around a stationary marker placed in the scene, so we required ArUco to detect these markers and calculate the camera's position relative to the marker. The aim is to find the transformation that brings points centered around the camera, into a space with the marker as the origin, then once this is calculated we can apply this transformation to each point cloud to align them. We start this process by detecting any markers visible in the scene, then finding rotation and translation vectors from the camera to this marker, adjusting for intrinsic camera parameters such as focal length and principal point offset. From this we can build up a transformation matrix to combine both the rotation and translation, before inverting it to get the translation from camera to marker as required.
-\\
-
 \subsubsection{Point cloud transformation}
-Once we have found the transformation matrix as in the previous part, we must apply it to each point cloud before they are is sent to the server. We experimented with doing this by multiplying each xyz point by the transformation matrix to give the transformed point, but this was causing some performance issues due to the amount of points needed to be transformed at once. A better way of doing this would be to apply the transformation to all points in one operation with a more complex matrix operation. We used an optimised implementation of this in opencv called \texttt{perspectiveTransform} to do this efficiently, which when given the set of input points, and the transformation function we calculated earlier, would return the transformed points we needed. When each client calculated the transformation to bring their origin to the marker, and applied this transformation to the point clouds captured from the Kinect, they could be successfully combined such that they would align.
-
-%adam can you please write about the matrix transformations you did and why
+Once we have found the transformation matrix as in the previous part, we must apply it to each point cloud before they are is sent to the server. Each xyz point must be extended with a 1 on the bottom row, so that it can be multiplied correctly with the transformation matrix. We experimented applying the transformation matrix to each point to give the transformed point, but this was causing some performance issues due to the amount of points needed to be transformed at once. A better way of doing this would be to apply the transformation to all points in one operation with a more complex matrix operation, shown in Figure \ref{fig:transformationMatrix}. We used an optimised implementation of this in opencv called perspectiveTransform to do this efficiently, which when given the set of input points, and the transformation function we calculated earlier, would return the transformed points we needed. When each client calculated the transformation to bring their origin to the marker, and applied this transformation to the point clouds captured from the connect, they could be successfully combined such that they would align.\\
+\begin{figure}[h]
+  \[\left(\begin{array}{cccc}
+  \multicolumn{3}{c}{\multirow{3}{*}{\textbf{r}}} & \multirow{3}{*}{\textbf{t}} \\
+      &   &   & \\ 
+      &   &   & \\
+    0 & 0 & 0 & 1
+    \end{array}\right)^{-1}
+  \left(\begin{array}{cccc}
+    \multirow{3}{*}{\textbf{p_1}} & \multirow{3}{*}{\textbf{p_2}} & \multirow{3}{*}{\dots} & \multirow{3}{*}{\textbf{p_n}}} \\
+    & & & \\
+    & & & \\
+    1 & 1 & & 1
+    \end{array}\right)\]
+  \caption{Transformation matrix as before, applied to each point $p_1$ \dots $p_n$}
+  \label{fig:transformationApplication}
+\end{figure}
 \newpage
 \subsection{Challenges}
 \subsubsection{Dual Camera Sensors}
