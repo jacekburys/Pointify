@@ -280,19 +280,34 @@ We were also experiencing problems with the network queues on the socket.
 \newpage
 \section{Conclusion and Future Extensions}
 \subsection{Conclusion}
-The initial goal of the project was to improve an open source 3D live reconstruction application that is hosted on github. We were suggested to read, analyse its source code and make improvement by replacing the existing code on calibration with markers. However, as we dug deeper and played with its code, we found the project was far from perfect. We were more and more convinced that the code was not structured very well and was over complex on some parts that don't need to be so complicated. We believed we could do a better job by starting a new project from scratch with the knowledge learnt from the good parts of the original project. We explained this idea to our supervisor, Ben. He has agreed and offered his support.
-\\\\
-From then, the goal of the project became building an application that is able to take normal depth images from multiple Kinect cameras and merge them into one 3D point cloud (and view it) in real time. After several discussions, we decided to build command line tools to be the driver of Kinect cameras and image data sender, and a web application to process data and render it on screen. This development plan worked quite well as proved afterwards.
-\\\\
-We use C++ for client (command line tools), as we need to use languages that can drive Kinect and OpenCV. Some of the documentation for these libraries were not very well written but we managed to figure out the ambiguity. We also explored the C++11 concurrency features to speed up the client processing. For the server (web app), we used nodeJS for the back end and angularJS for the front end. Both frameworks are mature enough to allow rapid development and yield productive results. Since we wrote the C++ client in a platform independent way, and the server side is a web application that runs everywhere, the result product actually can run on different operating systems. As far as we tested, it runs on [Some OS], [Some OS], and [Some other OS].
-\\\\
+
+Throughout the project we 
+What did you learn? What might you have done differently?
+How would you build on what you have done?
+
+
 Overall, we are very happy about the result we did in the amount of time that we consider not very long. We have decided to release it open source on github with the name Pointify.
+\newpage
 \subsection{Future Extensions}
-There are features that we believe can improve the usability of this product, but didn't implement due to the harsh time limit on the project. We managed to identify some top ranking future extensions and listed them below. Hopefully we can have a slim chance to implement them in the future.
+There are features that we believe can improve the usability of this product, but didn't implement due to the time constraint on the project. Throughout the project we came up with possible extensions to implement for Pointify:
 \\\\
-1. We can try to build up GUI implementation on client side. This will allow people who don't have technical background to use the product with ease, instead of looking up "What is command line?". This will allow us to integrate more things with ease, for example, we can simply display the current frame rate on the screen. We can try to use some platform-independent UI library to achieve this, possibly Qt.
+%1. GUI implementation%
+1. \textbf{GUI Implementation}
 \\\\
-2. We can try to make the product work with more types of cameras. There might be other types of cameras that can capture depth information. What we can do is to build up a layer of indirection on the hardware driver, so that the current existing calculation code will work with different camera implementations. We also need to unify the format data that is passed so that we can maximise the amount of code that can be reused.
+Currently, only the server has a GUI implementation in place but the client side has no GUI implementation as everything is done by command line. As it stands now, the command line outputs non-user friendly errors to the client. We can try to build up a user friendly GUI implementation on client side to ensure a smoother client experience. The current client application only opens up the camera view for the Kinect and does not display any other helpful information. We can add to the display, the current frame rate and the calibration status of the client so it does not have to check on the server machine the status (which is useful if server and client are far way - better explain this). We can try to use some platform-independent UI library to achieve this, possibly Qt.
+\\\\
+%2. Pointify to support other camera devices%
+2. \textbf{Pointify to support other camera devices}
+\\\\
+Modifying Pointify to work not only with Kinect cameras, but with many more types of different cameras. There are other cameras, that do not require to be plugged in to a power socket, which can capture depth information so it is possible to configure Pointify to work for these cameras. The disadvantage of using Kinect cameras is that they must be plugged into a power socket which constrains the mobility of the client should they want to roam about. What we can do is to build up a layer of indirection on the hardware driver, so that the current existing calculation(calibration?) code will work with different camera implementations. We would also need to unify the data format that is passed so that we can maximise the amount of code that can be reused.
+\\\\
+3. \textbf{Pointify installation}
+\\\\
+In order to get Pointify to run, several prerequsites must be installed such as \texttt{Bower}, \texttt{Ruby} and \texttt{MongoDB}. With a proper simple installation set in place, we can run a single script to detect and install the aforementioned prerequsites instead of manually installing them one by one. After the prerequsites are installed, further dependancies must be installed, the \texttt{mongod} daemon must be set up in a new shell and then finally the server started by calling \texttt{gulp serve}. The installation script would then install these dependancies and then run the daemon before starting the server in a browser window.
+\\\\
+4. \textbf{Recordings}
+\\\\
+A very nice feature which would go with Pointify is the ability to record point cloud streams. After successfully calibrating the clients, you can then press the "Start recording" button to record a point cloud stream which then later can be played back. The server should be able save and load these point cloud streams that it records in a database. (add more here)
 
 % TODO : references
 
