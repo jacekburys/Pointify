@@ -27,7 +27,7 @@ class ViewerController {
     this.rendering = false;
     this.pointCloudGeometry = null;
     this.material = new THREE.PointsMaterial({
-      size: 0.3,
+      size: 0.30,
       vertexColors: THREE.VertexColors,
     });
 
@@ -158,6 +158,7 @@ class ViewerController {
     }
     this.rendering = true;
     console.log('trying to render frame');
+    console.log(frameArr);
     var isNew = false;
     if (!this.pointCloudGeometry) {
       this.pointCloudGeometry = new THREE.Geometry();
@@ -321,8 +322,10 @@ class ViewerController {
     this.recordingService.getRecording(rec._id, function(res) {
       var data = res.data;
       this.recordingFrameTimes = data.frameTimes;
-      this.recordingFrames = data.frames;
+      this.recordingFrames = JSON.parse(data.frames);
       console.log('recording loaded');
+      console.log(this.recordingFrames.length);
+      console.log(data);
     }.bind(this));
   }
 
@@ -366,6 +369,9 @@ class ViewerController {
       return;
     }
     this.playingRecording = !this.playingRecording;
+    if (this.playingRecording) {
+      this.recordingLoop();
+    }
   }
 
   recordingLoop() {
@@ -373,15 +379,16 @@ class ViewerController {
       return;
     }
     var ind = this.recordingCurrentFrame;
+    console.log('recording frame ' + ind);
     this.renderPointCloud(this.recordingFrames[ind].frameParts);
     if (ind === this.recordingFrames.length - 1) {
       return;
     }
     var timeDiff = this.recordingFrameTimes[ind + 1] - this.recordingFrameTimes[ind];
     setTimeout(function() {
-      goFrameForward();
-      recordingLoop();
-    }, timeDiff);
+      this.goFrameForward();
+      this.recordingLoop();
+    }.bind(this), timeDiff);
   }
 }
 

@@ -54,7 +54,7 @@ export default function(io) {
       };
       io.recordingBuffer.push(temp);
       var d = new Date();
-      io.recordingFrametimes.push(d.getTime());
+      io.recordingFrameTimes.push(d.getTime());
     }
   }
 
@@ -137,7 +137,7 @@ export default function(io) {
     socket.on('viewer_save_recording', function(recordingName) {
       var recording = new Recording({
         name : recordingName,
-        frames : io.recordingBuffer,
+        frames : JSON.stringify(io.recordingBuffer),
         frameTimes : io.recordingFrameTimes,
       });
       recording.save(function(err) {
