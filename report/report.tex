@@ -291,10 +291,10 @@ Once we have found the transformation matrix as in the previous part, we must ap
 \end{figure}
 \subsection{Point cloud streaming}
 Once we had built the point cloud, the next step was to send the information over a network to the server. We decided to do this by packing all the points into a binary buffer, as there would be no wasted space. This information we needed to send consisted of three 32 bit floats, for x y and z coordinates, as well as three 8 bit integers for the rgb colour values, giving a total of 15 bytes per point. There can be up to 512 x 424 points in space, giving a maximum total buffer size of 3180KB per frame. In reality, this number was much smaller, as the sensor can not pick up points that are too close or far away. We discussed the idea of compressing this buffer to reduce transfer speed, but as our client software was reletively CPU intensive already, we decided to send the uncompressed data instead.
+\newpage
 \subsection{Challenges}
 \subsubsection{Dual Camera Sensors}
 When performing the calibration we noticed that the calibration was slightly off. After doing some research we worked out that this was caused by the offset between the depth and rgb cameras on the Kinect hardware. The reason for this was that we were performing the AruCo calibration on the rgb matrix from the colour camera and then we were using the obtained rotation and translation vectors to calibrate the output from the depth camera. This slight offset caused the obtained origin in the coordinate space to be different and then caused the point clouds obtained from the different cameras to not align correctly. This is demonstrated in figure~\ref{fig:rgbdepth} below.
-
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.4]{rgbdepth}
@@ -333,16 +333,17 @@ The TCP based streaming protocol that Socket.IO uses has not been implemented wi
 This meant that during streaming of the frames we had to send our data via standard \texttt{emit} messages instead. We are not sure as to whether this would have made a significant impact on the framerate but the data sent over the normal protocol has a much larger header per frame.
 \newpage
 \section{Evaluation}
-\subsubsection{Design}
-\subsubsection{Code Quality}
-\subsubsection{Calibration Accuracy}
-\subsubsection{Testing}
-\subsubsection{Build Server}
+\subsection{Design}
+
+\subsection{Code Quality}
+\subsection{Calibration Accuracy}
+\subsection{Testing}
+\subsection{Build Server}
 The build server helped us massively in the process of testing and running demos. It allowed us to have a persistent instance of the server code live and accessable at all times, allowing a single programmer to work on the client code, and test it against the server code. It would seamlessly update whenever a commit was pushed to the master branch, run build checks and unit tests before deploying the code live. Any of us could log in to the TeamCity instance to check the build status and manually run tests, allowing us to be updated with the status of the project easily.
 \\\\
 A downside of the setup we used is that it was set up to only observe the master branch, which was only updated for major milestones. There were times where we would have liked the server to be observing another branch that was more often updated to test against. Another issue with our setup was how we used the departments cloudstack setup, which is only accessable from within college. This meant that whenever we wanted to access the build server from outside of college, we had to take a more convoluted approach, such as using the college VPN.
-\subsubsection{Deployment} %gulp
-\subsubsection{Streaming}
+\subsection{Deployment} %gulp
+\subsection{Streaming}
 
 \newpage
 \section{Conclusion and Future Extensions}
