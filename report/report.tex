@@ -254,9 +254,9 @@ When streaming with more than one camera, we required the point clouds they send
 This involved working with a third party library called ArUco, which is a well established computer vision library for C++ that helps with the calibration process. In the method we chose, the cameras are all centered around a stationary marker placed in the scene, so we required ArUco to detect these markers and calculate the camera's position relative to the marker. The aim is to find the transformation that brings points centered around the camera, into a space with the marker as the origin, then once this is calculated we can apply this transformation to each point cloud to align them. We start this process by detecting any markers visible in the scene, then finding rotation and translation vectors from the camera to this marker, adjusting for intrinsic camera parameters such as focal length and principal point offset. From this we can build up a transformation matrix to combine both the rotation and translation, before inverting it to get the translation from camera to marker as shown in Figure \ref{fig:transformationMatrix}. \\
 \begin{figure}[h]
   \[\left(\begin{array}{cccc}
-  \multicolumn{3}{c}{\multirow{3}{*}{\textbf{r}}} & \multirow{3}{*}{\textbf{t}} \\
-      &   &   & \\ 
-      &   &   & \\
+      & | &   & | \\
+    - & r & - & t \\ 
+      & | &   & | \\
     0 & 0 & 0 & 1
     \end{array}\right)^{-1}\]
   \caption{Transformation matrix, where \textbf{r} is the rotation and \textbf{t} is the translation}
@@ -267,9 +267,9 @@ This involved working with a third party library called ArUco, which is a well e
 Once we have found the transformation matrix as in the previous part, we must apply it to each point cloud before they are is sent to the server. Each xyz point must be extended with a 1 on the bottom row, so that it can be multiplied correctly with the transformation matrix. We experimented applying the transformation matrix to each point to give the transformed point, but this was causing some performance issues due to the amount of points needed to be transformed at once. A better way of doing this would be to apply the transformation to all points in one operation with a more complex matrix operation, shown in Figure \ref{fig:transformationMatrix}. We used an optimised implementation of this in opencv called perspectiveTransform to do this efficiently, which when given the set of input points, and the transformation function we calculated earlier, would return the transformed points we needed. When each client calculated the transformation to bring their origin to the marker, and applied this transformation to the point clouds captured from the connect, they could be successfully combined such that they would align.\\
 \begin{figure}[h]
   \[\left(\begin{array}{cccc}
-  \multicolumn{3}{c}{\multirow{3}{*}{\textbf{r}}} & \multirow{3}{*}{\textbf{t}} \\
-      &   &   & \\ 
-      &   &   & \\
+      & | &   & | \\
+    - & r & - & t \\ 
+      & | &   & | \\
     0 & 0 & 0 & 1
     \end{array}\right)^{-1}
   \left(\begin{array}{cccc}
