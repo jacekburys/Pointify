@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{graphicx}
+\usepackage{float}
 \graphicspath{ {images/} }
 \usepackage{hyperref}
 \setcounter{tocdepth}{4}
@@ -78,13 +79,13 @@ For live imaging there are also two main use cases. For virtual reality gaming i
 \section{Introduction}
 
 % TODO : maybe put these side by side
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[scale=0.3]{placeholder}
   \caption{placeholder}
   \label{fig:placeholder1}
 \end{figure}
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[scale=0.3]{placeholder}
   \caption{placeholder}
@@ -186,7 +187,7 @@ We decided to use SocketIO to communicate between the clients and the server as 
 We chose to design our system as a distributed system for a few main reasons. Using a distributed system is good for applications like these because when adding more devices to the system, you are also adding more computers and computing power. This means that increased number of cameras has a negligible increase on the load of the server which makes the system more powerful. Another advantage of this design is that the cameras do not need to be physically connected to a single computer and can be situated in different corners of the space. This is a vital feature for some of the use cases of our system, such as imaging a point of interest which would require the cameras to be quite far from each other. There are also drawbacks of the distributed approach however. Having a computer dedicated to each camera means that the hardware requirements are greater and having the system run over the network means that the framerate and latency will be worse than having it all run on one server.
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.6]{distributed}
+  \includegraphics[scale=0.35]{distributed}
   \caption{Diagram of the distributed system design of the project}
 \end{figure}
 \newpage
@@ -194,7 +195,7 @@ We chose to design our system as a distributed system for a few main reasons. Us
 The UML sequence diagram of the client's structure is shown below:
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.7]{clientUML}
+  \includegraphics[scale=0.6]{clientUML}
   \caption{UML sequence diagram of the client}
 \end{figure}
 \subsubsection{C++}
@@ -206,7 +207,7 @@ We chose to do the calibration on the server and send the point clouds directly 
 The UML sequence diagram of the server's structure is shown below:
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.7]{clientUML}
+  \includegraphics[scale=0.6]{serverUML}
   \caption{UML sequence diagram of the server}
 \end{figure}
 \subsubsection{Gulp} %webapp
