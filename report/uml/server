@@ -2,7 +2,7 @@ viewer:Viewer[a]
 server:Server[a]
 client:Client[a]
 
-[c:calibrate for each client]
+[c:calibrate]
 viewer:[calibrated]=server.viewer_calibrate
 [c: for each client]
 server:calibrated=client.calibrate
