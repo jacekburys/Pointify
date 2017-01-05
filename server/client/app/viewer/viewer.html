@@ -1,6 +1,6 @@
 <div layout="row" class="main">
   <div flex="25" layout-margin>
-    <div flex>
+    <div layout="column" flex>
       <!-- TODO : put a logo or something here -->
       <!-- TODO : make buttons change color depending on situation -->
       <h1 class="text-center">Pointify</h1>
@@ -23,21 +23,21 @@
         </md-slider-container>
       </section>
       <h1 class="text-center"> Clients </h1>
-      <ul class="list-group pre-scrollable">
-        <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
-          <div class="row">
-            <div class="col-sm-3">
-              {{client.clientID}}
-            </div>
-            <div class="col-sm-6">
-              {{client.ip}}
-            </div>
-            <div class="col-sm-3">
-              {{client.calibStatus}}
-            </div>
-          </div>
-        </li>
-      </ul>
+      <div layout="column" flex>
+        <div layout="row" layout-margin
+         class="client-list-header">
+          <div flex="20" layout-padding><h4>ID</h4></div>
+          <div flex="30" layout-padding><h4>IP</h4></div>
+          <div flex="50" layout-padding><h4>Status</h4></div>
+        </div>
+        <div layout="row" layout-margin
+         ng-repeat="client in $ctrl.connectedClients"
+         class="client-list-item">
+          <div flex="20" layout-padding>{{client.clientID}}</div>
+          <div flex="30" layout-padding>{{client.ip}}</div>
+          <div flex="50" layout-padding>{{client.calibStatus}}</div>
+        </div>
+      </div>
     </div>
   </div>
   <div flex="75" class="viewer-div">
