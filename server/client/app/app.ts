@@ -5,6 +5,8 @@ angular.module('serverApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
+  'ngFileSaver',
+  'ngMaterial',
 //  'btford.socket-io',
   'ui.router',
   'ui.bootstrap'
