@@ -22,8 +22,8 @@
 \rule{\textwidth}{1.6pt}\\[\baselineskip] % Thick horizontal line
 
 \scshape % Small caps
-Tagline 1 \\ 
-Tagline 2\par
+Real-Time Multi-Camera \\
+3D Reconstruction \par
 
 \vspace*{2\baselineskip}
 
@@ -201,20 +201,30 @@ The UML sequence diagram of the client's structure is shown below:
   \includegraphics[scale=0.6]{clientUML}
   \caption{UML sequence diagram of the client}
 \end{figure}
-\subsubsection{C++}
+\subsubsection{C++11}
+We chose to use C++ as the language for our client because it was the language that was the fastest cross platform language and it had support for Socket.IO, libfreenect2 and OpenCV 2 which had the ArUco calibration as an included module. It was also the language that all of the team were comfortable in since we had used it in our course previously. All the libraries we used which interfaced with the server were cross-platform so if someone wishes to create a client that uses a different type of camera they can choose any of the supported programming languages to do so.
 \subsubsection{ArUco}
-\subsubsection{Libfreenect}
+ArUco was the calibration system that was proposed by our supervisor Ben Glocker. It is the current leading calibration system and is provided as a module for OpenCV 2. Using standard libraries over implementing it ourselves reduces the possibility of bugs and the development cost. Standard libraries also makes our code easier to read for future developers to extend. It is also faster than AprilTags, which is the other calibration system.
+\subsubsection{OpenCV 2}
+OpenCV is the industry standard open source library for computer vision. It can be run in C++, C, Python and Java for Windows, Linux, OS X, iOS and Android. OpenCV is very optimised for efficiency due to its large developer base and is this performace is essential for us since we use it on every loop of our camera. It can also take advantage of multi-core processing and since almost all devices are multi-core now this improves the performance of our application. Since it uses OpenCL, it can take advantage of hardware acceleration to compute the matrix operations efficiently.
+\subsubsection{Libfreenect2}
+Libfreenect2 was our only option when it came to choosing a cross-platform driver to use for communicating with the kinect camera. Microsoft only supplied the Kinect SDK 2.0 for Windows. It utilises OpenGL and OpenCL libraries for depth processing. The system also supports up to 5 devices so it allows extensibility in the future if someone wishes to use a single computer to host multiple kinect cameras.
 \subsubsection{Data}
-We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data.
+We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data. 
+\newpage
 \subsection{Server}
-The UML sequence diagram of the server's structure is shown below:
+The UML sequence diagram of the server's structure is shown in the figure~\ref{fig:calibrationoffset} below:
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.6]{serverUML}
   \caption{UML sequence diagram of the server}
 \end{figure}
+
+Each message shown in the diagram above is sent via Socket.IO over the network and the connected clients are in a list held by the server. This is done because the viewer front-end and the server back-end need to communicate via the network when the status of connections change and frames are recieved and requested. 
+
 \subsubsection{Gulp} %webapp
 \subsubsection{AngularJS}
+
 
 \newpage
 \section{Implementation}
