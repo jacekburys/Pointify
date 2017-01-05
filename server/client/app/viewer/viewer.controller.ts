@@ -3,7 +3,7 @@
 (function() {
 
 class ViewerController {
-  constructor($scope, socket, FileSaver, Blob, ply, $mdDialog) {
+  constructor($window, $scope, socket, FileSaver, Blob, ply, $mdDialog) {
     this.$scope = $scope;
     this.socket = socket;
     this.FileSaver = FileSaver;
@@ -95,6 +95,9 @@ class ViewerController {
       _this.frameRate = frameRate.toFixed(2);
       _this.$scope.$apply();
     });
+    $window.onload = function() {
+      this.runThree();
+    }.bind(this);
   }
 
   takePicture() {
@@ -224,6 +227,7 @@ class ViewerController {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize( width, height );
+      console.log(width + ' ' + height);
     }
 
     function animate() {
@@ -253,7 +257,7 @@ class ViewerController {
       console.log('ok');
       console.log('trying to save ply');
       var vertices = this.pointCloudGeometry.vertices;
-      /var colors = this.pointCloudGeometry.colors;
+      var colors = this.pointCloudGeometry.colors;
       var plyText = this.ply.toPly(vertices, colors);
       var data = new this.Blob([plyText], {type: 'application/ply' });
       this.FileSaver.saveAs(data, result + '.ply');

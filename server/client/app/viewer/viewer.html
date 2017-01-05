@@ -1,24 +1,27 @@
-<div class="row main">
-  <div class="col-sm-4">
-    <div class="col-sm-10 col-sm-offset-1">
+<div layout="row" class="main">
+  <div flex="25" layout-margin>
+    <div flex>
       <!-- TODO : put a logo or something here -->
       <!-- TODO : make buttons change color depending on situation -->
       <h1 class="text-center">Pointify</h1>
-      <h2>Frame Rate: {{$ctrl.frameRate}}</h2>
-      <button type="button" class="btn-block btn-lg btn-default button"
-              ng-click="$ctrl.takePicture()">Take Picture</button>
-      <button type="button" class="btn-block btn-lg btn-default button"
-              ng-click="$ctrl.toggleStreaming()">
-              <span ng-if="$ctrl.streaming">Stop Streaming</span>
-              <span ng-if="!$ctrl.streaming">Start Streaming</span>
-              </button>
-      <button type="button" class="btn-block btn-lg btn-default button"
-              ng-click="$ctrl.calibrate()">Calibrate</button>
-      <button type="button" class="btn-block btn-lg btn-default button"
-              ng-click="$ctrl.saveAsPLY()">Save as PLY file</button>
-      <md-slider-container>
-        <md-slider flex min="0.01" max="5" step="0.01" ng-model="$ctrl.material.size" aria-label="pointSize" id="pointSizeSlider">
-      </md-slider-container>
+      <h2 class="text-center">Frame Rate: {{$ctrl.frameRate}}</h2>
+      <section layout="column">
+        <md-button type="button" class="md-raised md-primary"
+                ng-click="$ctrl.takePicture()">Take Picture</md-button>
+        <md-button type="button" class="md-raised md-primary"
+                ng-click="$ctrl.toggleStreaming()">
+                <span ng-if="$ctrl.streaming">Stop Streaming</span>
+                <span ng-if="!$ctrl.streaming">Start Streaming</span>
+                </md-button>
+        <md-button type="button" class="md-raised md-primary"
+                ng-click="$ctrl.calibrate()">Calibrate</md-button>
+        <md-button type="button" class="md-raised md-primary"
+                ng-click="$ctrl.saveAsPLY()">Save as PLY file</md-button>
+        <h2 class="text-center">Point Size</h2>
+        <md-slider-container>
+          <md-slider flex min="0.01" max="5" step="0.01" ng-model="$ctrl.material.size" aria-label="pointSize" id="pointSizeSlider">
+        </md-slider-container>
+      </section>
       <h1 class="text-center"> Clients </h1>
       <ul class="list-group pre-scrollable">
         <li ng-repeat="client in $ctrl.connectedClients" class="list-group-item">
@@ -37,8 +40,8 @@
       </ul>
     </div>
   </div>
-  <div class="col-sm-8">
-    <div id="viewer" ng-init="$ctrl.runThree()">
+  <div flex="75" class="viewer-div">
+    <div flex id="viewer">
     </div>
   </div>
 </div>
