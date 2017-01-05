@@ -7,6 +7,7 @@
 #include <cmdlog.h>
 #include <iostream>
 
+
 Calibration::Calibration(libfreenect2::Freenect2Device *device)
 {
     // Device used for calibration
@@ -27,10 +28,37 @@ void Calibration::setDevice(libfreenect2::Freenect2Device *device)
     this->device = device;
 }
 
-void Calibration::detectMarkers(cv::Mat* img)
+int Calibration::detectMarkers(cv::Mat* img)
 {
     cv::aruco::detectMarkers(*img, dict, corners, ids);
+
+    //TODO: make it work with areas instead
+
+    double largestSize = 0;
+    int largestCornerIndex = 0;
+    for (int i = 0; i < corners.size(); i++) {
+        auto corner = corners[i];
+        double size = cv::norm(corner[0] - corner[1]);
+        if (size > largestSize) {
+            largestSize = size;
+            largestCornerIndex = i;
+        }
+    }
+
+    for (int i = 0; i < corners.size();) {
+        auto corner = corners[i];
+        double size = cv::norm(corner[0] - corner[1]);
+        if (size < largestSize / 4) {
+            ids.erase(ids.begin() + i);
+            corners.erase(corners.begin() + i);
+        }
+        else
+            i++;
+    }
+
+    int numberOfMarkers = (int)ids.size();
     cv::aruco::drawDetectedMarkers(*img, corners, ids);
+    return numberOfMarkers;
 }
 
 bool Calibration::calibrate(cv::Mat img)

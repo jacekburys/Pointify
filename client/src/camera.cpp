@@ -9,14 +9,17 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <socketio/sio_client.h>
 #include <cmdlog.h>
 #include <queue>
+#include <chrono>
 
 #include "camera.hpp"
 
 typedef unsigned char byte;
 using namespace std;
+using namespace std::chrono;
 
 Camera::Camera(sio::client* client) {
     this->client = client;
@@ -111,6 +114,8 @@ string Camera::getPointCloudStream()
 
 void Camera::start()
 {
+    timeval tim;
+    int time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     // init kinect
     libfreenect2::Freenect2 freenect2;
     libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::None));
@@ -152,6 +157,7 @@ void Camera::start()
                         depth2rgb(COLOR_WIDTH, COLOR_HEIGHT + 2, COLOR_CHANNELS);
     undistorted = &undistortedLocal;
     registered = &registeredLocal;
+    int numberOfMarkers = 0;
 
     while (!shutdown)
     {
@@ -166,6 +172,7 @@ void Camera::start()
         // generate color-depth frame, and convert to matrix
         registration->apply(rgb, depth, undistorted, registered, true, &depth2rgb);
         cv::Mat(registered->height, registered->width, CV_8UC4, registered->data).copyTo(rgbd);
+
         cv::cvtColor(rgbd, rgbd, CV_RGBA2RGB);
 
         // handle picture signal
@@ -186,6 +193,11 @@ void Camera::start()
             }
         }
 
+        latestFrameTaken = getPointCloudStream();
+        int newtime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        int framerate = 1000 / (newtime - time);
+        time = newtime;
+
         // handle calibration signal
         if (!calibrationFinished)
         {
@@ -204,15 +216,19 @@ void Camera::start()
             }
         }
 
-        // handle stream signal
-        if (streamTriggered) {
-//            thread streamFrameThread(streamFramesWrapper, this);
-//            streamFrameThread.detach();
-            latestFrameTaken = getPointCloudStream();
+        if (!streaming) {
+            // draw markers/axis over image, then display it
+            int currentNumberOfMarkers = calibration.detectMarkers(&rgbd);
+
+            if ((numberOfMarkers == 0 && currentNumberOfMarkers > 0) ||
+                (numberOfMarkers == 1 && currentNumberOfMarkers != 1) ||
+                (numberOfMarkers > 1 && currentNumberOfMarkers < 2)){
+                client->socket()->emit("number_of_markers", sio::int_message::create(currentNumberOfMarkers));
+            }
+
+            numberOfMarkers = currentNumberOfMarkers;
         }
 
-        // draw markers/axis over image, then display it
-        calibration.detectMarkers(&rgbd);
         cv::imshow("Camera", rgbd);
 
         int key = cv::waitKey(1);
@@ -232,30 +248,14 @@ void Camera::start()
 
         listener.release(frames);
     }
+
     dev->stop();
     dev->close();
 }
 
 string Camera::takePicture()
 {
-    unique_lock<mutex> lock(pictureMutex);
-    pictureFinished = false;
-    pictureCv.wait(lock, [this] { return pictureFinished; });
-    return capturedPicture;
-}
-
-void Camera::startStreaming() {
-    streamTriggered = true;
-}
-
-void Camera::sendStreamingFrame() {
-    client->socket()->emit("new_streaming_frame", make_shared<string>(latestFrameTaken.c_str(), latestFrameTaken.size()));
-    INFO("sent streaming frame");
-}
-
-void Camera::stopStreaming() {
-    streamTriggered = false;
-    latestFrameTaken = "";
+    return latestFrameTaken;
 }
 
 bool Camera::calibrate()
@@ -266,3 +266,10 @@ bool Camera::calibrate()
     return calibrationSuccess;
 }
 
+void Camera::startStreaming() {
+    streaming = true;
+}
+
+void Camera::stopStreaming() {
+    streaming = false;
+}

@@ -11,7 +11,7 @@ class Calibration
 {
 private:
     // size of marker in meters
-    float MARKER_LENGTH = 0.2005;
+    float MARKER_LENGTH = 0.287;
 
     bool calibrated = false;
       
@@ -45,7 +45,7 @@ public:
     void setDevice(libfreenect2::Freenect2Device*);
     bool calibrate(cv::Mat);
     vector<float> transformPoint(float, float, float);
-    void detectMarkers(cv::Mat*);
+    int detectMarkers(cv::Mat*);
 
 };
 
