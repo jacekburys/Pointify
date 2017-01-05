@@ -22,8 +22,8 @@
 \rule{\textwidth}{1.6pt}\\[\baselineskip] % Thick horizontal line
 
 \scshape % Small caps
-Tagline 1 \\ 
-Tagline 2\par
+Real-Time Multi-Camera \\
+3D Reconstruction \par
 
 \vspace*{2\baselineskip}
 
@@ -228,22 +228,36 @@ The UML sequence diagram of the client's structure is shown below:
   \includegraphics[scale=0.6]{clientUML}
   \caption{UML sequence diagram of the client}
 \end{figure}
-\subsubsection{C++}
+\subsubsection{C++11}
+We chose to use C++ as the language for our client because it was the language that was the fastest cross platform language and it had support for Socket.IO, libfreenect2 and OpenCV 2 which had the ArUco calibration as an included module. It was also the language that all of the team were comfortable in since we had used it in our course previously. All the libraries we used which interfaced with the server were cross-platform so if someone wishes to create a client that uses a different type of camera they can choose any of the supported programming languages to do so.
 \subsubsection{ArUco}
+<<<<<<< HEAD
+ArUco was the calibration system that was proposed by our supervisor Ben Glocker. It is the current leading calibration system and is provided as a module for OpenCV 2. Using standard libraries over implementing it ourselves reduces the possibility of bugs and the development cost. Standard libraries also makes our code easier to read for future developers to extend. It is also faster than AprilTags, which is the other calibration system.
+\subsubsection{OpenCV 2}
+OpenCV is the industry standard open source library for computer vision. It can be run in C++, C, Python and Java for Windows, Linux, OS X, iOS and Android. OpenCV is very optimised for efficiency due to its large developer base and is this performace is essential for us since we use it on every loop of our camera. It can also take advantage of multi-core processing and since almost all devices are multi-core now this improves the performance of our application. Since it uses OpenCL, it can take advantage of hardware acceleration to compute the matrix operations efficiently.
+\subsubsection{Libfreenect2}
+Libfreenect2 was our only option when it came to choosing a cross-platform driver to use for communicating with the kinect camera. Microsoft only supplied the Kinect SDK 2.0 for Windows. It utilises OpenGL and OpenCL libraries for depth processing. The system also supports up to 5 devices so it allows extensibility in the future if someone wishes to use a single computer to host multiple kinect cameras.
+=======
 \subsubsection{Libfreenect}
 \subsubsection{CMake}
 Our tool of choice for building the client was CMake, as it is a well established tool for building cross platform applications. CMake allowed us to write one make script "CMakeLists.txt", which compiled to a build solution that would run on the user's platform. On Unix systems this would be a Makefile, which allowed to user to use "make" to build the application, and on Windows machines this compiled a Visual Studio solution which could be built inside Visual Studio. We had to make sure that the libraries we used were built for the platform that the client was running on, this could be done by building them from source inside our CMake file, or providing the users with precompiled binaries for them. For our needs we found it easier to compile the libraries to the platforms we were using, and downloading them onto the machines we worked on. 
+>>>>>>> b7473002fd73ba968932aba8e5748f188b2f29b4
 \subsubsection{Data}
-We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data.
+We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data. 
+\newpage
 \subsection{Server}
-The UML sequence diagram of the server's structure is shown below:
+The UML sequence diagram of the server's structure is shown in the figure~\ref{fig:calibrationoffset} below:
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.6]{serverUML}
   \caption{UML sequence diagram of the server}
 \end{figure}
+
+Each message shown in the diagram above is sent via Socket.IO over the network and the connected clients are in a list held by the server. This is done because the viewer front-end and the server back-end need to communicate via the network when the status of connections change and frames are recieved and requested. 
+
 \subsubsection{Gulp} %webapp
 \subsubsection{AngularJS}
+
 
 \newpage
 \section{Implementation}
@@ -340,22 +354,22 @@ We were also experiencing problems with the network queues on the socket.
 \section{Conclusion and Future Extensions}
 \subsection{Conclusion}
 
-Over the course of 3 months we have endured and have managed to produce a stable application, that combines various technologies together such as angularJS and nodeJS, to successfully 3D reconstruct a scene. Through the many problems and setbacks we encountered such as deciding to do a fresh project on Linux which took some time setting up as well as figuring out the calibration of the Kinect cameras, we persevered by using our knowledge and past experience to (explain a little about the problem with the calibration)/
+When we received the proposal for 3D reconstruction, even though it was our last choice, we were nevertheless extremely excited to develop the application despite most of our members having no experience in using OpenCV. It was a great opportunity to utilise the Computer Vision materal for those in group who were taking the course because we were able to use the techniques taught and apply them in the creation of Pointify. Ensuring software development practices such as pair programming were maintained throughout the project was one of the primary importances as members are able to discuss their problems together and discuss how they could better implement a solution.
+\\\\
+The technical aspect of creating Pointify (coming from the idea that an object or a scene can be reconstructed by rendering many points together from captured depth information) took the most time during the 3 months. In order to start we had to understand how LiveScan3D worked which took some time as we felt that LiveScan3D's code was poorly structured. However after analysing LiveScan3D's implementation, several methods were proposed through our group meeting and then a final concrete solution was decided. We then were able to carefully plan out the major sections of the project to which each group member was assigned a task. During this short time we have endured and have managed to produce a stable application, that combined various technologies together such as angularJS and nodeJS, to successfully capture depth information through multiple Kinect cameras, perform calibration and then render the many points together to 3D reconstruct a scene. 
+\\\\
+Given the chance to start the project again from the beginning, we would have gone for creating the project on Linux, as it is easier to develop on there, after experiencing first hand the challenges of building the project on Windows as some time we lost was spent trying to develop on Windows. We took a risk to start afresh and develop Pointify on Linux for a cross platform application. We underestimated the complexity of the calibration of the Kinect cameras and did not consider the offset between the depth and rgb camera until our supervisor, Ben, pointed it out to us. It would have been more effective and time efficient to meticulously plan the calibration aspect of the project. The latter part of the project was spent on debugging and trying to increase the current frame (add more here)
+\\\\
+Overall, we are happy about the project we created over term even though we would have liked to have some of the feature extensions integrated. We have decided to release it as an open source project on github with detailed instructions on how to build, test and develop Pointify. It would be nice if we could get feedback through reported bugs as other developers may want to use Pointify in their own projects.
+
 %What did you learn? What might you have done differently?
 %How would you build on what you have done?
-\\\\
-Because we familiarised ourselves with LiveScan3D and analysed how they implemented the calibration, we were able to refer back to the code in order to help us solve (some problem we had where we neede to look at how livescan did it ...)   
-\\\\
-Given the chance to start the project again from the beginning, we would have gone for a cross-platform solution straight away after experiencing first hand the challenges of building the project only on Windows. 
-
 %As various challenges e.g. with differences in
 %coordinate systems used internally by our devices and the OpenCV library code have %shown us, it would
 %be wiser to first plan the procedure with finer detail. Moreover, we have been %overly focused on correctness
 %of the system for a while and neglected the efficiency of the calibration phase. We %have experienced firsthand
 %that the usability is crucial as the compression techniques (e.g. using %zlib_compressor class from
 %boost library) were introduced quite late and our development was pointlessly slowed down.
-
-Overall, we are very happy about the result we did in the amount of time that we consider not very long. We have decided to release it open source on github with the name Pointify.
 \newpage
 \subsection{Future Extensions}
 There are features that we believe can improve the usability of this product, but didn't implement due to the time constraint on the project. Throughout the project we came up with possible extensions to implement for Pointify:
