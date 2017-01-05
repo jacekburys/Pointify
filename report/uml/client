@@ -1,0 +1,29 @@
+client:Client[a]
+camera:Camera[a]
+calibration:Calibration[a]
+aruco:ArUco[a]
+libfreenect2:libfreenect2[a]
+socketio:SocketIO[a]
+
+[c:calibrate]
+client:camera.calibrate()
+camera:libfreenect2.frames[]
+camera:calibration.calibrate()
+calibration:libfreenect2.detectMarkers()
+calibration:libfreenect2.estimateMarkerPose()
+client:socketio.emit()
+[/c]
+
+[c: take picture]
+client:camera.takePicture()
+camera:libfreenect2.frames[]
+camera:calibration.transformPoints()
+client:socketio.emit()
+[/c]
+
+[c:streaming loop]
+client:camera.takePicture()
+camera:libfreenect2.frames[]
+camera:calibration.transformPoints()
+client:socketio.emit()
+[/c]
