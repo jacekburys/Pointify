@@ -3,12 +3,13 @@
 (function() {
 
 class ViewerController {
-  constructor($scope, socket, FileSaver, Blob, ply) {
+  constructor($scope, socket, FileSaver, Blob, ply, $mdDialog) {
     this.$scope = $scope;
     this.socket = socket;
     this.FileSaver = FileSaver;
     this.Blob = Blob;
     this.ply = ply;
+    this.$mdDialog = $mdDialog;
     this.streaming = false;
     this.scene = null;
     this.connectedClients = [];
@@ -237,12 +238,28 @@ class ViewerController {
       console.log('no pointCloudGeometry');
       return;
     }
-    console.log('trying to save ply');
-    var vertices = this.pointCloudGeometry.vertices;
-    var colors = this.pointCloudGeometry.colors;
-    var plyText = this.ply.toPly(vertices, colors);
-    var data = new this.Blob([plyText], {type: 'application/ply' });
-    this.FileSaver.saveAs(data, 'cloud.ply');
+
+    var confirm = $mdDialog.prompt()
+      .title('File name?')
+      .textContent('Type name of your point cloud file')
+      .placeholder('pointcloud')
+      .ariaLabel('PointCloud')
+      .initialValue('pointcloud')
+      //.targetEvent(ev)
+      .ok('Save')
+      .cancel('Cancel');
+
+    $mdDialog.show(confirm).then(function(result) {
+      console.log('ok');
+      console.log('trying to save ply');
+      var vertices = this.pointCloudGeometry.vertices;
+      var colors = this.pointCloudGeometry.colors;
+      var plyText = this.ply.toPly(vertices, colors);
+      var data = new this.Blob([plyText], {type: 'application/ply' });
+      this.FileSaver.saveAs(data, 'cloud.ply');
+    }, function() {
+      console.log('cancel');
+    });
   }
 }
 
