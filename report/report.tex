@@ -118,13 +118,20 @@ as well as making the product more extensible for developers who may choose to w
 By approaching it from the development standpoint rather than a research one, we ensured that our code was readable,
 extensible, and used industry-standard and cross-platform drivers, libraries and frameworks.
 
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.3]{livescan}
+  \caption{Screenshot of LiveScan3D being run with a single kinect camera}
+  \label{fig:livescan}
+\end{figure}
+
 \subsection{Objectives}
 The first two weeks that we spent working on LiveScan3D gave us a clear understanding of what our application
 should do and how we can achieve that. We decided to follow LiveScan3D's idea with one server and multiple
 clients sending fragments of the scene to it. However, we decided to add a web application that would be used
 to control the clients.
 \\\\
-The aim of the project was to:
+The initial aim of the project was to:
 \begin{itemize}
   \item Build a distributed system that can gather and merge point cloud data from multiple Kinect cameras.
   \item Be able to display the point clouds in a way that is convenient for the user.
@@ -136,7 +143,7 @@ The aim of the project was to:
 \subsection{Achievements}
 \begin{itemize}
   \item Distributed system consisting of multiple clients with Kinect cameras, a server and a viewer allowing the user to easily control the Kinect clients and generate the point clouds.
-  \item Usage of cross-platform frameworks and drivers allowing the project to be run on Windows, Linux and Mac operating systems.
+  \item Usage of cross-platform frameworks and drivers allowing the project to be run on Windows, Linux and OS X operating systems.
   \item Exporting the data in the PLY format.
   \item Rendering generated point clouds and stream in real-time
   \item 3D video streaming and recording.
@@ -200,8 +207,8 @@ After we had investigated the task in more detail, and understood exactly what w
 \\ 
 \newpage
 \subsection{Issues}
-\subsubsection{LiveScan}
-LiveScan is run solely on Windows and uses Visual Studio with Microsoft Kinect SDK 2.0. This posed us many problems as a group because only 3 of the members of the group used Windows systems. We also had a problem that with one of the computers, the version of Windows was the 'N' edition of the operating system. Athough we tried the recommended fixes on the internet, we were unable to get LiveScan to run on this version of Windows due to errors about missing MSVCP120.dll and MFPlat.dll. This meant that only 2 computers were able to run the LiveScan software which meant there was only one client and one server running. This did not allow us to test the feature of multiple calibrated cameras and also hindered our development that we were only able to work on 2  computers.
+\subsubsection{LiveScan3D}
+LiveScan3D is run solely on Windows and uses Visual Studio with Microsoft Kinect SDK 2.0. This posed us many problems as a group because only 3 of the members of the group used Windows systems. We also had a problem that with one of the computers, the version of Windows was the 'N' edition of the operating system. Athough we tried the recommended fixes on the internet, we were unable to get LiveScan to run on this version of Windows due to errors about missing MSVCP120.dll and MFPlat.dll. This meant that only 2 computers were able to run the LiveScan software which meant there was only one client and one server running. This did not allow us to test the feature of multiple calibrated cameras and also hindered our development that we were only able to work on 2  computers.
 \\\\
 We also found it difficult to work with the codebase provided by LiveScan as the quality of the code was poor and did not utilise OpenCV for matrix operations nor did it use any of the leading calibration techniques. This resulted in code that was highly fragile and highly coupled which posed us issues when we were trying to perform tasks like replacing the calibration system.
 \subsubsection{Pointify}
@@ -333,11 +340,13 @@ The TCP based streaming protocol that Socket.IO uses has not been implemented wi
 This meant that during streaming of the frames we had to send our data via standard \texttt{emit} messages instead. We are not sure as to whether this would have made a significant impact on the framerate but the data sent over the normal protocol has a much larger header per frame.
 \newpage
 \section{Evaluation}
-\subsubsection{Design}
-\subsubsection{Code Quality}
-\subsubsection{Calibration Accuracy}
-\subsubsection{Testing}
-\subsubsection{Build Server}
+\subsection{Design}
+
+\subsection{Code Quality}
+Overall we are fairly happy with the quality of the code we have produced. We approached the code in an object oriented fashion and we have distinct sections of the code which 
+\subsection{Calibration Accuracy}
+\subsection{Testing}
+\subsection{Build Server}
 The build server helped us massively in the process of testing and running demos. It allowed us to have a persistent instance of the server code live and accessable at all times, allowing a single programmer to work on the client code, and test it against the server code. It would seamlessly update whenever a commit was pushed to the master branch, run build checks and unit tests before deploying the code live. Any of us could log in to the TeamCity instance to check the build status and manually run tests, allowing us to be updated with the status of the project easily.
 \\\\
 A downside of the setup we used is that it was set up to only observe the master branch, which was only updated for major milestones. There were times where we would have liked the server to be observing another branch that was more often updated to test against. Another issue with our setup was how we used the departments cloudstack setup, which is only accessable from within college. This meant that whenever we wanted to access the build server from outside of college, we had to take a more convoluted approach, such as using the college VPN.
