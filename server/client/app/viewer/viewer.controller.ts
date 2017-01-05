@@ -239,7 +239,7 @@ class ViewerController {
       return;
     }
 
-    var confirm = $mdDialog.prompt()
+    var confirm = this.$mdDialog.prompt()
       .title('File name?')
       .textContent('Type name of your point cloud file')
       .placeholder('pointcloud')
@@ -249,15 +249,15 @@ class ViewerController {
       .ok('Save')
       .cancel('Cancel');
 
-    $mdDialog.show(confirm).then(function(result) {
+    this.$mdDialog.show(confirm).then(function(result) {
       console.log('ok');
       console.log('trying to save ply');
       var vertices = this.pointCloudGeometry.vertices;
-      var colors = this.pointCloudGeometry.colors;
+      /var colors = this.pointCloudGeometry.colors;
       var plyText = this.ply.toPly(vertices, colors);
       var data = new this.Blob([plyText], {type: 'application/ply' });
-      this.FileSaver.saveAs(data, 'cloud.ply');
-    }, function() {
+      this.FileSaver.saveAs(data, result + '.ply');
+    }.bind(this), function() {
       console.log('cancel');
     });
   }
