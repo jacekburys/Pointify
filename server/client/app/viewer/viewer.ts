@@ -4,7 +4,7 @@ angular.module('serverApp')
   .config(function($stateProvider) {
     $stateProvider
       .state('viewer', {
-        url: '/viewer',
+        url: '/',
         template: '<viewer></viewer>'
       });
   });

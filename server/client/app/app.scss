@@ -20,8 +20,5 @@ body {
 
 // Component styles are injected through grunt
 /* inject:scss */
-@import 'main/main';
 @import 'viewer/viewer';
-@import '../components/footer/footer';
-@import '../components/modal/modal';
 /* endinject */
