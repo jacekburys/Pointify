@@ -206,7 +206,7 @@ LiveScan is run solely on Windows and uses Visual Studio with Microsoft Kinect S
 We also found it difficult to work with the codebase provided by LiveScan as the quality of the code was poor and did not utilise OpenCV for matrix operations nor did it use any of the leading calibration techniques. This resulted in code that was highly fragile and highly coupled which posed us issues when we were trying to perform tasks like replacing the calibration system.
 \subsubsection{Pointify}
 When we opted to pivot the project and work on Pointify, we were able to alleviate a lot of the issues that we encountered when working with LiveScan. We did however have issues that we encountered during development. When we initially started development, we needed to start development on a single operating system. We chose to begin development on Linux but this meant that we needed to dual boot our computers or run Linux through a virtual machine. This meant that we were not able to begin development immediately due to the time it took to ensure that our systems were set up correctly. This also posed issues of speed when it came to processing power and networking speeds that were crucial during the development of the system. With virtual machines we were only able to allocate partial amounts of our resources to it, restricting the performance inside the operating system, this was also a problem with networking as the virtual machine uses NAT translation to control the networking within the virtual machine which hindered the network contributing to latency and therefore lag in the streaming. Another problem that we faced with the NAT translation was jitter which caused a delay with each individual packet affecting the obtained frame rate. 
-\\\\
+\newpage
 There were also hardware issues that we had to deal with. We had designed the system to be able to work with multiple cameras and calibrate them correctly. We however for the project were only provided with two kinect cameras to develop with. For testing with the picture taking, we were able to use the cameras in different positions in order to emulate how the system would be able to deal with multiple cameras. This was a sufficient method to be able to test how the calibration would be able to cope and how the rendering was able to cope with a large volume of points. For live streaming however this proved to be much more difficult. We were unable to test how the system would be able to cope with multiple cameras sending data at once and how this would affect the framerate. The fact that we needed to use the hardware to test the system was also a problem that we faced which meant that we were only able to work on the project when we were in university rather than being able to do any work remotely. For testing purposes we set the build server to be a persistent server for Pointify as well which allowed us to test the client in isolation without having to use a seperate machine to act as the server for our distributed system. We had a problem with USB 3.0 ports as well, some of the computers that we were trying to use did not have USB 3.0 which is required for \texttt{libfreenect2} drivers to be able to communicate with the camera.
 \newpage
 \section{Design}
@@ -230,11 +230,16 @@ The UML sequence diagram of the client's structure is shown below:
 \end{figure}
 \subsubsection{C++}
 \subsubsection{ArUco}
-\subsubsection{Libfreenect}
+ArUco was the calibration system that was proposed by our supervisor Ben Glocker. It is the current leading calibration system and is provided as a module for OpenCV 2. Using standard libraries over implementing it ourselves reduces the possibility of bugs and the development cost. Standard libraries also makes our code easier to read for future developers to extend. It is also faster than AprilTags, which is the other calibration system.
+\subsubsection{OpenCV 2}
+OpenCV is the industry standard open source library for computer vision. It can be run in C++, C, Python and Java for Windows, Linux, OS X, iOS and Android. OpenCV is very optimised for efficiency due to its large developer base and is this performace is essential for us since we use it on every loop of our camera. It can also take advantage of multi-core processing and since almost all devices are multi-core now this improves the performance of our application. Since it uses OpenCL, it can take advantage of hardware acceleration to compute the matrix operations efficiently.
+\subsubsection{Libfreenect2}
+Libfreenect2 was our only option when it came to choosing a cross-platform driver to use for communicating with the kinect camera. Microsoft only supplied the Kinect SDK 2.0 for Windows. It utilises OpenGL and OpenCL libraries for depth processing. The system also supports up to 5 devices so it allows extensibility in the future if someone wishes to use a single computer to host multiple kinect cameras.
 \subsubsection{CMake}
 Our tool of choice for building the client was CMake, as it is a well established tool for building cross platform applications. CMake allowed us to write one make script "CMakeLists.txt", which compiled to a build solution that would run on the user's platform. On Unix systems this would be a Makefile, which allowed to user to use "make" to build the application, and on Windows machines this compiled a Visual Studio solution which could be built inside Visual Studio. We had to make sure that the libraries we used were built for the platform that the client was running on, this could be done by building them from source inside our CMake file, or providing the users with precompiled binaries for them. For our needs we found it easier to compile the libraries to the platforms we were using, and downloading them onto the machines we worked on. 
 \subsubsection{Data}
 We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data.
+\newpage
 \subsection{Server}
 The UML sequence diagram of the server's structure is shown below:
 \begin{figure}[h]
@@ -266,7 +271,6 @@ This involved working with a third party library called ArUco, which is a well e
   \caption{Transformation matrix, where \textbf{r} is the rotation and \textbf{t} is the translation}
   \label{fig:transformationMatrix}
 \end{figure}
-
 \subsubsection{Point cloud transformation}
 Once we have found the transformation matrix as in the previous part, we must apply it to each point cloud before they are is sent to the server. Each xyz point must be extended with a 1 on the bottom row, so that it can be multiplied correctly with the transformation matrix. We experimented applying the transformation matrix to each point to give the transformed point, but this was causing some performance issues due to the amount of points needed to be transformed at once. A better way of doing this would be to apply the transformation to all points in one operation with a more complex matrix operation, shown in Figure \ref{fig:transformationMatrix}. We used an optimised implementation of this in opencv called perspectiveTransform to do this efficiently, which when given the set of input points, and the transformation function we calculated earlier, would return the transformed points we needed. When each client calculated the transformation to bring their origin to the marker, and applied this transformation to the point clouds captured from the connect, they could be successfully combined such that they would align.\\
 \begin{figure}[h]
@@ -285,14 +289,15 @@ Once we have found the transformation matrix as in the previous part, we must ap
   \caption{Transformation matrix as before, applied to each point $p_1$ \dots $p_n$}
   \label{fig:transformationApplication}
 \end{figure}
-\newpage
+\subsection{Point cloud streaming}
+Once we had built the point cloud, the next step was to send the information over a network to the server. We decided to do this by packing all the points into a binary buffer, as there would be no wasted space. This information we needed to send consisted of three 32 bit floats, for x y and z coordinates, as well as three 8 bit integers for the rgb colour values, giving a total of 15 bytes per point. There can be up to 512 x 424 points in space, giving a maximum total buffer size of 3180KB per frame. In reality, this number was much smaller, as the sensor can not pick up points that are too close or far away. We discussed the idea of compressing this buffer to reduce transfer speed, but as our client software was reletively CPU intensive already, we decided to send the uncompressed data instead.
 \subsection{Challenges}
 \subsubsection{Dual Camera Sensors}
 When performing the calibration we noticed that the calibration was slightly off. After doing some research we worked out that this was caused by the offset between the depth and rgb cameras on the Kinect hardware. The reason for this was that we were performing the AruCo calibration on the rgb matrix from the colour camera and then we were using the obtained rotation and translation vectors to calibrate the output from the depth camera. This slight offset caused the obtained origin in the coordinate space to be different and then caused the point clouds obtained from the different cameras to not align correctly. This is demonstrated in figure~\ref{fig:rgbdepth} below.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.7]{rgbdepth}
+  \includegraphics[scale=0.4]{rgbdepth}
   \caption{Showing the offset between the field of view of rgb and depth cameras on the Kinect}
   \label{fig:rgbdepth}
 \end{figure}
@@ -300,7 +305,7 @@ This produces an offset in the calibration as shown in figure~\ref{fig:calibrati
 \\
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.3]{placeholder}
+  \includegraphics[scale=0.26]{registeredunregisteredpointcloud}
   \caption{Showing the difference between the calibration accuracy of registered and unregistered}
   \label{fig:calibrationoffset}
 \end{figure}
@@ -311,7 +316,7 @@ To fix this issue we needed to use the registered camera matrix from the \texttt
 When using the registered matrix, we encountered a much worse camera matrix than the one directly taken from the rgb camera as shown in figure~\ref{fig:registeredaccuracy} below.
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.3]{placeholder}
+  \includegraphics[scale=0.7]{registeredunregisteredview}
   \caption{Showing the difference between the registered and rgb matrices}
   \label{fig:registeredaccuracy}
 \end{figure}
@@ -322,11 +327,10 @@ There were also a few unsolved challenges that we face with the project that we 
 \subsubsection{TCP vs UDP}
 With the network we had a major problem with the protocols of TCP vs UDP. Since we are streaming the frames, UDP is a much more desirable protocol to be using to increase the framerate of our system. The first problem we encountered with using this is that SocketIO only supports TCP communication. We then considered using standard networking protocols rather than SocketIO for the streaming of the frames between the client and the server but we realised that, for the server to communicate between its nodeJS backend and its angularJS frontend, it needs to use JavaScript for the rendering of the point clouds. JavaScript as a language does not natively support UDP therefore we realised that even if we would be able to communicate the server and the client, we would encounter a bottleneck between the backend and the frontend of the server and experience no additional improvement on the framerate.
 \subsubsection{Synchronisation Lag}
-Lag is another issue we encountered. We were able to obtain a moderate framerate between the server and the client for streaming but we experienced on average a 3-second delay between the camera display on the client and the server. We have not found any bottlenecks within our system that could be causing this lag and we are assuming that it is simply the network delay that is causing it.
-\newpage
-\subsubsection{Socket.io C++ Client}
-The TCP based streaming protocol that it uses has not been implemented with the current C++ client offered.
-We were also experiencing problems with the network queues on the socket.
+Lag is another issue we encountered. We were able to obtain a moderate framerate between the server and the client for streaming but we experienced on average a 3-second delay between the camera display on the client and the server. We have not encountered any bottlenecks within our system that could be causing this lag and we are assuming that it is simply the network delay that is causing it.
+\subsubsection{Socket.IO C++ Client}
+The TCP based streaming protocol that Socket.IO uses has not been implemented with the current C++ client offered.
+This meant that during streaming of the frames we had to send our data via standard \texttt{emit} messages instead. We are not sure as to whether this would have made a significant impact on the framerate but the data sent over the normal protocol has a much larger header per frame.
 \newpage
 \section{Evaluation}
 \subsubsection{Design}
@@ -334,6 +338,9 @@ We were also experiencing problems with the network queues on the socket.
 \subsubsection{Calibration Accuracy}
 \subsubsection{Testing}
 \subsubsection{Build Server}
+The build server helped us massively in the process of testing and running demos. It allowed us to have a persistent instance of the server code live and accessable at all times, allowing a single programmer to work on the client code, and test it against the server code. It would seamlessly update whenever a commit was pushed to the master branch, run build checks and unit tests before deploying the code live. Any of us could log in to the TeamCity instance to check the build status and manually run tests, allowing us to be updated with the status of the project easily.
+\\\\
+A downside of the setup we used is that it was set up to only observe the master branch, which was only updated for major milestones. There were times where we would have liked the server to be observing another branch that was more often updated to test against. Another issue with our setup was how we used the departments cloudstack setup, which is only accessable from within college. This meant that whenever we wanted to access the build server from outside of college, we had to take a more convoluted approach, such as using the college VPN.
 \subsubsection{Deployment} %gulp
 \subsubsection{Streaming}
 
@@ -350,8 +357,6 @@ For some members of the group, it was their first time to use angularJS and node
 Given the chance to start the project again from the beginning, we would have gone for creating the project on Linux straightaway, as it is easier to develop on there, after experiencing first hand the challenges of building the project on Windows as some time we lost was spent trying setup OpenCV. Even though we took a small risk to start afresh and develop Pointify on Linux for a cross platform application, it paid off it the end. We feel we underestimated the complexity of the calibration of the Kinect cameras and did not consider the offset between the depth and rgb camera until our supervisor, Ben, pointed it out to us. It would have been more effective and time efficient to meticulously plan the calibration aspect of the project as it was the most time consuming aspect of the development.
 \\\\
 Aligning all the times members were able to work together was tricky due to the courses taken by each member. This meant that during some group meetings, some members would not be present however this did not pose a problem because members were kept updated on the topics discussed in the meeting. Overall, we are happy about the project we created over term even though we would have liked to have some of the feature extensions integrated. We have decided to release it as an open source project on github with detailed instructions on how to build, test and develop Pointify. It would be nice if we could get feedback through reported bugs or possible improvements as this would allow us to improve Pointify and learn what could have been done better. We also hope that our project might encourage other developers to use Pointify in their own projects. 
-%What did you learn? What might you have done differently?
-%How would you build on what you have done?
 %As various challenges e.g. with differences in
 %coordinate systems used internally by our devices and the OpenCV library code have %shown us, it would
 %be wiser to first plan the procedure with finer detail. Moreover, we have been %overly focused on correctness
