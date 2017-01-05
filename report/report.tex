@@ -231,17 +231,13 @@ The UML sequence diagram of the client's structure is shown below:
 \subsubsection{C++11}
 We chose to use C++ as the language for our client because it was the language that was the fastest cross platform language and it had support for Socket.IO, libfreenect2 and OpenCV 2 which had the ArUco calibration as an included module. It was also the language that all of the team were comfortable in since we had used it in our course previously. All the libraries we used which interfaced with the server were cross-platform so if someone wishes to create a client that uses a different type of camera they can choose any of the supported programming languages to do so.
 \subsubsection{ArUco}
-<<<<<<< HEAD
 ArUco was the calibration system that was proposed by our supervisor Ben Glocker. It is the current leading calibration system and is provided as a module for OpenCV 2. Using standard libraries over implementing it ourselves reduces the possibility of bugs and the development cost. Standard libraries also makes our code easier to read for future developers to extend. It is also faster than AprilTags, which is the other calibration system.
 \subsubsection{OpenCV 2}
 OpenCV is the industry standard open source library for computer vision. It can be run in C++, C, Python and Java for Windows, Linux, OS X, iOS and Android. OpenCV is very optimised for efficiency due to its large developer base and is this performace is essential for us since we use it on every loop of our camera. It can also take advantage of multi-core processing and since almost all devices are multi-core now this improves the performance of our application. Since it uses OpenCL, it can take advantage of hardware acceleration to compute the matrix operations efficiently.
 \subsubsection{Libfreenect2}
 Libfreenect2 was our only option when it came to choosing a cross-platform driver to use for communicating with the kinect camera. Microsoft only supplied the Kinect SDK 2.0 for Windows. It utilises OpenGL and OpenCL libraries for depth processing. The system also supports up to 5 devices so it allows extensibility in the future if someone wishes to use a single computer to host multiple kinect cameras.
-=======
-\subsubsection{Libfreenect}
 \subsubsection{CMake}
 Our tool of choice for building the client was CMake, as it is a well established tool for building cross platform applications. CMake allowed us to write one make script "CMakeLists.txt", which compiled to a build solution that would run on the user's platform. On Unix systems this would be a Makefile, which allowed to user to use "make" to build the application, and on Windows machines this compiled a Visual Studio solution which could be built inside Visual Studio. We had to make sure that the libraries we used were built for the platform that the client was running on, this could be done by building them from source inside our CMake file, or providing the users with precompiled binaries for them. For our needs we found it easier to compile the libraries to the platforms we were using, and downloading them onto the machines we worked on. 
->>>>>>> b7473002fd73ba968932aba8e5748f188b2f29b4
 \subsubsection{Data}
 We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data. 
 \newpage
@@ -314,7 +310,7 @@ This produces an offset in the calibration as shown in figure~\ref{fig:calibrati
 \\
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.3]{placeholder}
+  \includegraphics[scale=0.3]{registeredunregisteredpointcloud}
   \caption{Showing the difference between the calibration accuracy of registered and unregistered}
   \label{fig:calibrationoffset}
 \end{figure}
@@ -325,7 +321,7 @@ To fix this issue we needed to use the registered camera matrix from the \texttt
 When using the registered matrix, we encountered a much worse camera matrix than the one directly taken from the rgb camera as shown in figure~\ref{fig:registeredaccuracy} below.
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.3]{placeholder}
+  \includegraphics[scale=0.7]{registeredunregisteredview}
   \caption{Showing the difference between the registered and rgb matrices}
   \label{fig:registeredaccuracy}
 \end{figure}
