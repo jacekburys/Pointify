@@ -16,8 +16,7 @@ function onConnect(socket) {
     socket.log(JSON.stringify(data, null, 2));
   });
   // Insert sockets below
-  //require('../api/thing/thing.socket').register(socket);
-  //require('../api/pointify_client/pointify_client.socket').register(socket);
+  //require('../api/example/example.socket').register(socket);
 }
 
 export default function(socketio) {
