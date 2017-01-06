@@ -1,6 +1,6 @@
 export default function(io) {
 
-  var FRAME_RATE_CAP = 5;
+  var FRAME_RATE_CAP = 30;
 
   io.requestInterval = 1000.0 / FRAME_RATE_CAP;
 
