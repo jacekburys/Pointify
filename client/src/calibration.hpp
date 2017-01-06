@@ -11,7 +11,7 @@ class Calibration
 {
 private:
     // size of marker in meters
-    float MARKER_LENGTH = 0.197;
+    float MARKER_LENGTH = 0.097;
 
     bool calibrated = false;
       
