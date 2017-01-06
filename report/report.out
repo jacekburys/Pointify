@@ -1,0 +1,65 @@
+\BOOKMARK [1][-]{section.1}{Executive Summary}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Client}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Server}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{Introduction}{}% 4
+\BOOKMARK [2][-]{subsection.2.1}{Background and Motivation}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.2}{LiveScan3D}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.3}{Objectives}{section.2}% 7
+\BOOKMARK [2][-]{subsection.2.4}{Achievements}{section.2}% 8
+\BOOKMARK [1][-]{section.3}{Project Management}{}% 9
+\BOOKMARK [2][-]{subsection.3.1}{Project Plan}{section.3}% 10
+\BOOKMARK [3][-]{subsubsection.3.1.1}{Iteration One}{subsection.3.1}% 11
+\BOOKMARK [3][-]{subsubsection.3.1.2}{Iteration Two}{subsection.3.1}% 12
+\BOOKMARK [3][-]{subsubsection.3.1.3}{Iteration Three}{subsection.3.1}% 13
+\BOOKMARK [3][-]{subsubsection.3.1.4}{Iteration Four}{subsection.3.1}% 14
+\BOOKMARK [3][-]{subsubsection.3.1.5}{Iteration Five}{subsection.3.1}% 15
+\BOOKMARK [2][-]{subsection.3.2}{Management techniques}{section.3}% 16
+\BOOKMARK [3][-]{subsubsection.3.2.1}{Version Control}{subsection.3.2}% 17
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Task Board}{subsection.3.2}% 18
+\BOOKMARK [3][-]{subsubsection.3.2.3}{Continuous Integration and Deployment}{subsection.3.2}% 19
+\BOOKMARK [2][-]{subsection.3.3}{Team Meetings}{section.3}% 20
+\BOOKMARK [2][-]{subsection.3.4}{Task Allocation}{section.3}% 21
+\BOOKMARK [2][-]{subsection.3.5}{Issues}{section.3}% 22
+\BOOKMARK [3][-]{subsubsection.3.5.1}{LiveScan3D}{subsection.3.5}% 23
+\BOOKMARK [3][-]{subsubsection.3.5.2}{Pointify}{subsection.3.5}% 24
+\BOOKMARK [1][-]{section.4}{Design}{}% 25
+\BOOKMARK [2][-]{subsection.4.1}{SocketIO}{section.4}% 26
+\BOOKMARK [2][-]{subsection.4.2}{Distributed System}{section.4}% 27
+\BOOKMARK [2][-]{subsection.4.3}{Client}{section.4}% 28
+\BOOKMARK [3][-]{subsubsection.4.3.1}{C++}{subsection.4.3}% 29
+\BOOKMARK [3][-]{subsubsection.4.3.2}{ArUco}{subsection.4.3}% 30
+\BOOKMARK [3][-]{subsubsection.4.3.3}{OpenCV 2}{subsection.4.3}% 31
+\BOOKMARK [3][-]{subsubsection.4.3.4}{Libfreenect2}{subsection.4.3}% 32
+\BOOKMARK [3][-]{subsubsection.4.3.5}{CMake}{subsection.4.3}% 33
+\BOOKMARK [3][-]{subsubsection.4.3.6}{Data}{subsection.4.3}% 34
+\BOOKMARK [2][-]{subsection.4.4}{Server}{section.4}% 35
+\BOOKMARK [3][-]{subsubsection.4.4.1}{Gulp}{subsection.4.4}% 36
+\BOOKMARK [3][-]{subsubsection.4.4.2}{AngularJS}{subsection.4.4}% 37
+\BOOKMARK [1][-]{section.5}{Implementation}{}% 38
+\BOOKMARK [2][-]{subsection.5.1}{Calibration}{section.5}% 39
+\BOOKMARK [3][-]{subsubsection.5.1.1}{Marker pose estimation}{subsection.5.1}% 40
+\BOOKMARK [3][-]{subsubsection.5.1.2}{Point cloud transformation}{subsection.5.1}% 41
+\BOOKMARK [2][-]{subsection.5.2}{Point cloud streaming}{section.5}% 42
+\BOOKMARK [2][-]{subsection.5.3}{Challenges}{section.5}% 43
+\BOOKMARK [3][-]{subsubsection.5.3.1}{Dual Camera Sensors}{subsection.5.3}% 44
+\BOOKMARK [3][-]{subsubsection.5.3.2}{Calibration Accuracy}{subsection.5.3}% 45
+\BOOKMARK [2][-]{subsection.5.4}{Unsolved Challenges}{section.5}% 46
+\BOOKMARK [3][-]{subsubsection.5.4.1}{TCP vs UDP}{subsection.5.4}% 47
+\BOOKMARK [3][-]{subsubsection.5.4.2}{Synchronisation Lag}{subsection.5.4}% 48
+\BOOKMARK [3][-]{subsubsection.5.4.3}{Socket.IO C++ Client}{subsection.5.4}% 49
+\BOOKMARK [1][-]{section.6}{Evaluation}{}% 50
+\BOOKMARK [2][-]{subsection.6.1}{Design}{section.6}% 51
+\BOOKMARK [2][-]{subsection.6.2}{Code Quality}{section.6}% 52
+\BOOKMARK [2][-]{subsection.6.3}{Calibration Accuracy}{section.6}% 53
+\BOOKMARK [2][-]{subsection.6.4}{Performance}{section.6}% 54
+\BOOKMARK [2][-]{subsection.6.5}{Build Server}{section.6}% 55
+\BOOKMARK [2][-]{subsection.6.6}{Testing}{section.6}% 56
+\BOOKMARK [2][-]{subsection.6.7}{Deployment}{section.6}% 57
+\BOOKMARK [2][-]{subsection.6.8}{Streaming}{section.6}% 58
+\BOOKMARK [1][-]{section.7}{Conclusion and Future Extensions}{}% 59
+\BOOKMARK [2][-]{subsection.7.1}{Conclusion}{section.7}% 60
+\BOOKMARK [2][-]{subsection.7.2}{Future Extensions}{section.7}% 61
+\BOOKMARK [3][-]{subsubsection.7.2.1}{GUI Implementation}{subsection.7.2}% 62
+\BOOKMARK [3][-]{subsubsection.7.2.2}{Pointify to support other camera devices}{subsection.7.2}% 63
+\BOOKMARK [3][-]{subsubsection.7.2.3}{Pointify installation}{subsection.7.2}% 64
+\BOOKMARK [3][-]{subsubsection.7.2.4}{Recordings}{subsection.7.2}% 65
