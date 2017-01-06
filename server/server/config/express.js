@@ -16,9 +16,9 @@ import path from 'path';
 //import lusca from 'lusca';
 import config from './environment';
 import session from 'express-session';
-import connectMongo from 'connect-mongo';
-import mongoose from 'mongoose';
-var MongoStore = connectMongo(session);
+//import connectMongo from 'connect-mongo';
+//import mongoose from 'mongoose';
+//var MongoStore = connectMongo(session);
 
 export default function(app) {
   var env = app.get('env');
@@ -35,15 +35,15 @@ export default function(app) {
   // Persist sessions with MongoStore / sequelizeStore
   // We need to enable sessions for passport-twitter because it's an
   // oauth 1.0 strategy, and Lusca depends on sessions
-  app.use(session({
-    secret: config.secrets.session,
-    saveUninitialized: true,
-    resave: false,
-    store: new MongoStore({
-      mongooseConnection: mongoose.connection,
-      db: 'server'
-    })
-  }));
+  //app.use(session({
+  //  secret: config.secrets.session,
+  //  saveUninitialized: true,
+  //  resave: false,
+  //  store: new MongoStore({
+  //    mongooseConnection: mongoose.connection,
+  //    db: 'server'
+  //  })
+  //}));
 
   /**
    * Lusca - express server security
