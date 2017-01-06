@@ -249,13 +249,7 @@ Libfreenect2 was our only option when it came to choosing a cross-platform drive
 \subsubsection{CMake}
 Our tool of choice for building the client was CMake, as it is a well established tool for building cross platform applications. CMake allowed us to write one make script "CMakeLists.txt", which compiled to a build solution that would run on the user's platform. On Unix systems this would be a Makefile, which allowed to user to use "make" to build the application, and on Windows machines this compiled a Visual Studio solution which could be built inside Visual Studio. We had to make sure that the libraries we used were built for the platform that the client was running on. This could be done by building them from source inside our CMake file, or providing the users with precompiled binaries for them. For our needs we found it easier to compile the libraries to the platforms we were using, and downloading them onto the machines we worked on. 
 \subsubsection{Data}
-<<<<<<< HEAD
-We chose to do the calibration on the client and send the point clouds directly to the server to allow for distributed computation and speed up the transfer of data. This means that the server is not doing too much work at any one time, as the processing is spread out to the client machines. The task of rendering the point clouds is delegated to the machine viewing it on the web app, which may be different to the server, meaning the CPU and GPU power needed to render the point cloud can be taken from the server too.
-\newpage
-=======
 We chose to do the calibration on the client and send the point clouds directly to the server to allow for distributed computation and speed up the transfer of data. This means that the server isn't doing too much work at any one time, as the processing is spread out to the client machines. The task of rendering the point clouds is delegated to the machine viewing it on the web app, which may be different to the server, meaning the CPU and GPU power needed to render the point cloud can be taken from the server too.
-
->>>>>>> 7b1d0d4ef860ce188d03bbfcf024a0d8e791b3ba
 \subsection{Server}
 The UML sequence diagram of the server's structure is shown in the figure below:
 \begin{figure}[h]
@@ -265,11 +259,28 @@ The UML sequence diagram of the server's structure is shown in the figure below:
 \end{figure}
 \\
 Each message sent in the diagram above is being sent over Socket.IO. During the calibration sequence and the take picture sequence, the viewer sends a single message to the server. The server then sends its message to all connected clients and recieves the response that it gets back from each client. It then puts all the responses into an array and transmits the obtained array back to the viewer. This way the viewer is abstracted away from the list of clients. During streaming, the server simply requests pictures from the clients in a loop.
-\subsubsection{Gulp} %webapp
+\subsubsection{Gulp}
+In order adhere to the good software engineering practices and make the development process more efficient we used \texttt{Gulp} which is a toolkit for automating time-consuming tasks that are very often encountered in the process of developing a webapp. Thanks to it, we could start the webapp in a few seconds by running one simple command from the terminal.
 \subsubsection{AngularJS}
+AngularJS is one of the most popular frameworks for front-end development. It uses JavaScript as its programming language and utilizes the Model-View-Controller architecture, which makes it possible to build interactive and seamlessly working applications. Furthermore, it is relatively easy to use and we had past experience with it, which increased the speed at which we could progress with the webapp.
 
 \newpage
 \section{Implementation}
+\subsection{Boilerplate generation}
+ As in most of web development projects, there is a lot of boilerplate code that just has to be written and is very similar in every project. We decided to use Yeoman, which is a scafoolding tool that allows the users to select the frameworks and generates the project structure and a basic template of the web app. We then modified that template by adding our own parts. This saved multiple hours of work.
+\subsection{Front end}
+\subsubsection{Overview}
+We wanted to develop a single command center from which all the clients would be controlled. Our frontend does exactly that. There are two main parts, the controls and the point cloud renderer. We used AngularJS to control the behaviour of the buttons, which then is passed to the server via Socket.io. When the server sends the point cloud data to the front end, it is then passed to the Three.js renderer which allows the user to view the point cloud.
+\subsubsection{Communication with the server}
+We chose to use Socket.io as the way of communication between the front end and the server. Each action of the user on the control part of the app sends a Socket.io message to the server.
+ % TODO : I don't know what else can be written here
+\subsubsection{Point cloud rendering}
+ Point cloud data is obtained from the server via Socket.io as a single chunk of bytes. This implementation decision allowed us to reduce the amount of data being sent and thus speed up the frame rate. The bytes then have to be parsed 
+% TODO : is 'parsed' a good word here? 
+and converted into the coordinates and colors of the points. Finally, the data is being passed to Three.js to render.
+\subsection{Server}
+\subsubsection{Communication with the clients}
+\subsubsection{Synchronization}
 \subsection{Calibration}
 \subsubsection{Marker pose estimation}
 When streaming with more than one camera, we required the point clouds they send to be aligned such that they can be displayed seamlessly on top of each other, building a 3D representation of the scene. The idea behind this involves applying a transformation to each point in the scene, to bring it from the camera's perspective to some common perspective shared by all the cameras. We discussed two ways of doing this, one of which chooses one of the cameras as the "master" camera, then synchronises the other cameras around it. The alternative method is by centering all of the cameras on a common point, in our case the calibration marker we use. An advantage of using the first method is that one less camera would need to be calibrated, as all of the other cameras would be centered around the master, but this would lead to more complicated code, and more difficult communication between the cameras. The second approach would give more elegant and maintainable code, as each of the cameras performs the same calibration, but sacrificing a small amount of efficiency on one of the cameras. For these reasons, we chose to use the second approach, calibrating all cameras around the marker placed in the scene. 
