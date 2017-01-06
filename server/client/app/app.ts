@@ -7,13 +7,17 @@ angular.module('serverApp', [
   'ngSanitize',
   'ngFileSaver',
   'ngMaterial',
-//  'btford.socket-io',
+  'ngAnimate',
   'ui.router',
   'ui.bootstrap'
 ])
-  .config(function($urlRouterProvider, $locationProvider) {
-    $urlRouterProvider
-      .otherwise('/');
-
-    $locationProvider.html5Mode(true);
-  });
+.config(function($urlRouterProvider, $locationProvider, $qProvider, $mdThemingProvider) {
+  $urlRouterProvider.otherwise('/');
+  $locationProvider.html5Mode(true);
+  $qProvider.errorOnUnhandledRejections(false);
+  $mdThemingProvider
+    .theme('default')
+    .primaryPalette('grey')
+    .accentPalette('red')
+    .dark();
+});
