@@ -17,17 +17,19 @@
             ng-click="$ctrl.saveAsPLY()">Save as PLY file</md-button>
     <h2 class="text-center">Point Size</h2>
     <md-slider-container>
-      <md-slider flex min="0.01" max="5" step="0.01" ng-model="$ctrl.material.size" aria-label="pointSize" id="pointSizeSlider">
+      <md-slider flex min="0.01" max="5" step="0.01" ng-model="$ctrl.material.size"
+       aria-label="pointSize" id="pointSizeSlider">
     </md-slider-container>
-    <h1 class="text-center"> Clients </h1>
-    <div layout="row"
-     class="client-list-header">
-      <div flex="20" layout-padding><h4>ID</h4></div>
-      <div flex="30" layout-padding><h4>IP</h4></div>
-      <div flex="50" layout-padding><h4>Status</h4></div>
+  
+    <h2 class="text-center" ng-show="$ctrl.connectedClients.length"> Clients </h2>
+    <div layout="row" layout-margin
+     class="client-list-header" ng-show="$ctrl.connectedClients.length">
+      <div flex="20" layout-margin><h4>ID</h4></div>
+      <div flex="30" layout-margin><h4>IP</h4></div>
+      <div flex="50" layout-margin><h4>Status</h4></div>
     </div>
     <md-content>
-    <div layout="column">
+    <div layout="column" ng-show="$ctrl.connectedClients" ng-show="$ctrl.connectedClients.length">
       <div layout="row" layout-margin
        ng-repeat="client in $ctrl.connectedClients"
        class="client-list-item">
@@ -36,6 +38,11 @@
         <div flex="50" layout-padding>{{client.calibStatus}}</div>
       </div>
     </div>
+    </md-content>
+    <md-content>
+      <div class="text-center" ng-show="!$ctrl.connectedClients.length">
+        <h1>No clients connected</h1>
+      </div>
     </md-content>
   </div>
   <div flex="75" class="viewer-div">
