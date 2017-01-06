@@ -1,0 +1,65 @@
+\contentsline {section}{\numberline {1}Executive Summary}{3}{section.1}
+\contentsline {subsection}{\numberline {1.1}Client}{3}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Server}{3}{subsection.1.2}
+\contentsline {section}{\numberline {2}Introduction}{4}{section.2}
+\contentsline {subsection}{\numberline {2.1}Background and Motivation}{4}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}LiveScan3D}{4}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Objectives}{4}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Achievements}{5}{subsection.2.4}
+\contentsline {section}{\numberline {3}Project Management}{6}{section.3}
+\contentsline {subsection}{\numberline {3.1}Project Plan}{6}{subsection.3.1}
+\contentsline {subsubsection}{\numberline {3.1.1}Iteration One}{6}{subsubsection.3.1.1}
+\contentsline {subsubsection}{\numberline {3.1.2}Iteration Two}{6}{subsubsection.3.1.2}
+\contentsline {subsubsection}{\numberline {3.1.3}Iteration Three}{6}{subsubsection.3.1.3}
+\contentsline {subsubsection}{\numberline {3.1.4}Iteration Four}{6}{subsubsection.3.1.4}
+\contentsline {subsubsection}{\numberline {3.1.5}Iteration Five}{6}{subsubsection.3.1.5}
+\contentsline {subsection}{\numberline {3.2}Management techniques}{7}{subsection.3.2}
+\contentsline {subsubsection}{\numberline {3.2.1}Version Control}{7}{subsubsection.3.2.1}
+\contentsline {subsubsection}{\numberline {3.2.2}Task Board}{7}{subsubsection.3.2.2}
+\contentsline {subsubsection}{\numberline {3.2.3}Continuous Integration and Deployment}{8}{subsubsection.3.2.3}
+\contentsline {subsection}{\numberline {3.3}Team Meetings}{8}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Task Allocation}{8}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.5}Issues}{9}{subsection.3.5}
+\contentsline {subsubsection}{\numberline {3.5.1}LiveScan3D}{9}{subsubsection.3.5.1}
+\contentsline {subsubsection}{\numberline {3.5.2}Pointify}{9}{subsubsection.3.5.2}
+\contentsline {section}{\numberline {4}Design}{11}{section.4}
+\contentsline {subsection}{\numberline {4.1}SocketIO}{11}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Distributed System}{11}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Client}{12}{subsection.4.3}
+\contentsline {subsubsection}{\numberline {4.3.1}C++}{12}{subsubsection.4.3.1}
+\contentsline {subsubsection}{\numberline {4.3.2}ArUco}{13}{subsubsection.4.3.2}
+\contentsline {subsubsection}{\numberline {4.3.3}OpenCV 2}{13}{subsubsection.4.3.3}
+\contentsline {subsubsection}{\numberline {4.3.4}Libfreenect2}{13}{subsubsection.4.3.4}
+\contentsline {subsubsection}{\numberline {4.3.5}CMake}{13}{subsubsection.4.3.5}
+\contentsline {subsubsection}{\numberline {4.3.6}Data}{14}{subsubsection.4.3.6}
+\contentsline {subsection}{\numberline {4.4}Server}{14}{subsection.4.4}
+\contentsline {subsubsection}{\numberline {4.4.1}Gulp}{14}{subsubsection.4.4.1}
+\contentsline {subsubsection}{\numberline {4.4.2}AngularJS}{14}{subsubsection.4.4.2}
+\contentsline {section}{\numberline {5}Implementation}{15}{section.5}
+\contentsline {subsection}{\numberline {5.1}Calibration}{15}{subsection.5.1}
+\contentsline {subsubsection}{\numberline {5.1.1}Marker pose estimation}{15}{subsubsection.5.1.1}
+\contentsline {subsubsection}{\numberline {5.1.2}Point cloud transformation}{15}{subsubsection.5.1.2}
+\contentsline {subsection}{\numberline {5.2}Point cloud streaming}{16}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Challenges}{16}{subsection.5.3}
+\contentsline {subsubsection}{\numberline {5.3.1}Dual Camera Sensors}{16}{subsubsection.5.3.1}
+\contentsline {subsubsection}{\numberline {5.3.2}Calibration Accuracy}{16}{subsubsection.5.3.2}
+\contentsline {subsection}{\numberline {5.4}Unsolved Challenges}{17}{subsection.5.4}
+\contentsline {subsubsection}{\numberline {5.4.1}TCP vs UDP}{17}{subsubsection.5.4.1}
+\contentsline {subsubsection}{\numberline {5.4.2}Synchronisation Lag}{17}{subsubsection.5.4.2}
+\contentsline {subsubsection}{\numberline {5.4.3}Socket.IO C++ Client}{18}{subsubsection.5.4.3}
+\contentsline {section}{\numberline {6}Evaluation}{19}{section.6}
+\contentsline {subsection}{\numberline {6.1}Design}{19}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Code Quality}{19}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Calibration Accuracy}{19}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.4}Performance}{20}{subsection.6.4}
+\contentsline {subsection}{\numberline {6.5}Build Server}{20}{subsection.6.5}
+\contentsline {subsection}{\numberline {6.6}Testing}{21}{subsection.6.6}
+\contentsline {subsection}{\numberline {6.7}Deployment}{21}{subsection.6.7}
+\contentsline {subsection}{\numberline {6.8}Streaming}{21}{subsection.6.8}
+\contentsline {section}{\numberline {7}Conclusion and Future Extensions}{23}{section.7}
+\contentsline {subsection}{\numberline {7.1}Conclusion}{23}{subsection.7.1}
+\contentsline {subsection}{\numberline {7.2}Future Extensions}{24}{subsection.7.2}
+\contentsline {subsubsection}{\numberline {7.2.1}GUI Implementation}{24}{subsubsection.7.2.1}
+\contentsline {subsubsection}{\numberline {7.2.2}Pointify to support other camera devices}{24}{subsubsection.7.2.2}
+\contentsline {subsubsection}{\numberline {7.2.3}Pointify installation}{24}{subsubsection.7.2.3}
+\contentsline {subsubsection}{\numberline {7.2.4}Recordings}{24}{subsubsection.7.2.4}
