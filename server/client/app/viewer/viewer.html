@@ -4,7 +4,7 @@
       <!-- TODO : put a logo or something here -->
       <!-- TODO : make buttons change color depending on situation -->
       <h1 class="text-center">Pointify</h1>
-      <h2 class="text-center">Frame Rate: {{$ctrl.frameRate}}</h2>
+      <!--<h2 class="text-center">Frame Rate: {{$ctrl.frameRate}}</h2> -->
       <section layout="column">
         <md-button type="button" class="md-raised md-primary"
                 ng-click="$ctrl.takePicture()">Take Picture</md-button>
@@ -42,6 +42,9 @@
   </div>
   <div flex="75" class="viewer-div">
     <div flex id="viewer">
+    </div>
+    <div class="frame-rate">
+      FPS: {{$ctrl.frameRate}}
     </div>
   </div>
 </div>
