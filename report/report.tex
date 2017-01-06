@@ -222,7 +222,7 @@ The UML sequence diagram of the client's structure is shown below:
   \caption{UML sequence diagram of the client}
 \end{figure}
 \subsubsection{C++}
-We were required to work in C++ for this part of the project in order to make use of the existing libraries that allowed us to interface with the Kinect cameras and calibration libraries.
+We were required to work in C++ for this part of the project in order to make use of the existing libraries that allowed us to interface with the Kinect cameras and calibration libraries. C++ is known for it's speed and expressiveness, making it a good fit for this project. 
 \subsubsection{ArUco}
 ArUco was the calibration system that was proposed by our supervisor Ben Glocker. It is the current leading calibration system and is provided as a module for OpenCV 2. Using standard libraries over implementing it ourselves reduces the possibility of bugs and the development cost. Standard libraries also makes our code easier to read for future developers to extend. It is also faster than AprilTags, which is the other calibration system.
 \subsubsection{OpenCV 2}
@@ -361,12 +361,15 @@ For the server, there are very few elements that happen in real-time when it is 
 \\\\
 Overall we feel that the performance of the server and the client are perfectly fast and we have not experienced any noticable decrease with any of our systems.
 
-\subsection{Testing}
-
 \subsection{Build Server}
 The build server helped us massively in the process of testing and running demos. It allowed us to have a persistent instance of the server code live and accessable at all times, allowing a single programmer to work on the client code, and test it against the server code. It would seamlessly update whenever a commit was pushed to the master branch, run build checks and unit tests before deploying the code live. Any of us could log in to the TeamCity instance to check the build status and manually run tests, allowing us to be updated with the status of the project easily.
 \\\\
 A downside of the setup we used is that it was set up to only observe the master branch, which was only updated for major milestones. There were times where we would have liked the server to be observing another branch that was more often updated to test against. Another issue with our setup was how we used the departments cloudstack setup, which is only accessable from within college. This meant that whenever we wanted to access the build server from outside of college, we had to take a more convoluted approach, such as using the college VPN.
+
+\subsection{Testing}
+We had set up formal test procedures to run before deploying the code live. This involved the Catch testsuite for C++, and tests integrated to gulp for the server. Due to the nature of the project, testing individual components was difficult, so we relied more on whole system testing to validate if our product was functioning correctly. For example, when testing the calibration, there was no easy way to check if our methods were giving the desired results without manually observing the alignment of the point cloud. 
+\\\\
+In evaluation, it may have been better to use a more test driven development approach to the project, especially when testing algorithms such as the point cloud buffer packing, as these are easily testable. But there are certain parts of this project which would be extremely difficult to test formally, and our manual approach was sufficient. 
 
 \subsection{Deployment} %gulp
 
