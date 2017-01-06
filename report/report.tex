@@ -50,26 +50,25 @@ Created by Group 30\\[\baselineskip]
 
 \newpage
 \section{Executive Summary}
-The ability to take an image and generate a 3D point cloud in real time, with multiple calibrated cameras, giving both depth and colour information has multiple use cases today. Through Pointify we have developed a system that utilises Microsoft's proprietary Xbox Kinect hardware to stream these 3D point clouds based on the XYZ and RGB data from the sensors on the devices in real time, allowing us to reconstruct a live 3D model of a scene, that updates live. It is a truly cross-platform service which allows the camera clients and the server to run on Windows, OS X or Linux operating systems. We achieve this by using services and programming languages that run on all operating systems. Having multiple calibrated Kinect cameras allows for a full 360 degree view of the object or scene that is being photographed. 
-\\\\
-The system works by:
-\\\\
-Client
+The ability to capture and record 3D images, and to display them back in real time has multiple use cases today. Through Pointify we have developed a system that utilises Microsoft's proprietary Xbox Kinect hardware to stream 3D images based on the XYZ and RGB data from the sensors on the devices in real time, allowing us to reconstruct a 3D model of a scene, that updates live. The user can move around in the scene and view the captured objects from any angle, as well as export this data to edit in third party software. It is a truly cross-platform service which allows the each component to run on Windows, OS X or Linux operating systems. We achieve this by using services and programming languages that run on all operating systems. Having multiple calibrated Kinect cameras allows for a full 360 degree view of the object or scene that is being photographed. The system follows a client-server model, and works as follows:
+\subsection{Client}
+The client software is responsible for connecting to the Kinect V2 sensors, capturing 3D images from these sensors and streaming it to the server, using the following technologies:
 \begin{itemize}
-\item Uses industry standard open source computer vision library OpenCV to perform matrix operations as efficiently as possible.
-\item Uses open source \texttt{libfreenect2} drivers from OpenKinect to extract the colour and depth camera data from the camera.
-\item Uses AruCo calibration as a module for OpenCV which we use to detect the marker within the scene and use it to calibrate the co-ordinate spaces of all cameras.
-\item Uses open-source C++11 implementation of SocketIO client to communicate with the server and send the point cloud data when requested.
+\item Industry standard open source computer vision library OpenCV to perform matrix operations as efficiently as possible
+\item Open source \texttt{libfreenect2} drivers from OpenKinect to extract the colour and depth camera data from the camera
+\item AruCo calibration as a module for OpenCV which we use to detect a marker within the scene and use it to calibrate the co-ordinate spaces of all cameras
+\item A custom \texttt{point cloud} structure to hold the 3d images, consisting of a number of coloured points in xyz space
+\item Open-source C++11 implementation of SocketIO client to communicate with the server and send the point cloud data when requested
 \end{itemize}
-~\\
-Server:
 
+\subsection{Server}
+The server is respondible for accepting connections from multiple clients, coordinating and combining their requests and displaying the final point cloud to the user:
 \begin{itemize}
-\item Based on an AngularJS frontend and a NodeJS backend.
-\item Run using the Gulp build system to automatically host the server on localhost.
-\item Uses SocketIO to calibrate the clients and synchronise the frames when taking a picture or streaming.
-\item Uses a ThreeJS renderer to display the received point clouds in real-time.
-\item Can export current picture or video stream as a PLY file.
+\item Based on an AngularJS frontend and a NodeJS backend
+\item Run using the Gulp build system to automatically host the server on localhost
+\item Uses SocketIO to calibrate the clients and synchronise the frames when taking a picture or streaming
+\item Uses a ThreeJS renderer to display the received point clouds in near real-time
+\item Can export current picture or video stream as a PLY file, to use in third party software
 \end{itemize}
 ~\\
 For static imaging there are two main use cases. In manufacturing, it is often the case that people wish to create duplicates of objects they already own. For example drill bits or trimmer attachments. Our system can achieve this by taking a picture and then exporting the PLY file which can be immediately imported into AutoCAD to 3D print the object. For medical reasons, the system can create 360 degree images of the human body and then send it off to remote doctors for an online diagnosis.
@@ -94,7 +93,9 @@ For live imaging there are also two main use cases. For virtual reality gaming i
 
 \subsection{Background and Motivation}
 A point cloud is a set of data points in some coordinate system, that when viewed together form some kind of image. These structures can find use in many fields,
-for example to create 3D models for VR games, manufacturing, 3D printing and medical applications. Gathering the points is done using one or more 3D scanners, calibrated with each other. Microsoft Kinect is one such device which is widely available and affordable, and includes both a depth and colour sensor as required. Pointify is an application that makes use of multiple Kinects to easily create aligned point clouds, as well as providing a web interface to view and export them for use in other applications.
+for example to create 3D models for VR games, manufacturing, 3D printing and medical applications. Gathering the points is done using one or more 3D scanners, calibrated with each other. Microsoft Kinect is one such device which is widely available and affordable, and includes both a depth and colour sensor as required making it a suitable device to use in this situation, but in theory any device with both a depth and colour sensor could be used.
+\\\\
+We designed pointify to be an application that makes use of multiple sensors to easily create aligned point clouds by calibrating and combining the input from them. Pointify provides a web interface to view and explore these 3D scenes, as well as export them to use in other applications.
 
 \subsection{LiveScan3D}
 The initial goal of our project was actually to improve an existing open source application called LiveScan3D, an existing research project performing similar functions to Pointify. Our supervisor, Ben Glocker, proposed that we could improve the calibration step in LiveScan3D. At that time LiveScan3D was using its own implementation of marker detection and position estimation, and it was not making use of the open source libraries like ArUco or OpenCV. LiveScan3D is only available on Windows machines and has to be compiled using Visual Studio. The fact that it is not cross platform resulted in quite a few difficulties relating to project management, as well as being a limitation on the uses of the final product. Furthermore, although LiveScan3D works, we found out that the code was lacking proper software engineering practices and documentation. We spent almost 2 weeks trying to make progress with the project, but eventually we decided to pivot and proposed that we could implement our own version that would be cross platform, as well as incorporating OpenCV and ArUco. This would make the application more flexible for the users as well as making the product more extensible for developers who may choose to work on different platforms. By approaching it from the development standpoint rather than a research one, we ensured that our code was readable, extensible, and used industry-standard and cross-platform drivers, libraries and frameworks.
@@ -110,21 +111,22 @@ The first two weeks that we spent working on LiveScan3D gave us a clear understa
 \\\\
 The initial aim of the project was to:
 \begin{itemize}
-  \item Build a distributed system that can gather and merge point cloud data from multiple Kinect cameras.
-  \item Be able to display the point clouds in a way that is convenient for the user.
-  \item Use standard libraries and frameworks, making the code easy to understand and robust.
-  \item Ensure that the project is cross-platform (Windows, Linux, OS X).
-  \item Allow that the set up and calibration of the cameras is simple.
-  % TODO : anything else?
+  \item Build a distributed system that can gather and merge point cloud data from multiple Kinect cameras
+  \item Live-stream the data to viewers in near real-time
+  \item Be able to display the point clouds in a way that is convenient for the user
+  \item Use standard libraries and frameworks, making the code easy to understand and robust
+  \item Ensure that the project is cross-platform (Windows, Linux, OS X)
+  \item Allow for the set up and calibration of the cameras to be simple
 \end{itemize}
 
 \subsection{Achievements}
 \begin{itemize}
-  \item Distributed system consisting of multiple clients with Kinect cameras, a server and a viewer allowing the user to easily control the Kinect clients and generate the point clouds.
-  \item Usage of cross-platform frameworks and drivers allowing the project to be run on Windows, Linux and OS X operating systems.
-  \item Exporting the data in the PLY format.
+  \item Distributed system consisting of multiple clients with Kinect cameras, a server and a viewer allowing the user to easily control the Kinect clients and generate the point clouds
+  \item Usage of cross-platform frameworks and drivers allowing the project to be run on Windows, Linux and OS X operating systems
+  \item Exporting the data in the PLY format
   \item Rendering generated point clouds and stream in real-time
-  \item 3D video streaming and recording.
+  \item 3D video streaming and recording
+  \item A simple calibration process that can be done in seconds
   % TODO : anything else?
 \end{itemize}
 
@@ -230,7 +232,7 @@ Libfreenect2 was our only option when it came to choosing a cross-platform drive
 \subsubsection{CMake}
 Our tool of choice for building the client was CMake, as it is a well established tool for building cross platform applications. CMake allowed us to write one make script "CMakeLists.txt", which compiled to a build solution that would run on the user's platform. On Unix systems this would be a Makefile, which allowed to user to use "make" to build the application, and on Windows machines this compiled a Visual Studio solution which could be built inside Visual Studio. We had to make sure that the libraries we used were built for the platform that the client was running on. This could be done by building them from source inside our CMake file, or providing the users with precompiled binaries for them. For our needs we found it easier to compile the libraries to the platforms we were using, and downloading them onto the machines we worked on. 
 \subsubsection{Data}
-We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data.
+We chose to do the calibration on the client and send the point clouds directly to the server to allow for distributed computation and speed up the transfer of data. This means that the server isn't doing too much work at any one time, as the processing is spread out to the client machines. The task of rendering the point clouds is delegated to the machine viewing it on the web app, which may be different to the server, meaning the CPU and GPU power needed to render the point cloud can be taken from the server too.
 
 \subsection{Server}
 The UML sequence diagram of the server's structure is shown below:
