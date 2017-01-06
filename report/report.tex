@@ -87,7 +87,7 @@ For live imaging there are also two main use cases. For virtual reality gaming i
 \end{subfigure}
 \begin{subfigure}[b]{0.49\textwidth}
   \centering
-  \includegraphics[scale=0.3]{placeholder}
+  \includegraphics[scale=0.125]{pointifyserver}
 \end{subfigure}
 \caption{Client and server setup of the Pointify system}
 \label{fig:pointifydemo}
@@ -230,6 +230,8 @@ The UML sequence diagram of the client's structure is shown below:
   \includegraphics[scale=0.6]{clientUML}
   \caption{UML sequence diagram of the client}
 \end{figure}
+\\
+Each sequence displayed above is triggered by a Socket.IO message recieved from the server. These instructions are recieved at the client initially. When calibrating, the client takes a frame from libfreenect2 which takes a picture on the camera. It then uses the frame to perform the calibration with ArUco which returns rotation and translation vectors, these vectors are then stored within the calibration class. Once this is done, a successful calibration message is sent back to the server. During the take picture, the frame is retrieved in the same way as the calibration and then transformPoints is called which the calibration class uses to transform the points with its internal rotation and translation vectors. It then sends the calibrated point cloud to the server via Socket.IO. The streaming function is the same as the take picture except that it happens in a loop. This does not require a seperate sequence however as the server deals with the synchronisation and requests the frames when it is needed.
 \subsubsection{C++}
 We were required to work in C++ for this part of the project in order to make use of the existing libraries that allowed us to interface with the Kinect cameras and calibration libraries. C++ is known for its speed and expressiveness, making it a good fit for this project. 
 \subsubsection{ArUco}
@@ -242,14 +244,16 @@ Libfreenect2 was our only option when it came to choosing a cross-platform drive
 Our tool of choice for building the client was CMake, as it is a well established tool for building cross platform applications. CMake allowed us to write one make script "CMakeLists.txt", which compiled to a build solution that would run on the user's platform. On Unix systems this would be a Makefile, which allowed to user to use "make" to build the application, and on Windows machines this compiled a Visual Studio solution which could be built inside Visual Studio. We had to make sure that the libraries we used were built for the platform that the client was running on. This could be done by building them from source inside our CMake file, or providing the users with precompiled binaries for them. For our needs we found it easier to compile the libraries to the platforms we were using, and downloading them onto the machines we worked on. 
 \subsubsection{Data}
 We chose to do the calibration on the client and send the point clouds directly to the server to allow for distributed computation and speed up the transfer of data. This means that the server is not doing too much work at any one time, as the processing is spread out to the client machines. The task of rendering the point clouds is delegated to the machine viewing it on the web app, which may be different to the server, meaning the CPU and GPU power needed to render the point cloud can be taken from the server too.
-
+\newpage
 \subsection{Server}
-The UML sequence diagram of the server's structure is shown below:
+The UML sequence diagram of the server's structure is shown in the figure below:
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.6]{serverUML}
   \caption{UML sequence diagram of the server}
 \end{figure}
+\\
+Each message sent in the diagram above is being sent over Socket.IO. During the calibration sequence and the take picture sequence, the viewer sends a single message to the server. The server then sends its message to all connected clients and recieves the response that it gets back from each client. It then puts all the responses into an array and transmits the obtained array back to the viewer. This way the viewer is abstracted away from the list of clients. During streaming, the server simply requests pictures from the clients in a loop.
 \subsubsection{Gulp} %webapp
 \subsubsection{AngularJS}
 
@@ -364,10 +368,6 @@ We noticed that the last suggestion seemed to work the best and gave us the most
 \\\\
 Once we had ArUco detect the marker in the scene and calibrate successfully, we noticed that the rotation and translation vectors that we were able to obtain were very accurate. We were able to stream and take pictures with multiple cameras and have the point clouds align almost seamlessly. We feel that the calibration is extremely fast and also if the right conditions are provided, then the marker can be detected fairly well. We realise that we will not always have optimal conditions for some of our use cases and this is something that we would have to look at for further work.
 \\\\
-(image of two point clouds aligned and calibrated)
-
-also image of how far from the marker the axis is when zoomed in and talk about translation being slightly off but it not affecting the overall calibration.
-
 \subsection{Performance}
 Both the client and the server seemed to run well on all of the systems we tested on. There were certain aspects of both that caused the running performance to be affected.
 \\\\
