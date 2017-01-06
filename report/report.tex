@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{float}
 \graphicspath{ {images/} }
 \usepackage{hyperref}
@@ -22,8 +23,8 @@
 \rule{\textwidth}{1.6pt}\\[\baselineskip] % Thick horizontal line
 
 \scshape % Small caps
-Tagline 1 \\ 
-Tagline 2\par
+Real-Time Multi-Camera\\ 
+3D Reconstruction\par
 
 \vspace*{2\baselineskip}
 
@@ -77,18 +78,19 @@ For live imaging there are also two main use cases. For virtual reality gaming i
 \newpage
 
 \section{Introduction}
-% TODO : maybe put these side by side
+
 \begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}
+  \centering
+  \includegraphics[scale=0.175]{pointifysetup}
+\end{subfigure}
+\begin{subfigure}[b]{0.49\textwidth}
   \centering
   \includegraphics[scale=0.3]{placeholder}
-  \caption{placeholder}
-  \label{fig:placeholder1}
-\end{figure}
-\begin{figure}[h]
-  \centering
-  \includegraphics[scale=0.3]{placeholder}
-  \caption{placeholder}
-  \label{fig:placeholder2}
+\end{subfigure}
+\caption{Client and server setup of the Pointify system}
+\label{fig:pointifydemo}
 \end{figure}
 
 \subsection{Background and Motivation}
@@ -100,9 +102,16 @@ We designed pointify to be an application that makes use of multiple sensors to 
 \subsection{LiveScan3D}
 The initial goal of our project was actually to improve an existing open source application called LiveScan3D, an existing research project performing similar functions to Pointify. Our supervisor, Ben Glocker, proposed that we could improve the calibration step in LiveScan3D. At that time LiveScan3D was using its own implementation of marker detection and position estimation, and it was not making use of the open source libraries like ArUco or OpenCV. LiveScan3D is only available on Windows machines and has to be compiled using Visual Studio. The fact that it is not cross platform resulted in quite a few difficulties relating to project management, as well as being a limitation on the uses of the final product. Furthermore, although LiveScan3D works, we found out that the code was lacking proper software engineering practices and documentation. We spent almost 2 weeks trying to make progress with the project, but eventually we decided to pivot and proposed that we could implement our own version that would be cross platform, as well as incorporating OpenCV and ArUco. This would make the application more flexible for the users as well as making the product more extensible for developers who may choose to work on different platforms. By approaching it from the development standpoint rather than a research one, we ensured that our code was readable, extensible, and used industry-standard and cross-platform drivers, libraries and frameworks.
 \begin{figure}[h]
+\centering
+\begin{subfigure}{.49\textwidth}
   \centering
-  \includegraphics[scale=0.3]{livescan}
-  \caption{Screenshot of LiveScan3D being run with a single Kinect camera}
+  \includegraphics[scale=0.4]{livescanclient}
+\end{subfigure}
+\begin{subfigure}{.49\textwidth}
+  \centering
+  \includegraphics[scale=1.2]{livescanserver}
+\end{subfigure}
+  \caption{Screenshots of LiveScan3D being run with a single Kinect camera}
   \label{fig:livescan}
 \end{figure}
 
@@ -330,6 +339,13 @@ This meant that during streaming of the frames, we had to send our data via stan
 \newpage
 \section{Evaluation}
 \subsection{Design}
+We utilised many design patterns when developing the technical structure of our project. For the server we utilised the publish subscribe design pattern for keeping control of the clients that are connected. This model worked well for us as meant that we only needed to design with one client in mind initially and that same design instantly worked with multiple clients as well.
+\\\\
+We also felt that the client should be kept very simple so we decided to make it a command line tool. Since this project is aimed at technically minded people, we felt that this was a good approach. In the future we may decide to make it a fully graphical user interface to appeal to the general user more.
+\\\\
+The fact that the server is run as a web application in localhost was a choice that our supervisor Ben Glocker liked from the start and we took inspiration for the idea from iPython notebooks which are run in the same way. We feel that the system is easy to use and not overly complicated.
+\\\\
+The physical design of the server is also minimal. We decided to have all the controls in a navigation pane on the left hand side and then fill the right hand side with the point cloud. This allows the user to have the maximum viewing area for the point cloud and have all the controls intuitively in the sidebar.
 \subsection{Code Quality}
 Overall we are fairly happy with the quality of the code we have produced. We approached the code in an object oriented fashion and we have clear communication between the various components of our code. One benefit of the amount of pair programming we did is the peer evaluation of the code as you type which holds the standard to a higher level. We also did not experience more bugs appearing as we progressed throughout the project or did we experience a vastly increased development cost which are indications of low fragility and low rigidity. We also agreed a level of code quality at the start that has been adhered to throughout the project.
 \\\\
