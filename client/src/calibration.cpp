@@ -7,6 +7,7 @@
 #include <cmdlog.h>
 #include <iostream>
 
+float Calibration::MARKER_LENGTH;
 
 Calibration::Calibration(libfreenect2::Freenect2Device *device)
 {

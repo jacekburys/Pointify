@@ -10,9 +10,6 @@ using namespace std;
 class Calibration 
 {
 private:
-    // size of marker in meters
-    float MARKER_LENGTH = 0.097;
-
     bool calibrated = false;
       
     //Every Calibration() object has these 
@@ -39,6 +36,9 @@ private:
     cv::Mat transformation;
 
 public:
+    // size of marker in meters
+    static float MARKER_LENGTH;
+
     Calibration(libfreenect2::Freenect2Device*);
     Calibration(); //Don't use default constructor for instantiation!
     void transformPoints(cv::Mat, cv::Mat);
