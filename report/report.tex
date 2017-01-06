@@ -50,8 +50,7 @@ Created by Group 30\\[\baselineskip]
 
 \newpage
 \section{Executive Summary}
-
-The ability to take an image and generate a 3D point cloud in real time, with multiple calibrated cameras, giving both depth and colour information has multiple use cases today. Through Pointify we have developed a system that utilises Microsoft's proprietary Xbox Kinect hardware to generate these point clouds based on the XYZ and RGB data from the sensors on the devices. It is a truly cross-platform service which allows the camera clients and the server to run on Windows, OS X or Linux operating systems. We achieve this by using services and programming languages that run on all operating systems. Having multiple calibrated Kinect cameras allows for a full 360 degree view of the object or scene that is being photographed.
+The ability to take an image and generate a 3D point cloud in real time, with multiple calibrated cameras, giving both depth and colour information has multiple use cases today. Through Pointify we have developed a system that utilises Microsoft's proprietary Xbox Kinect hardware to stream these 3D point clouds based on the XYZ and RGB data from the sensors on the devices in real time, allowing us to reconstruct a live 3D model of a scene, that updates live. It is a truly cross-platform service which allows the camera clients and the server to run on Windows, OS X or Linux operating systems. We achieve this by using services and programming languages that run on all operating systems. Having multiple calibrated Kinect cameras allows for a full 360 degree view of the object or scene that is being photographed. 
 \\\\
 The system works by:
 \\\\
@@ -67,19 +66,18 @@ Server:
 
 \begin{itemize}
 \item Based on an AngularJS frontend and a NodeJS backend.
-\item Run using the Gulp build system to automatically host the server using localhost.
+\item Run using the Gulp build system to automatically host the server on localhost.
 \item Uses SocketIO to calibrate the clients and synchronise the frames when taking a picture or streaming.
-\item Uses ThreeJS renderer to display the received point clouds in real-time.
+\item Uses a ThreeJS renderer to display the received point clouds in real-time.
 \item Can export current picture or video stream as a PLY file.
 \end{itemize}
 ~\\
 For static imaging there are two main use cases. In manufacturing, it is often the case that people wish to create duplicates of objects they already own. For example drill bits or trimmer attachments. Our system can achieve this by taking a picture and then exporting the PLY file which can be immediately imported into AutoCAD to 3D print the object. For medical reasons, the system can create 360 degree images of the human body and then send it off to remote doctors for an online diagnosis.
 \\\\
 For live imaging there are also two main use cases. For virtual reality gaming it can be useful to be able to map out the scene and work out the distance of the user from certain objects within their room. This could then be used to create live warnings in the virtual reality headset to alert the user when they are about to come into contact with an object in their gaming space. Also much like google street view our system can be used to create a live 3D view of certain points of interest or general roads which can be live streamed over the internet.
-
 \newpage
-\section{Introduction}
 
+\section{Introduction}
 % TODO : maybe put these side by side
 \begin{figure}[h]
   \centering
@@ -95,29 +93,11 @@ For live imaging there are also two main use cases. For virtual reality gaming i
 \end{figure}
 
 \subsection{Background and Motivation}
-
-A point cloud is a set of data points in some coordinate system. These sets of data can find use in many fields,
-for example to create 3D models for VR games, manufacturing, 3D printing and medical applications.
-Gathering the points is done using one or more 3D scanners. Microsoft Kinect is one such device which
-is widely available and affordable. Pointify is an application that makes use of multiple Kinects to easily
-create point clouds which can then be viewed and exported for use in other applications.
+A point cloud is a set of data points in some coordinate system, that when viewed together form some kind of image. These structures can find use in many fields,
+for example to create 3D models for VR games, manufacturing, 3D printing and medical applications. Gathering the points is done using one or more 3D scanners, calibrated with each other. Microsoft Kinect is one such device which is widely available and affordable, and includes both a depth and colour sensor as required. Pointify is an application that makes use of multiple Kinects to easily create aligned point clouds, as well as providing a web interface to view and export them for use in other applications.
 
 \subsection{LiveScan3D}
-
-The initial goal of our project was actually to improve an existing open source application called LiveScan3D.
-It has the same purpose as Pointify. Our supervisor, Ben Glocker, proposed that we could
-improve the calibration step in LiveScan3D. At that time LiveScan3D was using its own implementation
-of marker detection and pose estimation, and it was not making use of the open source libraries like
-ArUco or OpenCV. LiveScan3D is only available on Windows and has to be compiled using Visual Studio.
-The fact that it is not cross pratform resulted in quite a few difficulties relating to project management.
-Furthermore, although LiveScan3D works, we found out that the code was lacking proper software engineering
-practices and documentation. We spent almost 2 weeks trying to make progress with the project, but eventually
-we decided to pivot and proposed that we could implement our own version that would be cross platform, as well
-as incorporating OpenCV and ArUco. This would make the application more flexible for the users
-as well as making the product more extensible for developers who may choose to work on different platforms.
-By approaching it from the development standpoint rather than a research one, we ensured that our code was readable,
-extensible, and used industry-standard and cross-platform drivers, libraries and frameworks.
-
+The initial goal of our project was actually to improve an existing open source application called LiveScan3D, an existing research project performing similar functions to Pointify. Our supervisor, Ben Glocker, proposed that we could improve the calibration step in LiveScan3D. At that time LiveScan3D was using its own implementation of marker detection and position estimation, and it was not making use of the open source libraries like ArUco or OpenCV. LiveScan3D is only available on Windows machines and has to be compiled using Visual Studio. The fact that it is not cross platform resulted in quite a few difficulties relating to project management, as well as being a limitation on the uses of the final product. Furthermore, although LiveScan3D works, we found out that the code was lacking proper software engineering practices and documentation. We spent almost 2 weeks trying to make progress with the project, but eventually we decided to pivot and proposed that we could implement our own version that would be cross platform, as well as incorporating OpenCV and ArUco. This would make the application more flexible for the users as well as making the product more extensible for developers who may choose to work on different platforms. By approaching it from the development standpoint rather than a research one, we ensured that our code was readable, extensible, and used industry-standard and cross-platform drivers, libraries and frameworks.
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.3]{livescan}
@@ -126,17 +106,15 @@ extensible, and used industry-standard and cross-platform drivers, libraries and
 \end{figure}
 
 \subsection{Objectives}
-The first two weeks that we spent working on LiveScan3D gave us a clear understanding of what our application
-should do and how we can achieve that. We decided to follow LiveScan3D's idea with one server and multiple
-clients sending fragments of the scene to it. However, we decided to add a web application that would be used
-to control the clients.
+The first two weeks that we spent working on LiveScan3D gave us a clear understanding of what purpose our application should serve and how we can achieve that. We decided to follow LiveScan3D's client-server model with multiple clients sending fragments of the scene to a server, which would merge them together and display them to the user. We wanted a more user-friendly way of displaying the data, so we chose to use a web application to act as a front end.
 \\\\
 The initial aim of the project was to:
 \begin{itemize}
   \item Build a distributed system that can gather and merge point cloud data from multiple Kinect cameras.
   \item Be able to display the point clouds in a way that is convenient for the user.
   \item Use standard libraries and frameworks, making the code easy to understand and robust.
-  \item Make the project cross-platform (Windows, Linux, OS X).
+  \item Ensure that the project is cross-platform (Windows, Linux, OS X).
+  \item Allow that the set up and calibration of the cameras is simple.
   % TODO : anything else?
 \end{itemize}
 
@@ -153,9 +131,10 @@ The initial aim of the project was to:
 \newpage
 \section{Project Management}
 \subsection{Project Plan}
-Before we started looking into the specific requirements of this project, we met to discuss how we would go about designing and integrating our code, planning how we would use project management tools, as well as setting specific goals for each two week checkpoint.
+Before we started looking into the specific requirements of this project, we met to discuss how we would go about designing and integrating our code, planning how we would use project management tools, and software engineering techniques. We set out the following two week rolling iteration plan:
+
 \subsubsection{Iteration One}
-We planned to spend the first iteration reviewing two codebases to familiarise ourselves with the problem, an existing partial solution, and the libraries we would use to solve this problem. The existing partial solution is a program called LiveScan3D, a research project from Warsaw University of Technology that performed the calibration and streaming elements of the project we were looking for. Our aim was to improve this system, by using a better calibration mechanism, called ArUco, and stream the scene in a way that can be viewed by anyone on any platform. We planned to investigate ArUco, and it's containing library OpenCV, as well as looking in to ways of efficiently streaming data over a network.
+We planned to spend the first iteration reviewing two codebases to familiarise ourselves with the problem, an existing partial solution, and the libraries we would use to solve this. The existing partial solution is a program called LiveScan3D, a research project from Warsaw University of Technology that performed the calibration and streaming elements of the project we were looking for. Our aim was to improve this system, by using a better calibration mechanism, called ArUco, and stream the scene in a way that can be viewed by anyone on any platform. We planned to investigate ArUco, and it's containing library OpenCV, as well as looking in to ways of efficiently streaming data over a network.
 \subsubsection{Iteration Two}
 We planned to start building our solution in the second iteration, specifically building a client application that could read from the Kinect cameras and display this in a window. We also needed a server application to display a point cloud to the user, as well as placeholder controls to take pictures or start streaming data. We planned to set up our project management techniques and required libraries at the start of this iteration, so they would be ready to use when we started implementing our solution.
 \subsubsection{Iteration Three}
@@ -164,6 +143,7 @@ We aimed to be able to send a static point cloud from a single camera to the cli
 In the fourth iteration we aimed to implement calibration, allowing us to connect multiple sensors and stream their captured data to the server simultaneously, with the point clouds they capture aligning. This would involve working with the AruCo library, as well as combining input from multiple sensors together to give us a a view of many point clouds aligning.
 \subsubsection{Iteration Five}
 We planned to dedicate the final iteration to bug fixing and optimisation. There was a high chance that our final solution would have inefficiencies, as this application is performance critical. We wanted to ensure that we could stream the scene at a pleasant framerate with little to no errors or crashes. This was also a chance to add any small features we had thought of during implementation, as well as clean up the code and work on the user interfaces.
+
 \subsection{Management techniques}
 \subsubsection{Version Control}
 When working in a team this size, some form of version control is essential. We chose to use git, hosted on GitHub because of our teams' familiarity with the platform. We tried to follow the Git Flow branching model, as our project involved adding many features, one at a time, so following the "branch per feature" practice seemed logical. We mainly worked on our own separate branches, merging to master before a checkpoint, or when an important feature was complete and working. 
@@ -205,21 +185,25 @@ After we had investigated the task in more detail, and understood exactly what w
   \label{fig:trello}
 \end{figure}
 \\ 
+
 \newpage
 \subsection{Issues}
 \subsubsection{LiveScan3D}
-LiveScan3D is run solely on Windows and uses Visual Studio with Microsoft Kinect SDK 2.0. This posed us many problems as a group because only 3 of the members of the group used Windows systems. We also had a problem that with one of the computers, the version of Windows was the 'N' edition of the operating system. Athough we tried the recommended fixes on the internet, we were unable to get LiveScan to run on this version of Windows due to errors about missing MSVCP120.dll and MFPlat.dll. This meant that only 2 computers were able to run the LiveScan software which meant there was only one client and one server running. This did not allow us to test the feature of multiple calibrated cameras and also hindered our development that we were only able to work on 2  computers.
+LiveScan3D is run solely on Windows and uses Visual Studio with Microsoft Kinect SDK 2.0. This posed us many problems as a group because only 3 of the members of the group used Windows systems. We also had a problem that with one of the computers, the version of Windows was the 'N' edition of the operating system. Athough we tried the recommended fixes on the internet, we were unable to get LiveScan to run on this version of Windows due to errors about missing MSVCP120.dll and MFPlat.dll. This meant that only 2 machines were able to run the LiveScan software which meant there was only one client and one server running. This did not allow us to test the feature of multiple calibrated cameras and also hindered our development that we were only able to work on 2  computers.
 \\\\
 We also found it difficult to work with the codebase provided by LiveScan as the quality of the code was poor and did not utilise OpenCV for matrix operations nor did it use any of the leading calibration techniques. This resulted in code that was highly fragile and highly coupled which posed us issues when we were trying to perform tasks like replacing the calibration system.
 \subsubsection{Pointify}
 When we opted to pivot the project and work on Pointify, we were able to alleviate a lot of the issues that we encountered when working with LiveScan. We did however have issues that we encountered during development. When we initially started development, we needed to start development on a single operating system. We chose to begin development on Linux but this meant that we needed to dual boot our computers or run Linux through a virtual machine. This meant that we were not able to begin development immediately due to the time it took to ensure that our systems were set up correctly. This also posed issues of speed when it came to processing power and networking speeds that were crucial during the development of the system. With virtual machines we were only able to allocate partial amounts of our resources to it, restricting the performance inside the operating system, this was also a problem with networking as the virtual machine uses NAT translation to control the networking within the virtual machine which hindered the network contributing to latency and therefore lag in the streaming. Another problem that we faced with the NAT translation was jitter which caused a delay with each individual packet affecting the obtained frame rate. 
-\newpage
+\\\\
 There were also hardware issues that we had to deal with. We had designed the system to be able to work with multiple cameras and calibrate them correctly. We however for the project were only provided with two kinect cameras to develop with. For testing with the picture taking, we were able to use the cameras in different positions in order to emulate how the system would be able to deal with multiple cameras. This was a sufficient method to be able to test how the calibration would be able to cope and how the rendering was able to cope with a large volume of points. For live streaming however this proved to be much more difficult. We were unable to test how the system would be able to cope with multiple cameras sending data at once and how this would affect the framerate. The fact that we needed to use the hardware to test the system was also a problem that we faced which meant that we were only able to work on the project when we were in university rather than being able to do any work remotely. For testing purposes we set the build server to be a persistent server for Pointify as well which allowed us to test the client in isolation without having to use a seperate machine to act as the server for our distributed system. We had a problem with USB 3.0 ports as well, some of the computers that we were trying to use did not have USB 3.0 which is required for \texttt{libfreenect2} drivers to be able to communicate with the camera.
 \newpage
+
 \section{Design}
 We designed the project as a distributed system which has one server and multiple clients. We decided to do it like this to allow for further usability in the future if the user decides to use multiple cameras in a space and also to improve the extensibility of the product for potential new developers who may wish to create different types of clients which is possible with a standard interface.
+
 \subsection{SocketIO}
 We decided to use SocketIO to communicate between the clients and the server as it provides a simple to use decorator to the underlying networking code. This allows us to create an abstraction away from the underlying network code as well as allowing a standard interface if in the future alternative clients wish to be developed. SocketIO also has a C++ client as well as a JavaScript client which meant that we did not need to consider the networking protocols for dealing with the sockets between the server and the client. When calibrating, the server simply sends a calibration request to the client which then sends back a boolean callback if the calibration was successful or not. When streaming, the server simply requests a picture from each client every frame and synchronises the recieved frames itself so that all the client needs to do is implement one function to take a picture and does not need to know whether it is streaming or not. The server also sends start streaming and stop streaming notifications over SocketIO so that the client can change its state when streaming if required. This is done to aid further extensibility.
+
 \subsection{Distributed System}
 We chose to design our system as a distributed system for a few main reasons. Using a distributed system is good for applications like these because when adding more devices to the system, you are also adding more computers and computing power. This means that increased number of cameras has a negligible increase on the load of the server which makes the system more powerful. Another advantage of this design is that the cameras do not need to be physically connected to a single computer and can be situated in different corners of the space. This is a vital feature for some of the use cases of our system, such as imaging a point of interest which would require the cameras to be quite far from each other. There are also drawbacks of the distributed approach however. Having a computer dedicated to each camera means that the hardware requirements are greater and having the system run over the network means that the framerate and latency will be worse than having it all run on one server.
 \begin{figure}[h]
@@ -236,6 +220,7 @@ The UML sequence diagram of the client's structure is shown below:
   \caption{UML sequence diagram of the client}
 \end{figure}
 \subsubsection{C++}
+We were required to work in C++ for this part of the project in order to make use of the existing libraries that allowed us to interface with the Kinect cameras and calibration libraries.
 \subsubsection{ArUco}
 ArUco was the calibration system that was proposed by our supervisor Ben Glocker. It is the current leading calibration system and is provided as a module for OpenCV 2. Using standard libraries over implementing it ourselves reduces the possibility of bugs and the development cost. Standard libraries also makes our code easier to read for future developers to extend. It is also faster than AprilTags, which is the other calibration system.
 \subsubsection{OpenCV 2}
@@ -246,7 +231,7 @@ Libfreenect2 was our only option when it came to choosing a cross-platform drive
 Our tool of choice for building the client was CMake, as it is a well established tool for building cross platform applications. CMake allowed us to write one make script "CMakeLists.txt", which compiled to a build solution that would run on the user's platform. On Unix systems this would be a Makefile, which allowed to user to use "make" to build the application, and on Windows machines this compiled a Visual Studio solution which could be built inside Visual Studio. We had to make sure that the libraries we used were built for the platform that the client was running on. This could be done by building them from source inside our CMake file, or providing the users with precompiled binaries for them. For our needs we found it easier to compile the libraries to the platforms we were using, and downloading them onto the machines we worked on. 
 \subsubsection{Data}
 We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data.
-\newpage
+
 \subsection{Server}
 The UML sequence diagram of the server's structure is shown below:
 \begin{figure}[h]
@@ -296,9 +281,10 @@ Once we have found the transformation matrix as in the previous part, we must ap
   \caption{Transformation matrix as before, applied to each point $p_1$ \dots $p_n$}
   \label{fig:transformationApplication}
 \end{figure}
+
 \subsection{Point cloud streaming}
 Once we had built the point cloud, the next step was to send the information over a network to the server. We decided to do this by packing all the points into a binary buffer, as there would be no wasted space. This information we needed to send consisted of three 32 bit floats, for x y and z coordinates, as well as three 8 bit integers for the rgb colour values, giving a total of 15 bytes per point. There can be up to 512 x 424 points in space, giving a maximum total buffer size of 3180KB per frame. In reality, this number was much smaller, as the sensor can not pick up points that are too close or far away. We discussed the idea of compressing this buffer to reduce transfer speed, but as our client software was reletively CPU intensive already, we decided to send the uncompressed data instead.
-\newpage
+
 \subsection{Challenges}
 \subsubsection{Dual Camera Sensors}
 When performing the calibration we noticed that the calibration was slightly off. After doing some research we worked out that this was caused by the offset between the depth and rgb cameras on the Kinect hardware. The reason for this was that we were performing the AruCo calibration on the rgb matrix from the colour camera and then we were using the obtained rotation and translation vectors to calibrate the output from the depth camera. This slight offset caused the obtained origin in the coordinate space to be different and then caused the point clouds obtained from the different cameras to not align correctly. This is demonstrated in figure~\ref{fig:rgbdepth} below.
@@ -318,7 +304,6 @@ This produces an offset in the calibration as shown in figure~\ref{fig:calibrati
 \end{figure}
 \\
 To fix this issue we needed to use the registered camera matrix from the \texttt{apply} function within \texttt{libfreenect2}. This gave us a matrix which provided the rgb data points mapped onto the corresponding points from the depth camera's field of view. We therefore performed the calibration from the depth cameras field of view and output the correct resultant rotation and translation vectors for the point cloud generated from this camera.
-\newpage
 \subsubsection{Calibration Accuracy}
 When using the registered matrix, we encountered a much worse camera matrix than the one directly taken from the rgb camera as shown in figure~\ref{fig:registeredaccuracy} below.
 \begin{figure}[h]
@@ -329,6 +314,7 @@ When using the registered matrix, we encountered a much worse camera matrix than
 \end{figure}
 \\
 This reduced quality meant that AruCo was unable to accurately detect the markers in the scene. To rectify this we noticed that where \texttt{libfreenect2} was unable to detect the marker accurately, there were very small parts of the screen that were being detected as a marker as well as the main marker. This caused us issues as with multiple markers on the screen, when performing the calibration, AruCo may take the wrong marker to calibrate on, causing the points to be calibrated on the wrong location. To rectify this, during the calibration step, if there were more than one marker in the scene we would calculate the size of the 3D planes and then keep only the largest plane and remove the smaller ones. This would then return us with only the main marker in the scene if it was detected correctly.
+
 \subsection{Unsolved Challenges}
 There were also a few unsolved challenges that we face with the project that we have been unable to find a solution to at this time. These challenges that we face are related to the streaming capability of our system and they are related to the obtainable frame rate of the streaming.
 \subsubsection{TCP vs UDP}
@@ -338,16 +324,17 @@ Lag is another issue we encountered. We were able to obtain a moderate framerate
 \subsubsection{Socket.IO C++ Client}
 The TCP based streaming protocol that Socket.IO uses has not been implemented with the current C++ client offered.
 This meant that during streaming of the frames we had to send our data via standard \texttt{emit} messages instead. We are not sure as to whether this would have made a significant impact on the framerate but the data sent over the normal protocol has a much larger header per frame.
+
 \newpage
 \section{Evaluation}
 \subsection{Design}
-
 \subsection{Code Quality}
 Overall we are fairly happy with the quality of the code we have produced. We approached the code in an object oriented fashion and we have clear communication between the various components of our code. One benefit of the amount of pair programming we did is the peer evaluation of the code as you type which holds the standard to a higher level. We also did not experience more bugs appearing as we progressed throughout the project or did we experience a vastly increased development cost which are indications of low fragility and low rigidity. We also agreed a level of code quality at the start that has been adhered to throughout the project.
 \\\\
 We utilised branches effectively for each feature of the product so that we could then be comfortable about the quality of any code on a seperate branch and the fact that it is working correctly before merging into the master branch. This way we know that the master branch is the release branch of everything that is fully working and if there are issues on other branches we can use the master branch to test with slightly older versions of the code.
 \\\\
 If we had more time and were pursuing a slower but higher quality level of development we would have done more peer reviewing of each commit before accepting it. We decided not to waste time doing this due to the agile development structure of the project and the fact that we had to have an extensive set of features for the presentation.
+
 \subsection{Calibration Accuracy}
 As discussed earlier in the project, the calibration accuracy was a topic that had to undergo certain levels of compromise in order to get it fully working.
 \\\\
@@ -362,6 +349,7 @@ Once we had ArUco detect the marker in the scene and calibrate successfully, we 
 (image of two point clouds aligned and calibrated)
 
 also image of how far from the marker the axis is when zoomed in and talk about translation being slightly off but it not affecting the overall calibration.
+
 \subsection{Performance}
 Both the client and the server seemed to run well on all of the systems we tested on. There were certain aspects of both that caused the running performance to be affected.
 \\\\
@@ -370,19 +358,23 @@ In the client we had a loop that was constantly running until the application wa
 For the server, there are very few elements that happen in real-time when it is not streaming that are different from a standard web application. The server has a front end which dynamically updates whenever the server sends it a message over Socket.IO. We use ThreeJS to render the points which is a very lightweight framework. Apart from the rendering, the server has buttons which send Socket.IO messages but there is not much else that runs constantly when idle. Therefore the server is just as fast as any other web interface and perfectly usable.
 \\\\
 Overall we feel that the performance of the server and the client are perfectly fast and we have not experienced any noticable decrease with any of our systems.
+
 \subsection{Testing}
+
 \subsection{Build Server}
 The build server helped us massively in the process of testing and running demos. It allowed us to have a persistent instance of the server code live and accessable at all times, allowing a single programmer to work on the client code, and test it against the server code. It would seamlessly update whenever a commit was pushed to the master branch, run build checks and unit tests before deploying the code live. Any of us could log in to the TeamCity instance to check the build status and manually run tests, allowing us to be updated with the status of the project easily.
 \\\\
 A downside of the setup we used is that it was set up to only observe the master branch, which was only updated for major milestones. There were times where we would have liked the server to be observing another branch that was more often updated to test against. Another issue with our setup was how we used the departments cloudstack setup, which is only accessable from within college. This meant that whenever we wanted to access the build server from outside of college, we had to take a more convoluted approach, such as using the college VPN.
+
 \subsection{Deployment} %gulp
+
 \subsection{Streaming}
 The streaming was the section we spent most of the time improving towards the end of the project. This was a challenge since we are trying to process, send and render multiple point clouds per second over the network. We found this part the most difficult to test effectively as the load on the network was such a large factor that we would often experience false positives as to whether a certain improvement we had implemented had improved or worsened the obtained framerate. To negate these issues, towards the end of the project, we opted to create a local network to remove this control variable from our testing. We also used LiveScan3D to compare to what framerate we should theoretically be able to achieve with their systems and what we were achieving, all the while taking into account the extra overhead we had with respect to LiveScan3D.
 \\\\
-One of the first things we attempted to reduce the overhead is to reduce the size of the data being sent. When sending individual points over Socket.IO, we were trying to send each point in its own seperate message. We discovered after looking into Socket.IO that we were not utilising all available space in each message that was being sent and we were sending extra blank bits over the network. To solve this problem we decided to pack all of the points into a string buffer for each frame and send the entire frame as one string message. We found that this considerably improved the framerate that we were experiencing. The second improvement that we made is that we tried to pre-cache the frame in the client during streaming so that when a new frame was requested, the client did not need to process the frame, it could simply send the latest processed frame immediately. We found that this had a slight improvement on the streaming but also had a slight negative impact on the speed of the client as it needed to perform more computation in each loop. The third improvement that we made was to try and request a frame every time the server had finished processing the frame which would avoid the network getting flooded. We realised with this approach that it actually significantly slowed down the framerate since the processing time of each frame was more of a cost than the network being flooded. We decided to implement the first 3 changes and we feel this is sufficient for this stage of the project.
+One of the first things we attempted to reduce the overhead is to reduce the size of the data being sent. When sending individual points over Socket.IO, we were trying to send each point in its own separate message. We discovered after looking into Socket.IO that we were not utilising all available space in each message that was being sent and we were sending extra blank bits over the network. To solve this problem we decided to pack all of the points into a string buffer for each frame and send the entire frame as one string message. We found that this considerably improved the framerate that we were experiencing. The second improvement that we made is that we tried to pre-cache the frame in the client during streaming so that when a new frame was requested, the client did not need to process the frame, it could simply send the latest processed frame immediately. We found that this had a slight improvement on the streaming but also had a slight negative impact on the speed of the client as it needed to perform more computation in each loop. The third improvement that we made was to try and request a frame every time the server had finished processing the frame which would avoid the network getting flooded. We realised with this approach that it actually significantly slowed down the framerate since the processing time of each frame was more of a cost than the network being flooded. We decided to implement the first 3 changes and we feel this is sufficient for this stage of the project.
 (maybe also talk about trying to spawn a load of threads to send the data on the client)
 \\\\
-We also noticed that we were experiencing a considerable amount of lag between when something happened in the client and when it was to be displayed on the server. We also noticed that this lag was getting worse as the streaming duration increased. This immediately gave us the impression that there was a queue somewhere within the system that was holding the frames that needed to be processed and this queue was getting larger because the frames were being produced faster than they were being rendered. To rectify this we decided to store the latest recieved frame for each camera in the server and only process the one that we have stored on each iteration of the renderer. This worked well in keeping the lag to be consistent during the streaming and not increasing. We did find however that there was still a constant level of lag that we experienced of around 3 seconds which we were unable to reduce further. Hopefully in the future we would be able to come up with a better way of reducing lag that could work better.
+We also noticed that we were experiencing a considerable amount of lag between when something happened in the client and when it was to be displayed on the server. We also noticed that this lag was getting worse as the streaming duration increased. This immediately gave us the impression that there was a queue somewhere within the system that was holding the frames that needed to be processed and this queue was getting larger because the frames were being produced faster than they were being rendered. To rectify this we decided to store the latest received frame for each camera in the server and only process the one that we have stored on each iteration of the renderer. This worked well in keeping the lag to be consistent during the streaming and not increasing. We did find however that there was still a constant level of lag that we experienced of around 3 seconds which we were unable to reduce further. Hopefully in the future we would be able to come up with a better way of reducing lag that could work better.
 \\\\
 Another problem we encountered with the streaming was the time synchronisation of multiple cameras within the scene. What we found is that when we were testing with different computers that all had different hardware specifications that one of the clients would be considerably faster than the other and the two point clouds in the same frame would be showing data at different points in time. To rectify this, we decided to make the server only request a new frame from each client once all of the clients had sent their frame. We were not concerned about the clients not sending their frame because if a client disconnects then it is removed from the client pool and the server will not wait for it. We found that this worked well and we were able to keep all of the frames in a time sync. The main problem we found with this was that we would have to wait for the slowest client for each frame. This meant that the streaming was now as slow as its slowest member. We feel that this is sufficient for the current state of the system but we would probably like to implement some more sophisticated synchronisation systems if we were to have more time in the future.
 \\\\
@@ -395,11 +387,11 @@ When we received the proposal for 3D reconstruction, even though it was our last
 \\\\
 The technical aspect of creating Pointify (coming from the idea that an object or a scene can be reconstructed by rendering many points together from captured depth information) took the most time during the 3 months. During this short time we have endured and have managed to produce a stable application, that combined various technologies together to successfully capture depth information through multiple Kinect cameras, perform calibration and then render the many points together to 3D reconstruct a scene. In order to start we had to understand how LiveScan3D worked which took some time as we felt that LiveScan3D's code was poorly structured. However after analysing LiveScan3D's implementation, several methods were proposed through our group meeting and then a final concrete solution was decided. We then were able to carefully plan out the major sections of the project to which each group member was assigned a task.
 \\\\
-For some members of the group, it was their first time to use angularJS and nodeJS so they were able to acquire a new skill as they used it for developing the front and backend. Although the main focus of the project was ensuring that we completed implementing the features at each iteration, the latter part of the project was spent on debugging and trying to increase the current frame rate from streaming point clouds. To increase the frame rate we tried to stream the point clouds by connecting the server and client through an ethernet hub rather than wifi however this only a small increase in the frame rate. Nevertheless, the small increase in the frame rate was noticable enough. 
+For some members of the group, it was their first time to use angularJS and nodeJS so they were able to acquire a new skill as they used it for developing the front and backend. Although the main focus of the project was ensuring that we completed implementing the features at each iteration, the latter part of the project was spent on debugging and trying to increase the current frame rate from streaming point clouds. To increase the frame rate we tried to stream the point clouds by connecting the server and client through an Ethernet hub rather than WiFi however this only a small increase in the frame rate. Nevertheless, the small increase in the frame rate was noticeable enough. 
 \\\\
 Given the chance to start the project again from the beginning, we would have gone for creating the project on Linux straightaway, as it is easier to develop on there, after experiencing first hand the challenges of building the project on Windows as some time we lost was spent trying setup OpenCV. Even though we took a small risk to start afresh and develop Pointify on Linux for a cross platform application, it paid off it the end. We feel we underestimated the complexity of the calibration of the Kinect cameras and did not consider the offset between the depth and rgb camera until our supervisor, Ben, pointed it out to us. It would have been more effective and time efficient to meticulously plan the calibration aspect of the project as it was the most time consuming aspect of the development.
 \\\\
-Aligning all the times members were able to work together was tricky due to the courses taken by each member. This meant that during some group meetings, some members would not be present however this did not pose a problem because members were kept updated on the topics discussed in the meeting. Overall, we are happy about the project we created over term even though we would have liked to have some of the feature extensions integrated. We have decided to release it as an open source project on github with detailed instructions on how to build, test and develop Pointify. It would be nice if we could get feedback through reported bugs or possible improvements as this would allow us to improve Pointify and learn what could have been done better. We also hope that our project might encourage other developers to use Pointify in their own projects. 
+Aligning all the times members were able to work together was tricky due to the courses taken by each member. This meant that during some group meetings, some members would not be present however this did not pose a problem because members were kept updated on the topics discussed in the meeting. Overall, we are happy about the project we created over term even though we would have liked to have some of the feature extensions integrated. We have decided to release it as an open source project on GitHub with detailed instructions on how to build, test and develop Pointify. It would be nice if we could get feedback through reported bugs or possible improvements as this would allow us to improve Pointify and learn what could have been done better. We also hope that our project might encourage other developers to use Pointify in their own projects. 
 %As various challenges e.g. with differences in
 %coordinate systems used internally by our devices and the OpenCV library code have %shown us, it would
 %be wiser to first plan the procedure with finer detail. Moreover, we have been %overly focused on correctness
@@ -415,7 +407,7 @@ Currently, only the server has a GUI implementation in place but the client side
 \subsubsection{Pointify to support other camera devices}
 Modifying Pointify to work not only with Kinect cameras, but with many more types of different cameras. The disadvantage of using Kinect cameras is that they must be plugged into a power socket which constrains the mobility of the client should they want to roam about. There are other cameras, that do not require to be plugged in to a power socket, which can capture depth information so it is possible to configure Pointify to work for these cameras. What we can do is to build up a layer of indirection on the hardware driver, so that the current existing calibration code will work with different camera implementations. We would also need to unify the data format that is passed so that we can maximise the amount of code that can be reused.
 \subsubsection{Pointify installation}
-In order to get Pointify to run, several prerequsites must be installed such as \texttt{Bower}, \texttt{Ruby} and \texttt{MongoDB}. With a proper simple installation set in place, we can run a single script to detect and install the aforementioned prerequsites instead of manually installing them one by one. After the prerequsites are installed, further dependancies must be installed, the \texttt{mongod} daemon must be set up in a new shell and then finally the server started by calling \texttt{gulp serve}. The installation script would then install these dependancies and then run the daemon before starting the server in a browser window.
+In order to get Pointify to run, several prerequsites must be installed such as \texttt{Bower}, \texttt{Ruby} and \texttt{MongoDB}. With a proper simple installation set in place, we can run a single script to detect and install the aforementioned prerequisites instead of manually installing them one by one. After the prerequisites are installed, further dependencies must be installed, the \texttt{mongod} daemon must be set up in a new shell and then finally the server started by calling \texttt{gulp serve}. The installation script would then install these dependencies and then run the daemon before starting the server in a browser window.
 \subsubsection{Recordings}
 A very nice feature which would go with Pointify is the ability to record point cloud streams. After successfully calibrating the clients, you can then press the "Start recording" button to record a point cloud stream which then later can be played back. The server should be able save and load these point cloud streams that it records in a database. Although each frame in size is roughly a few megabytes, \texttt{MongoDB} should be suitable to storing the recording point cloud streams. (Add more here)
 
