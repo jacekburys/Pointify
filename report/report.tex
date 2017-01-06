@@ -232,7 +232,7 @@ Libfreenect2 was our only option when it came to choosing a cross-platform drive
 \subsubsection{CMake}
 Our tool of choice for building the client was CMake, as it is a well established tool for building cross platform applications. CMake allowed us to write one make script "CMakeLists.txt", which compiled to a build solution that would run on the user's platform. On Unix systems this would be a Makefile, which allowed to user to use "make" to build the application, and on Windows machines this compiled a Visual Studio solution which could be built inside Visual Studio. We had to make sure that the libraries we used were built for the platform that the client was running on. This could be done by building them from source inside our CMake file, or providing the users with precompiled binaries for them. For our needs we found it easier to compile the libraries to the platforms we were using, and downloading them onto the machines we worked on. 
 \subsubsection{Data}
-We chose to do the calibration on the server and send the point clouds directly to the client to allow for distributed computation and speed up the transfer of data.
+We chose to do the calibration on the client and send the point clouds directly to the server to allow for distributed computation and speed up the transfer of data. This means that the server isn't doing too much work at any one time, as the processing is spread out to the client machines. The task of rendering the point clouds is delegated to the machine viewing it on the web app, which may be different to the server, meaning the CPU and GPU power needed to render the point cloud can be taken from the server too.
 
 \subsection{Server}
 The UML sequence diagram of the server's structure is shown below:
