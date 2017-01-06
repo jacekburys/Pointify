@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
     cmdline::parser cmdParser;
     cmdParser.add<string>("ip", 'i', "Server IP address", false, "127.0.0.1");
     cmdParser.add<unsigned short>("port", 'p', "Server port number", false, 9000);
-    cmdParser.add<float>("msize", 'm', "Marker size in meters", false, 0.0988);
+    //cmdParser.add<float>("msize", 'm', "Marker size in meters", false, 0.0988);
+    cmdParser.add<float>("msize", 'm', "Marker size in meters", false, 0.1973);
     cmdParser.parse_check(argc, argv);
     const char* inputIp = cmdParser.get<string>("ip").c_str();
     unsigned short inputPort = cmdParser.get<unsigned short>("port");
