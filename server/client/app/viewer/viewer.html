@@ -1,44 +1,42 @@
 <div layout="row" class="main">
-  <div flex="25" layout-margin>
-    <div layout="column" flex>
-      <!-- TODO : put a logo or something here -->
-      <!-- TODO : make buttons change color depending on situation -->
-      <h1 class="text-center">Pointify</h1>
-      <!--<h2 class="text-center">Frame Rate: {{$ctrl.frameRate}}</h2> -->
-      <section layout="column">
-        <md-button type="button" class="md-raised md-primary"
-                ng-click="$ctrl.takePicture()">Take Picture</md-button>
-        <md-button type="button" class="md-raised md-primary"
-                ng-click="$ctrl.toggleStreaming()">
-                <span ng-if="$ctrl.streaming">Stop Streaming</span>
-                <span ng-if="!$ctrl.streaming">Start Streaming</span>
-                </md-button>
-        <md-button type="button" class="md-raised md-primary"
-                ng-click="$ctrl.calibrate()">Calibrate</md-button>
-        <md-button type="button" class="md-raised md-primary"
-                ng-click="$ctrl.saveAsPLY()">Save as PLY file</md-button>
-        <h2 class="text-center">Point Size</h2>
-        <md-slider-container>
-          <md-slider flex min="0.01" max="5" step="0.01" ng-model="$ctrl.material.size" aria-label="pointSize" id="pointSizeSlider">
-        </md-slider-container>
-      </section>
-      <h1 class="text-center"> Clients </h1>
-      <div layout="column" flex>
-        <div layout="row" layout-margin
-         class="client-list-header">
-          <div flex="20" layout-padding><h4>ID</h4></div>
-          <div flex="30" layout-padding><h4>IP</h4></div>
-          <div flex="50" layout-padding><h4>Status</h4></div>
-        </div>
-        <div layout="row" layout-margin
-         ng-repeat="client in $ctrl.connectedClients"
-         class="client-list-item">
-          <div flex="20" layout-padding>{{client.clientID}}</div>
-          <div flex="30" layout-padding>{{client.ip}}</div>
-          <div flex="50" layout-padding>{{client.calibStatus}}</div>
-        </div>
+  <div flex="25" layout-margin layout="column">
+    <!-- TODO : put a logo or something here -->
+    <!-- TODO : make buttons change color depending on situation -->
+    <h1 class="text-center">Pointify</h1>
+    <!--<h2 class="text-center">Frame Rate: {{$ctrl.frameRate}}</h2> -->
+    <md-button type="button" class="md-raised md-primary"
+            ng-click="$ctrl.takePicture()">Take Picture</md-button>
+    <md-button type="button" class="md-raised md-primary"
+            ng-click="$ctrl.toggleStreaming()">
+            <span ng-if="$ctrl.streaming">Stop Streaming</span>
+            <span ng-if="!$ctrl.streaming">Start Streaming</span>
+            </md-button>
+    <md-button type="button" class="md-raised md-primary"
+            ng-click="$ctrl.calibrate()">Calibrate</md-button>
+    <md-button type="button" class="md-raised md-primary"
+            ng-click="$ctrl.saveAsPLY()">Save as PLY file</md-button>
+    <h2 class="text-center">Point Size</h2>
+    <md-slider-container>
+      <md-slider flex min="0.01" max="5" step="0.01" ng-model="$ctrl.material.size" aria-label="pointSize" id="pointSizeSlider">
+    </md-slider-container>
+    <h1 class="text-center"> Clients </h1>
+    <div layout="row"
+     class="client-list-header">
+      <div flex="20" layout-padding><h4>ID</h4></div>
+      <div flex="30" layout-padding><h4>IP</h4></div>
+      <div flex="50" layout-padding><h4>Status</h4></div>
+    </div>
+    <md-content>
+    <div layout="column">
+      <div layout="row" layout-margin
+       ng-repeat="client in $ctrl.connectedClients"
+       class="client-list-item">
+        <div flex="20" layout-padding>{{client.clientID}}</div>
+        <div flex="30" layout-padding>{{client.ip}}</div>
+        <div flex="50" layout-padding>{{client.calibStatus}}</div>
       </div>
     </div>
+    </md-content>
   </div>
   <div flex="75" class="viewer-div">
     <div flex id="viewer">
