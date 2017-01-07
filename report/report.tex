@@ -260,9 +260,28 @@ The UML sequence diagram of the server's structure is shown in the figure below:
 \\
 Each message sent in the diagram above is being sent over Socket.IO. During the calibration sequence and the take picture sequence, the viewer sends a single message to the server. The server then sends its message to all connected clients and recieves the response that it gets back from each client. It then puts all the responses into an array and transmits the obtained array back to the viewer. This way the viewer is abstracted away from the list of clients. During streaming, the server simply requests pictures from the clients in a loop.
 \subsubsection{Gulp}
-In order adhere to the good software engineering practices and make the development process more efficient we used \texttt{Gulp} which is a toolkit for automating time-consuming tasks that are very often encountered in the process of developing a webapp. Thanks to it, we could start the webapp in a few seconds by running one simple command from the terminal.
+In order adhere to the good software engineering practices and make the development process more efficient we used \texttt{Gulp} which is a toolkit for automating time-consuming tasks that are very often encountered in the process of developing a webapp. It has functionality for linting the code, injecting scripts and CSS files, cleaning the project and many more. All of them contribute to good software engineering design by ensuring that the code is clean and has good style. Thanks to Gulp we could start the webapp in a few seconds by running one simple command from the terminal.
+\subsubsection{Node.js}
+We chose to use Node.js as the framework for building ther server. Our plan was that the server would be just
+aggregating the data from the Kinect clients and sending it to the web app front end. Node.js seemed like a good
+choice because it is known for its high throughput and we did not plan to do too much CPU intencive processing
+on the server side. Furhtermore, it is currently one of the most popular framework with a large set of
+available packages which can be very easily managed with \texttt{npm}. % TODO : anything else?
 \subsubsection{AngularJS}
 AngularJS is one of the most popular frameworks for front-end development. It uses JavaScript as its programming language and utilizes the Model-View-Controller architecture, which makes it possible to build interactive and seamlessly working applications. Furthermore, it is relatively easy to use and we had past experience with it, which increased the speed at which we could progress with the webapp.
+\subsubsection{Angular Material}
+Pleasant and easy to understand UI is a vital part of every web app. There is no need to design the UI components
+from the scratch, instead, it is more efficient to use one of the available UI frameworks. We begun the project
+with Bootstrap, but later decided to switch to Angular Material because it looked better visually and is
+as easy to use as Bootstrap.
+\subsubsection{Three.js}
+Being able to render the point clouds is essential in Pointify. As none of us had previous experience with
+rendering 3D scenes we had to look for a good library that would help us with that. At first we found an open
+source project called Potree which is a 3D renderer designed specifically for large point clouds. However,
+having done more research we came to the conclusion that it would be too advanced for what we actually needed.
+This would introduce more unnecessary complexity, so we decided to use Three.js instead.
+Three.js is a JavaScript 3D library which makes it really easy to render 3D scenes in the browser.
+Fortunately, it supports point clouds and turned out to be perfect for our needs.
 
 \newpage
 \section{Implementation}
