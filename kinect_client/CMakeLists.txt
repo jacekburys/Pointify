@@ -7,7 +7,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "bin/")
 include_directories(include)
 include_directories(src)
 
-link_directories(lib/linux)
+if (WIN32)
+    link_directories(lib/windows)
+elseif (APPLE)
+    link_directories(lib/mac)
+elseif (UNIX)
+    link_directories(lib/linux)
+endif()
  
 add_executable(client 
   src/client.cpp
@@ -28,3 +34,4 @@ target_link_libraries(client
   opencv_imgproc
   opencv_calib3d
 )
+
