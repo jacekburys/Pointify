@@ -59,28 +59,32 @@ int main(int argc, char *argv[])
 
     // add camera event listeners
     client.socket()->on("take_picture",
+						static_cast<sio::socket::event_listener>(
                         [&camera, &client] (sio::event& event)
                         {
                             string buffString = camera.takePicture();
                             client.socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
                             INFO("picture sent");
-                        });
+                        }));
     client.socket()->on("calibrate",
+						static_cast<sio::socket::event_listener>(
                         [&camera, &client] (sio::event& event)
                         {
                             INFO("got calibrate message");
                             client.socket()->emit("calibration_status", sio::bool_message::create(camera.calibrate()));
-                        });
+                        }));
     client.socket()->on("start_streaming",
+						static_cast<sio::socket::event_listener>(
                         [&camera, &client] (sio::event& event)
                         {
                             camera.startStreaming();
-                        });
+                        }));
     client.socket()->on("stop_streaming",
+						static_cast<sio::socket::event_listener>(
                         [&camera, &client] (sio::event& event)
                         {
                             camera.stopStreaming();
-                        });
+                        }));
 
     // start camera display
     camera.start();

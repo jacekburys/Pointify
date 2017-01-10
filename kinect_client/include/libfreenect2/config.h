@@ -63,4 +63,9 @@
 
 /* #undef LIBFREENECT2_WITH_PROFILING */
 
+#if defined(_MSC_VER)
+#undef LIBFREENECT2_API
+#define LIBFREENECT2_API
+#endif
+
 #endif // LIBFREENECT2_CONFIG_H

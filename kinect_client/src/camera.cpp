@@ -5,7 +5,11 @@
 #include <future>
 #include <mutex>
 #include <condition_variable>
+#if defined(_WIN32)
+#include <Windows.h>
+#else
 #include <unistd.h>
+#endif
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
@@ -38,7 +42,11 @@ void Camera::streamFrame()
 {
     string buffString = getPointCloudStream();
     client->socket()->emit("new_frame", make_shared<string>(buffString.c_str(), buffString.size()));
+#if defined(_WIN32)
+	Sleep(500);
+#else
     usleep(500000);
+#endif
     framesEmitted++;
     INFO("%i", framesEmitted);
 }

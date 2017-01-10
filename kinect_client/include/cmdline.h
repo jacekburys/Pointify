@@ -36,8 +36,33 @@
 #include <typeinfo>
 #include <cstring>
 #include <algorithm>
-#include <cxxabi.h>
 #include <cstdlib>
+
+#if !defined(_WIN32)
+#include <cxxabi.h>
+
+static inline std::string demangle(const std::string &name)
+{
+  int status=0;
+  char *p=abi::__cxa_demangle(name.c_str(), 0, 0, &status);
+  std::string ret(p);
+  free(p);
+  return ret;
+}
+#else
+
+#include <windows.h> 
+#include <Dbghelp.h>
+#pragma comment(lib,"dbghelp.lib")     
+
+static inline std::string demangle(const std::string &name)
+{
+   TCHAR szUndecorateName[256];
+   memset(szUndecorateName, 0, 256);
+   UnDecorateSymbolName(name.c_str(), szUndecorateName, 256, 0);
+   return szUndecorateName;
+}
+#endif
 
 namespace cmdline{
 
@@ -100,15 +125,6 @@ template<typename Target, typename Source>
 Target lexical_cast(const Source &arg)
 {
   return lexical_cast_t<Target, Source, detail::is_same<Target, Source>::value>::cast(arg);
-}
-
-static inline std::string demangle(const std::string &name)
-{
-  int status=0;
-  char *p=abi::__cxa_demangle(name.c_str(), 0, 0, &status);
-  std::string ret(p);
-  free(p);
-  return ret;
 }
 
 template <class T>
@@ -566,7 +582,7 @@ public:
 
     size_t max_width=0;
     for (size_t i=0; i<ordered.size(); i++){
-      max_width=std::max(max_width, ordered[i]->name().length());
+      max_width=(std::max)(max_width, ordered[i]->name().length());
     }
     for (size_t i=0; i<ordered.size(); i++){
       if (ordered[i]->short_name()){
