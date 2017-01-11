@@ -95,9 +95,9 @@ class ViewerController {
       _this.frameRate = frameRate.toFixed(2);
       _this.$scope.$apply();
     });
-    $window.onload = function() {
+    angular.element(document).ready(function() {
       this.runThree();
-    }.bind(this);
+    }.bind(this));
   }
 
   takePicture() {

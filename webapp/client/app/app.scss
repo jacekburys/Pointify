@@ -14,10 +14,12 @@ $fa-font-path: "../bower_components/font-awesome/fonts";
   padding: 0.2em 0;
 }
 
+@font-face {font-family: Roboto; src: url('../assets/fonts/Roboto-Black.ttf'); }
 body {
   background-color : #000000;
   font-family: Roboto;
 }
+
 
 // Component styles are injected through grunt
 /* inject:scss */
