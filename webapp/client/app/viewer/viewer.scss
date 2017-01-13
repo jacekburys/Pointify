@@ -1,0 +1,30 @@
+.main {
+  background-color: #25272b;
+  color: white;
+  height: 100vh;
+}
+
+.logo {
+  width: 90%;
+}
+
+.viewer-div {
+  background-color: black;
+}
+
+.client-list-item {
+  background-color: #56595e;
+}
+
+.client-list-header{
+  background-color: #56595e;
+}
+
+.frame-rate {
+    position: absolute;
+    right: 40px;
+    top: 10px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}

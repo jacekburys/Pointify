@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "rootDir": "./client",
+        "outDir": ".tmp",
+        "target": "ES5"
+    },
+    "filesGlob": [
+        "client/{app,components}/**/!(*.spec).ts",
+        "typings/main.d.ts"
+    ],
+    "files": [
+        "client/app/app.ts",
+        "client/app/viewer/viewer.controller.ts",
+        "client/app/viewer/viewer.ts",
+        "client/components/ply/ply.service.ts",
+        "client/components/socket/socket.service.ts",
+        "client/components/util/util.module.ts",
+        "client/components/util/util.service.ts",
+        "typings/main.d.ts"
+        ]
+}
