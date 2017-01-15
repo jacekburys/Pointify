@@ -3,11 +3,9 @@
 
 Pointify is an open-source system which allows for real time 3D reconstruction using multiple Kinect v2 sensors simultaneously.
 
-Pointify is based off LiveScan3D, taken from [LiveScan3D](https://github.com/MarekKowalski/LiveScan3D)
+Pointify is based off [LiveScan3D](https://github.com/MarekKowalski/LiveScan3D), but is different since we use OpenCV 2 with ArUco for the calibration. Pointify is also cross-platform and works on Linux, Windows and Mac OS X.
 
-Pointify is different to LiveScan3D since it uses OpenCV with ArUco for the calibration as well as using cross-platform libraries so works on Linux, Windows and Mac OS X.
-
-Example of point cloud obtained from two Kinect V2 sensors:
+An example point cloud obtained from two Kinect V2 sensors using Pointify:
 
 ![Merged Point Clouds](/report/images/mergedpointclouds.png)
 
@@ -20,8 +18,8 @@ Install the appropriate dependencies from [libfreenect2](https://github.com/Open
 
 
 #Authors
-Jacek Burys
-Adam Hosier
-Kabeer Vohra
+Jacek Burys\\
+Adam Hosier\\
+Kabeer Vohra\\
 Liu Rui
 
