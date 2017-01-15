@@ -18,8 +18,11 @@ Install the appropriate dependencies from [libfreenect2](https://github.com/Open
 
 
 #Authors
-Jacek Burys//
-Adam Hosier//
-Kabeer Vohra//
+Jacek Burys
+
+Adam Hosier
+
+Kabeer Vohra
+
 Liu Rui
 
