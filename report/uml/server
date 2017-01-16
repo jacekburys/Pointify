@@ -1,0 +1,24 @@
+viewer:Viewer[a]
+server:Server[a]
+client:Client[a]
+
+[c:calibrate]
+viewer:[calibrated]=server.viewer_calibrate
+[c: for each client]
+server:calibrated=client.calibrate
+[/c]
+[/c]
+
+[c: take picture]
+viewer:[frame]=server.viewer_take_picture
+[c: for each client]
+server:frame=client.take_picture
+[/c]
+[/c]
+
+[c:streaming loop]
+viewer:[frame]=server.viewer_take_picture
+[c: for each client]
+server:frame=client.take_picture
+[/c]
+[/c]

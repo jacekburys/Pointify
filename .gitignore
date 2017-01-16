@@ -75,12 +75,8 @@ $RECYCLE.BIN/
 .nfs*
 
 
-client/bin
-client/lib
 lib
 .vimrc
-client/shell
-
 
 # Intellij Files
 .idea
