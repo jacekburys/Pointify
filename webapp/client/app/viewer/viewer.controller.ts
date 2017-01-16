@@ -44,7 +44,6 @@ class ViewerController {
     socket.ioSocket.on('viewer_number_of_markers', function(numObj) {
       var num = numObj.numberOfMarkers;
       var clientID = numObj.clientID;
-      //console.log('num of markers: ', num);
       var index = _this.connectedClients.findIndex(function(client) {
         return client.clientID === clientID;
       });
@@ -61,7 +60,6 @@ class ViewerController {
         _this.connectedClients[index].calibStatus = 'Marker detected';
       } else {
         _this.connectedClients[index].calibStatus = 'Marker detected';
-        //_this.connectedClients[index].calibStatus = 'Multiple markers';
       }
       _this.$scope.$apply();
     });
@@ -238,7 +236,12 @@ class ViewerController {
 
   saveAsPLY() {
     if (!this.pointCloudGeometry) {
-      // TODO : handle this error
+      var temp = this.$mdDialog.alert()
+          .clickOutsideToClose(true)
+          .title('No point cloud to save')
+          .ariaLabel('No point cloud to save')
+          .ok('Got it!');
+      this.$mdDialog.show(temp);
       console.log('no pointCloudGeometry');
       return;
     }
@@ -249,7 +252,6 @@ class ViewerController {
       .placeholder('pointcloud')
       .ariaLabel('PointCloud')
       .initialValue('pointcloud')
-      //.targetEvent(ev)
       .ok('Save')
       .cancel('Cancel');
 
