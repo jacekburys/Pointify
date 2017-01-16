@@ -16,7 +16,7 @@ Inside the webapp directory, run `npm install` to install server dependencies. R
 ##Kinect Client
 Install the appropriate dependencies from [libfreenect2](https://github.com/OpenKinect/libfreenect2). Download platform dependent library files from ... and put them in /kinect\_client/lib/{platform\_name} . Inside the kinect\_client directory run `cmake CMakeLists.txt`. After this generates the OS dependent MakeFile, run `make`.
 
-When this is done simply run `./client --ip=\{ip address of server\}`. Note this may require an elevated `sudo` request on linux.
+When this is done simply run `./client --ip={ip address of server}`. Note this may require an elevated `sudo` request on linux.
 
 #Authors
 Jacek Burys
