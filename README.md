@@ -14,7 +14,7 @@ An example point cloud obtained from two Kinect V2 sensors using Pointify:
 Inside the webapp directory, run `npm install` to install server dependencies. Run `bower install` to install front end dependencies. Run `gulp serve` to run the server and point browser to [localhost](localhost:9000) to see the viewer.
 
 ##Kinect Client
-Install the appropriate dependencies from [libfreenect2](https://github.com/OpenKinect/libfreenect2). Download platform dependent library files from [libraries](https://drive.google.com/open?id=0B9ToIasbTYasRjdkQmptUE9URkE) and put them in /kinect\_client/lib/{platform\_name} . Inside the kinect\_client directory run `cmake CMakeLists.txt`. After this generates the OS dependent MakeFile, run `make`.
+Install the appropriate dependencies from [libfreenect2](https://github.com/OpenKinect/libfreenect2). Download platform dependent library files from [here](https://drive.google.com/open?id=0B9ToIasbTYasRjdkQmptUE9URkE) and put them in /kinect\_client/lib/{platform\_name} . Inside the kinect\_client directory run `cmake CMakeLists.txt`. After this generates the OS dependent MakeFile, run `make`.
 
 When this is done simply run `./client --ip={ip address of server}`. Note this may require an elevated `sudo` request on linux.
 
